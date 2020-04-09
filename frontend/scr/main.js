@@ -26,6 +26,8 @@ class Setup {
         // ---------------- Setup functions ---------------- //
         // Initiate Grids
         this.initiateGrids();
+        this.initiateStateMap();
+        this.initiateUSMap();
     }
 
     initiateGrids() {
@@ -43,8 +45,36 @@ class Setup {
     createGrid(node) {
         $("#" + node.id).append('<div class="title-bar" id="' + node.id + '-title">');
         $("#" + node.id + '-title').append('<span class="graph-title">' + node.id + '</span>');
+        $("#" + node.id).append('<div class="grid-content" id="' + node.id + '-content">');
     }
 
+    initiateStateMap() {
+        this.stateMap = L.map("state_map-content", {
+            maxZoom: 19,
+            minZoom: 0,
+            zoomControl: false,
+            attributionControl: false,
+            scrollWheelZoom: true
+        });
+        this.stateMap.setView([39.95, -83.02], 8);
+        new L.Control.Zoom({ position: 'topleft' }).addTo(this.stateMap);
+        this.stateMapBaseLayer = L.esri.basemapLayer("DarkGray");
+        this.stateMapBaseLayer.addTo(this.stateMap);
+    }
+
+    initiateUSMap(){
+        this.USMap = L.map("US_map-content", {
+            maxZoom: 19,
+            minZoom: 0,
+            zoomControl: false,
+            attributionControl: false,
+            scrollWheelZoom: true
+        });
+        this.USMap.setView([39.95, -83.02], 4);
+        new L.Control.Zoom({ position: 'topleft' }).addTo(this.USMap);
+        this.USMapBaseLayer = L.esri.basemapLayer("DarkGray");
+        this.USMapBaseLayer.addTo(this.USMap);
+    }
 
 
 }

@@ -35,3 +35,41 @@
     font-size: 25px;
     color: #FFFFFF;
 }
+.grid-stack-item-content {
+    overflow-y: hidden!important;
+}
+
+.grid-stack-item-content {
+    color: #2c3e50;
+    border: solid lightgrey 2px;
+    /* text-align: center; */
+    overflow: hidden;
+    scrollbar-width: none !important;
+    background-color: #fff;
+    box-shadow: 2px 2px 2px lightgrey;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.grid-stack-item-content::-webkit-scrollbar {
+    width: 0 !important
+}
+
+html, body {
+    scrollbar-width: none !important;
+}
+
+.grid-stack {
+    background: none; /* lightgoldenrodyellow;*/
+}
+
+#state_map-content {
+    height: calc(100% - 30px);
+    width: 100%;
+}
+
+#US_map-content {
+    height: calc(100% - 30px);
+    width: 100%;
+}
