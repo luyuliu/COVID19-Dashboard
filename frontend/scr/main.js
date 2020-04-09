@@ -60,6 +60,29 @@ class Setup {
         new L.Control.Zoom({ position: 'topleft' }).addTo(this.stateMap);
         this.stateMapBaseLayer = L.esri.basemapLayer("DarkGray");
         this.stateMapBaseLayer.addTo(this.stateMap);
+
+        var stateLayer = L.geoJson(null, {
+            style: function(feature) {
+                console.log(feature)
+                var edgeColor = "#bdbdbd";
+                var fillColor = "#FFFFFF";
+                return {
+                    color: edgeColor,
+                    fillColor: fillColor,
+                    opacity: 1,
+                    opacity: 0.5,
+                    weight: 0.5
+                }
+            }
+        });
+        this.stateMap.addLayer(stateLayer);
+
+        var featureURL = "https://luyuliu.github.io/COVID19-Dashboard/data/us-states.geojson"
+        var featureURL = "https://luyuliu.github.io/CURIO-Map/data/morpcCensus.json"
+        $.get(featureURL, function(mapData){
+            stateLayer.addData(mapData)
+        })
+        
     }
 
     initiateUSMap(){
@@ -74,11 +97,29 @@ class Setup {
         new L.Control.Zoom({ position: 'topleft' }).addTo(this.USMap);
         this.USMapBaseLayer = L.esri.basemapLayer("DarkGray");
         this.USMapBaseLayer.addTo(this.USMap);
+
+        var USLayer = L.geoJson(null, {
+            style: function(feature) {
+                console.log(feature)
+                var edgeColor = "#bdbdbd";
+                var fillColor = "#FFFFFF";
+                return {
+                    color: edgeColor,
+                    fillColor: fillColor,
+                    opacity: 1,
+                    opacity: 0.5,
+                    weight: 0.5
+                }
+            }
+        });
+        this.USMap.addLayer(USLayer);
+
+        var featureURL = "https://luyuliu.github.io/COVID19-Dashboard/data/us-states.geojson"
+        $.get(featureURL, function(mapData){
+            USLayer.addData(mapData)
+        })
     }
-
-
 }
-
 
 // ---------------- Setup ---------------- //
 
