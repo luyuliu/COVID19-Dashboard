@@ -22,6 +22,8 @@ class Setup {
 
         };
 
+        this.defaultStateID = "OH"
+
 
         // ---------------- Setup functions ---------------- //
         // Initiate Grids
@@ -77,9 +79,10 @@ class Setup {
         });
         this.stateMap.addLayer(stateLayer);
 
-        var featureURL = "https://luyuliu.github.io/COVID19-Dashboard/data/us-states.geojson"
-        var featureURL = "https://luyuliu.github.io/CURIO-Map/data/morpcCensus.json"
-        $.get(featureURL, function(mapData){
+        var featureURL = "https://luyuliu.github.io/Drag-Map/data/states/jsoncounties-"+this.defaultStateID+".min.js"
+        console.log(featureURL)
+        d3.json(featureURL, function(mapData){
+            console.log(mapData)
             stateLayer.addData(mapData)
         })
         
@@ -100,7 +103,6 @@ class Setup {
 
         var USLayer = L.geoJson(null, {
             style: function(feature) {
-                console.log(feature)
                 var edgeColor = "#bdbdbd";
                 var fillColor = "#FFFFFF";
                 return {
