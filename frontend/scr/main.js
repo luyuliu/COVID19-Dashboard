@@ -8,7 +8,7 @@ class Setup {
         this.options = {
             verticalMargin: 10,
             handle: ".title-bar",
-            cellHeight: window.innerWidth/3,
+            cellHeight: window.innerWidth / 3,
             disableResize: true
         };
 
@@ -51,44 +51,47 @@ class Setup {
     }
 
     initiateStateMap() {
-        this.stateMap = L.map("state_map-content", {
-            maxZoom: 19,
-            minZoom: 0,
-            zoomControl: false,
-            attributionControl: false,
-            scrollWheelZoom: true
-        });
-        this.stateMap.setView([39.95, -83.02], 8);
-        new L.Control.Zoom({ position: 'topleft' }).addTo(this.stateMap);
-        this.stateMapBaseLayer = L.esri.basemapLayer("DarkGray");
-        this.stateMapBaseLayer.addTo(this.stateMap);
+        var featureURL = "https://luyuliu.github.io/CURIO-Map/data/morpcCensus.json"
+        // var featureURL = "https://luyuliu.github.io/Drag-Map/data/states/jsoncounties-"+this.defaultStateID+".min.js"
+        var self = this;
+        $.get(featureURL, function (mapData) {
 
-        var stateLayer = L.geoJson(null, {
-            style: function(feature) {
-                console.log(feature)
-                var edgeColor = "#bdbdbd";
-                var fillColor = "#FFFFFF";
-                return {
-                    color: edgeColor,
-                    fillColor: fillColor,
-                    opacity: 1,
-                    opacity: 0.5,
-                    weight: 0.5
+            self.stateMap = L.map("state_map-content", {
+                maxZoom: 19,
+                minZoom: 0,
+                zoomControl: false,
+                attributionControl: false,
+                scrollWheelZoom: true
+            });
+            self.stateMap.setView([39.95, -83.02], 8);
+            new L.Control.Zoom({ position: 'topleft' }).addTo(self.stateMap);
+            self.stateMapBaseLayer = L.esri.basemapLayer("DarkGray");
+            self.stateMapBaseLayer.addTo(self.stateMap);
+
+
+            console.log(featureURL)
+            self.stateLayer = L.geoJson(null, {
+                style: function (feature) {
+                    console.log(feature)
+                    var edgeColor = "#bdbdbd";
+                    var fillColor = "#FFFFFF";
+                    return {
+                        color: edgeColor,
+                        fillColor: fillColor,
+                        opacity: 1,
+                        opacity: 0.5,
+                        weight: 0.5
+                    }
                 }
-            }
-        });
-        this.stateMap.addLayer(stateLayer);
-
-        var featureURL = "https://luyuliu.github.io/Drag-Map/data/states/jsoncounties-"+this.defaultStateID+".min.js"
-        console.log(featureURL)
-        d3.json(featureURL, function(mapData){
+            });
+            self.stateMap.addLayer(self.stateLayer);
             console.log(mapData)
-            stateLayer.addData(mapData)
+            self.stateLayer.addData(mapData)
         })
-        
+
     }
 
-    initiateUSMap(){
+    initiateUSMap() {
         this.USMap = L.map("US_map-content", {
             maxZoom: 19,
             minZoom: 0,
@@ -100,9 +103,9 @@ class Setup {
         new L.Control.Zoom({ position: 'topleft' }).addTo(this.USMap);
         this.USMapBaseLayer = L.esri.basemapLayer("DarkGray");
         this.USMapBaseLayer.addTo(this.USMap);
-
+        var self = this;
         var USLayer = L.geoJson(null, {
-            style: function(feature) {
+            style: function (feature) {
                 var edgeColor = "#bdbdbd";
                 var fillColor = "#FFFFFF";
                 return {
@@ -112,12 +115,41 @@ class Setup {
                     opacity: 0.5,
                     weight: 0.5
                 }
+            },
+            onEachFeature: function (feature, layer) {
+                layer.on({
+                    click: function (e) {
+                        self.stateMap.removeLayer(self.stateLayer);
+                        self.stateLayer = L.geoJson(null, {
+                            style: function (feature) {
+                                console.log(feature)
+                                var edgeColor = "#bdbdbd";
+                                var fillColor = "#FFFFFF";
+                                return {
+                                    color: edgeColor,
+                                    fillColor: fillColor,
+                                    opacity: 1,
+                                    opacity: 0.5,
+                                    weight: 0.5
+                                }
+                            }
+                        });
+                        self.stateMap.addLayer(self.stateLayer);
+                        var featureURL = "https://luyuliu.github.io/Drag-Map/data/states/jsoncounties-" + this.defaultStateID + ".min.js";
+                        var featureURL = "https://luyuliu.github.io/data/morpc/DelawareFranklin.json"
+                        console.log(featureURL)
+                        $.get(featureURL, function (mapData) {
+                            console.log(mapData)
+                            self.stateLayer.addData(mapData)
+                        })
+                    }
+                })
             }
         });
         this.USMap.addLayer(USLayer);
 
         var featureURL = "https://luyuliu.github.io/COVID19-Dashboard/data/us-states.geojson"
-        $.get(featureURL, function(mapData){
+        $.get(featureURL, function (mapData) {
             USLayer.addData(mapData)
         })
     }
