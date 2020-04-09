@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="COVID-19 Dashboard" />
+  <meta property="og:description" content="Information about COVID-19 and everything you should know about it." />
+  <meta property="og:image" content="" />
+  <title>COVID-19 Dashboard </title>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/jquery.ui.touch-punch.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/lodash.min.js"></script>
+  <script src="js/cookie.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.0.4/simplebar.min.js"></script>
+  <link rel="stylesheet" href="css/simplebar.css" />
+
+
+
+  <script src="js/gridstack.js"></script>
+  <script src="js/gridstack.jQueryUI.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="js/d3-interpolate-path.js"></script>
+  <script src="js/d3-line-chunked.js"></script>
+  <script src="js/colorbrewer.min.x.js"></script>
+  <script src="js/geojson.min.js"></script>
+  <script src="js/intro.min.js"></script>
+  <script src="js/leaflet.js"></script>
+  <script src="js/esri-leaflet.js"></script>
+  <script src="js/heatmap.min.js"></script>
+  <script src="js/leaflet-heatmap.js"></script>
+
+
+  <script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script>
+  <script
+    src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
+  <script
+    src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.js"></script>
+  <script src="https://kit.fontawesome.com/88fc83302a.js"></script>
+
+  <link href="css/leaflet.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/gridstack.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+    integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+  <link rel="stylesheet" href="scr/main.css">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/introjs.min.css">
+</head>
+
+<body>
+
+  <!-- navigation bar -->
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+
+      <div class="navbar-header" id="mapheader">
+        <a class="navbar-brand mapheader" id="about-btn" href="#">COVID-19 Dashboard</a>
+      </div>
+      <div class="navbar-collapse collapse">
+
+      </div>
+      <!--/.navbar-collapse -->
+    </div>
+  </div>
+
+  <div id="grid-container" class="grid-stack"></div>
+
+  <script src="scr/main.js"></script>
+</body>
+
+</html>

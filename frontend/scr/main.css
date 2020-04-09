@@ -1,0 +1,37 @@
+
+.grid-stack {
+    background: none; /* lightgoldenrodyellow;*/
+}
+
+.grid-stack-item-content {
+    color: #2c3e50;
+    border: solid lightgrey 2px;
+    /* text-align: center; */
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 2px 2px 2px lightgrey;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.title-bar {
+    padding: 3px;
+    background: #f0f0f0;
+}
+
+.graph-title {
+    font: 16px sans-serif;
+    text-anchor: start;
+    text-align: left;
+    color: #988;
+}
+.navbar-inverse {
+    background-color: #222;
+    border-color: #080808;
+}
+.navbar .navbar-brand {
+    font-weight: bold;
+    font-size: 25px;
+    color: #FFFFFF;
+}
