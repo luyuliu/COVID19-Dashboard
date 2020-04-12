@@ -73,3 +73,8 @@ html, body {
     height: calc(100% - 30px);
     width: 100%;
 }
+
+#world_map-content {
+    height: calc(100% - 30px);
+    width: 100%;
+}
