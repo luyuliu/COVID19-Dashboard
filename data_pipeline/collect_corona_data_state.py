@@ -32,7 +32,8 @@ def collect_single_date(today_date):
                 value = numbers[index]
                 key = field_names[index]
                 insertion[key] = value
-            insertion["Date"] = today_date_string
+            mm, dd, yy = today_date_string.split("-")
+            insertion["Date"] = yy + mm + dd
             collection.append(insertion)
         line_count += 1
     col_case.insert_many(collection)

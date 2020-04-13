@@ -16,13 +16,21 @@ class Setup {
         this.grid = $('.grid-stack').data('gridstack');
 
         this.settingGrid = { // card congifuration, should be updated dynamically
+            'world_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight, id: "world_plot" },
+            'US_plot': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight, id: "US_plot" },
+            'state_plot': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight, id: "state_plot" },
             'world_map': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight, id: "world_map" },
             'US_map': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight, id: "US_map" },
             'state_map': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight, id: "state_map" },
-
         };
 
-        this.defaultStateID = "OH"
+        this.defaultStateID = "OH";
+        this.USMapData = null;
+        this.worldCaseData = null;
+
+        this.worldTop5List = [];
+        this.USTop5List = [];
+        this.stateTop5List = [];
 
 
         // ---------------- Setup functions ---------------- //
@@ -30,6 +38,7 @@ class Setup {
         this.initiateGrids();
         this.initiateStateMap();
         this.initiateUSMap();
+        this.initiateUSTimeSeries();
     }
 
     initiateGrids() {
@@ -72,7 +81,6 @@ class Setup {
             console.log(featureURL)
             self.stateLayer = L.geoJson(null, {
                 style: function (feature) {
-                    console.log(feature)
                     var edgeColor = "#bdbdbd";
                     var fillColor = "#FFFFFF";
                     return {
@@ -150,7 +158,52 @@ class Setup {
 
         var featureURL = "https://luyuliu.github.io/COVID19-Dashboard/data/us-states.geojson"
         $.get(featureURL, function (mapData) {
-            USLayer.addData(mapData)
+            self.USMapData = mapData;
+            USLayer.addData(mapData);
+        })
+    }
+
+    initiateUSTimeSeries() {
+        var self = this;
+        // var url = 'http://127.0.0.1:21232/corona_cases_state_level?where={"Region":"USA"}'
+        var url = 'http://127.0.0.1:21232/corona_cases_state_level?sort=[("Date", 1)]'
+        $.get(url, function (data) {
+            var data = data._items;
+            // console.log(data);
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+            today = mm + '-' + dd + '-' + yyyy;
+            
+            self.worldCaseData = {};
+
+            for (var i = 0; i < data.length; i++){
+                var item = data[i];
+                var name = item.name;
+                var region = item.Region;
+                if (self.worldCaseData[name] == null){
+                    self.worldCaseData[name] = {};
+                    self.worldCaseData[name]['start_date'] = item["Date"]
+                    self.worldCaseData[name]["confirmed"] = [item["confirmed"]]
+                    self.worldCaseData[name]["death"] = [item["death"]]
+                    self.worldCaseData[name]["recovered"] = [item["recovered"]]
+                    self.worldCaseData[name]['Region'] = item["Region"]
+                    self.worldCaseData[name]['start_date'] = item["Date"]
+                } 
+                else{
+                    self.worldCaseData[name]["confirmed"].push(item["confirmed"])
+                    self.worldCaseData[name]["death"].push(item["death"])
+                    self.worldCaseData[name]["recovered"].push(item["recovered"])
+                }
+
+                if (item["Date"] == today){
+
+                }
+            }
+
+            console.log(self.worldCaseData)
+
         })
     }
 }
