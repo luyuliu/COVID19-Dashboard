@@ -29,7 +29,7 @@ class Setup {
         this.worldCaseData = null;
 
         this.worldTop5List = [];
-        this.USTop5List = [];
+        this.USTop5List = ["New York"];
         this.stateTop5List = [];
 
 
@@ -197,9 +197,6 @@ class Setup {
                     self.worldCaseData[name]["recovered"].push(item["recovered"])
                 }
 
-                if (item["Date"] == today){
-
-                }
             }
 
             console.log(self.worldCaseData)
