@@ -78,3 +78,73 @@ html, body {
     height: calc(100% - 30px);
     width: 100%;
 }
+
+.ocean {
+	fill: #bfd7e4;
+}
+
+.graticule {
+  fill: none;
+  stroke: #efefef;
+  stroke-width: 0.4;
+}
+
+.world_symbol {
+  fill: #de2d26;
+  fill-opacity: 0.85;
+  stroke-width: 0.3;
+  stroke: #fff;
+}
+
+.world_symbol.highlight {
+	stroke-width: 3;
+	fill-opacity: 0.95;
+	stroke-opacity: 0.8;
+	}
+
+/* hoverline for world cases plot */
+.hover-line-world {
+    stroke: #f5f;
+    fill: none;
+    stroke-width: 2px;
+    left: 10px;
+    shape-rendering: crispEdges;
+    opacity: 0.5;
+}
+
+.text_label {
+	font: 11px Helvetica, sans-serif;
+	color: #999;
+}
+
+.land {
+	/* stroke: #cacaca; */
+}
+
+.line {
+    fill: none;
+    stroke: #777;
+    stroke-width: 1;
+}
+
+/* world curves highlight */
+.line.world_highlight {
+    stroke: red;
+    stroke-width: 3;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: #ffab00;
+    stroke: #fff;
+}
+  
+.focus circle {
+	fill: none;
+	stroke: steelblue;
+}

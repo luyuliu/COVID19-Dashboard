@@ -39,6 +39,9 @@ class Setup {
         this.initiateStateMap();
         this.initiateUSMap();
         this.initiateUSTimeSeries();
+
+        // this.worldMapInstance = new WorldMapUI();
+        // this.worldMapInstance.initiateWorldMap();
     }
 
     initiateGrids() {
@@ -49,7 +52,7 @@ class Setup {
             this.grid.addWidget($('<div><div class="grid-stack-item-content" style="left:0px; right: 5px ;" id="' + node.id + '"></div></div>'), node.x, node.y, node.width, node.height);
             this.grid.movable('.grid-stack-item', false);
             self.createGrid(node);
-            console.log("triggerd")
+            // console.log("triggerd")
         }, this);
     }
 
@@ -78,7 +81,7 @@ class Setup {
             self.stateMapBaseLayer.addTo(self.stateMap);
 
 
-            console.log(featureURL)
+            // console.log(featureURL)
             self.stateLayer = L.geoJson(null, {
                 style: function (feature) {
                     var edgeColor = "#bdbdbd";
@@ -93,7 +96,7 @@ class Setup {
                 }
             });
             self.stateMap.addLayer(self.stateLayer);
-            console.log(mapData)
+            // console.log(mapData)
             self.stateLayer.addData(mapData)
         })
 
@@ -130,7 +133,7 @@ class Setup {
                         self.stateMap.removeLayer(self.stateLayer);
                         self.stateLayer = L.geoJson(null, {
                             style: function (feature) {
-                                console.log(feature)
+                                // console.log(feature)
                                 var edgeColor = "#bdbdbd";
                                 var fillColor = "#FFFFFF";
                                 return {
@@ -145,9 +148,8 @@ class Setup {
                         self.stateMap.addLayer(self.stateLayer);
                         var featureURL = "https://luyuliu.github.io/Drag-Map/data/states/jsoncounties-" + this.defaultStateID + ".min.js";
                         var featureURL = "https://luyuliu.github.io/data/morpc/DelawareFranklin.json"
-                        console.log(featureURL)
+                        // console.log(featureURL)
                         $.get(featureURL, function (mapData) {
-                            console.log(mapData)
                             self.stateLayer.addData(mapData)
                         })
                     }
@@ -199,7 +201,6 @@ class Setup {
 
             }
 
-            console.log(self.worldCaseData)
 
         })
     }
