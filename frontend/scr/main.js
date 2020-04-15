@@ -8,7 +8,7 @@ class Setup {
         this.options = {
             verticalMargin: 10,
             handle: ".title-bar",
-            cellHeight: window.innerWidth / 6,
+            cellHeight: window.innerWidth / 3 / 4,
             disableResize: true
         };
 
@@ -16,12 +16,12 @@ class Setup {
         this.grid = GridStack.init(this.options)
 
         this.settingGrid = { // card congifuration, should be updated dynamically
-            'world_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight, id: "world_plot" },
-            'US_plot': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight, id: "US_plot" },
-            'state_plot': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight, id: "state_plot" },
-            'world_map': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "world_map" },
-            'US_map': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "US_map" },
-            'state_map': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "state_map" },
+            'world_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "world_plot" },
+            'US_plot': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "US_plot" },
+            'state_plot': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "state_plot" },
+            'world_map': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "world_map" },
+            'US_map': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_map" },
+            'state_map': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "state_map" },
         };
 
         this.defaultStateID = "OH";

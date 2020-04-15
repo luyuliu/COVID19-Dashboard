@@ -3,7 +3,7 @@ var all_mapping_vars = [];
 var bounds; // bounds for choropleth map classes
 
 var worldmap_width = $('#world_map-content').width() - 10,
-    worldmap_height = worldmap_width;
+    worldmap_height = worldmap_width/4*3;
 
 // scale globe to size of window
 var globe_scale = Math.min(worldmap_width, worldmap_height)/2; 

@@ -2,7 +2,7 @@ var maptype = 'geojson';
 
 
 var US_map_width = $('#US_map-content').width() - 10;
-var US_map_height = US_map_width;
+var US_map_height = US_map_width/4*3;
 
 var US_map_margin = {top: 10, right: 10, bottom: 20, left: 10};
 
@@ -22,7 +22,6 @@ var svg = d3.select("#US_map-content").append("svg")
     .attr("transform", "translate(" + US_map_margin.left + "," + US_map_margin.top + ")");
 
 
-
 var US_promises = [
     d3.json("https://luyuliu.github.io/data/COVID19_dashboard/us.geojson")
 ];
@@ -31,8 +30,6 @@ Promise.all(US_promises).then(ready);
 
 function ready(all_data) {
     var us_geojson = all_data[0]
-
-    // GEOJSON  
     if (maptype === 'geojson') {
         var us = us_geojson;
         svg.append("g")
@@ -55,23 +52,6 @@ function ready(all_data) {
                 // .transition(t)
                 .style("fill", "white");
             });;
-    
-        // the three commented lines below are a longer version of the line above
-        /*
-         .attr("d", function(d) {
-          return path(d);
-         })
-        */
-        // .classed('make-it-red', function(d) {
-        //   if (d.properties.name === "Mississippi" || d.properties.name === "Oregon") {
-        //     return true;
-        //   }
-        //   else {
-        //     return false;
-        //   }
-        // })
-
-
     }
 
 
