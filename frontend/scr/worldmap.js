@@ -107,9 +107,9 @@ var cur_case = 'confirmed';
 
 // TODO: add a date file here 
 var promises = [
-    d3.json("https://luyuliu.github.io/data/COVID19_dashboard/covid-19-world-iso3dissolved-centroids.geojson"),
-    d3.json("https://luyuliu.github.io/data/COVID19_dashboard/all-cases-data-processed-all.json"),
-    d3.json("https://luyuliu.github.io/data/COVID19_dashboard/ne_110m_admin0sov_joined.topo.json")
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/data/covid-19-world-iso3dissolved-centroids.geojson"),
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/data/all-cases-data-processed-all.json"),
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/data/ne_110m_admin0sov_joined.topo.json")
 ];
 
 Promise.all(promises).then(data_ready);

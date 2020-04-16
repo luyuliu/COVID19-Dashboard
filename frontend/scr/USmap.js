@@ -23,7 +23,7 @@ var svg = d3.select("#US_map-content").append("svg")
 
 
 var US_promises = [
-    d3.json("https://luyuliu.github.io/data/COVID19_dashboard/us.geojson")
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/data/us.geojson")
 ];
 
 Promise.all(US_promises).then(ready);
