@@ -16,6 +16,7 @@ class Setup {
         this.grid = GridStack.init(this.options)
 
         this.settingGrid = { // card congifuration, should be updated dynamically
+            'scatter_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "scatter_plot" },
             'world_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "world_plot" },
             'US_plot': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "US_plot" },
             'state_plot': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "state_plot" },

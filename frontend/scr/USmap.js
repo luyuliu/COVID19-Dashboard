@@ -169,7 +169,7 @@ function ready(all_data) {
         ;
 
     var US_yScale = d3.scaleLinear()
-        .domain([0, 4e5]) // input  TODO: get max
+        .domain([0, 2e5]) // input  TODO: get max
         .range([US_timelines_height, 0]); // output 
 
     var state_names = []; //[ "Mainland China", "USA", "Italy", "Japan"];
@@ -246,7 +246,6 @@ function ready(all_data) {
         .on("mousemove", function () {
             var xpos = d3.mouse(this)[0];
             var date = US_xScale.invert(xpos);
-            console.log(xpos)
             var ind = parseInt(US_toXScale.invert(date));
             US_svg.selectAll(".US_symbol")
                 .attr("d", US_path.pointRadius(function (d, i) {
