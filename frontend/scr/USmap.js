@@ -115,10 +115,10 @@ function ready(all_data) {
 
             US_timelines_svg.selectAll(".line").classed("US_highlight", function (dd, i) {
                 // if (dd == d.properties.NAME) alert(dd);
-                return (dd == d.properties.name);
+                return (dd == state_abbr[d.properties.name]);
             });
             US_timelines_svg.selectAll(".text_label").style("display", function (dd) {
-                if (dd.label == d.properties.name || state_names.includes(dd.label))
+                if (dd.label == state_abbr[d.properties.name] || state_names.includes(dd.label))
                     return "block";
                 else
                     return "none";
