@@ -16,13 +16,13 @@ class Setup {
         this.grid = GridStack.init(this.options)
 
         this.settingGrid = { // card congifuration, should be updated dynamically
-            'scatter_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "scatter_plot" },
-            'world_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "world_plot" },
-            'US_plot': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "US_plot" },
-            'state_plot': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*2, id: "state_plot" },
-            'world_map': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "world_map" },
-            'US_map': { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_map" },
-            'state_map': { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "state_map" },
+            'scatter_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "scatter_plot", title: "Scatter plot" },
+            'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "world_plot", title: "World cases" },
+            'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_plot", title: "US cases" },
+            'state_plot':   { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "state_plot", title: "State cases" },
+            'world_map':    { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "world_map", title: "World" },
+            'US_map':       { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "US_map", title: "United States" },
+            'state_map':    { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "state_map", title: "Counties" },
         };
 
         this.defaultStateID = "OH";
@@ -59,7 +59,7 @@ class Setup {
 
     createGrid(node) {
         $("#" + node.id).append('<div class="title-bar" id="' + node.id + '-title">');
-        $("#" + node.id + '-title').append('<span class="graph-title">' + node.id + '</span>');
+        $("#" + node.id + '-title').append('<span class="graph-title">' + node.title + '</span>');
         $("#" + node.id).append('<div class="grid-content" id="' + node.id + '-content">');
     }
 
@@ -207,6 +207,53 @@ class Setup {
     // }
 }
 
+function get_var_bounds(mapdata) {
+    mapdata.sort(d3.ascending) ;
+    minx = mapdata[0];
+    maxx = mapdata.slice(-1)[0];
+    if (minx<1 && minx>0) minx = 0;
+    return [maxx, d3.quantile(mapdata, 0.67), d3.quantile(mapdata, 0.33), minx];
+    // console.log(bounds)
+}
+
+function getColorx(val, bounds) {
+    for (i=1; i<bounds.length; i++)
+	if (val >= bounds[i])
+	    return colors[bounds.length-i-1];
+    return '#ffffff';
+}
+
 // ---------------- Setup ---------------- //
+
+var start_date = null;
+var end_date = null;
+var cur_date_world = null;
+var cur_date_us = null;
+var cur_date_state = null;
+var sync_time_lines = true;
+var fips_to_name = null;
+var state_abbr_inv = null;
+
+var case_date_parser = d3.timeParse("%m-%d-%Y");
+var case_date_parser_inv = d3.timeFormat("%m-%d-%Y");
+var case_date_format = d3.timeFormat("%m/%d");
+
+// friendly names to display type of cases
+var case_names = {
+    "confirmed": "Confirmed",
+    "deaths": "Death",
+    "recovered": "Recovered"
+}
+
+d3.json("data/all-cases-data-dates.json").then(function(data) {
+    start_date = data['first'];
+    end_date = data['last'];
+    // d2 = d3.timeDay.offset(case_date_parser(end_date), 1);
+    cur_date_world = case_date_parser(end_date);
+    cur_date_us = case_date_parser(end_date);
+    cur_date_state = case_date_parser(end_date);
+    // end_date = case_date_parser_inv(d2);
+    total_days = d3.timeDay.count(case_date_parser(start_date), case_date_parser(end_date)); 
+});
 
 var setup = new Setup();

@@ -1,15 +1,115 @@
+html, body {
+    font: 12px sans-serif;
+    scrollbar-width: none !important;
+    margin-top: 3px;
+    margin-left: 3px;
+    margin-right: 0px;
+    background-color: #6a6a6a;
+}
 
+/* Banner */
+.mynav {
+    padding: 5px;
+    background: #6a6a6a;
+    background-color: #353535;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    height: 50px;
+    line-height: 50px;
+    vertical-align: middle;
+    font-size: 25px;
+    color: #ababab;
+
+}
+
+.mynav a {
+}
+
+/* hamburger menu; dd=dropdown */
+.containerdd {
+    vertical-align: text-bottom;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.bar1, .bar2, .bar3 {
+  width: 30px;
+  height: 4px;
+  background-color: #6a6a6a;
+  margin: 5px 5px;
+  transition: 0.1s;
+}
+
+.change .bar1 {
+  -webkit-transform: rotate(-45deg) translate(-6px, 6px);
+  transform: rotate(-45deg) translate(-6px, 6px);
+}
+
+.change .bar2 {
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.change .bar3 {
+  -webkit-transform: rotate(45deg) translate(-6px, -7px);
+  transform: rotate(45deg) translate(-6px, -7px);
+}
+
+
+/* dropdown */
+/* 
+.dropdown {
+  position: relative;
+  display: inline-block;
+} */
+
+.dropdown-content {
+  display: none;
+  /* left: auto; */
+  /* right: 0; */
+  position: absolute;
+  background-color: #ababab;
+  /* min-width: 160px; */
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  font: 16px sans-serif;
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: #3a3a3a;
+  padding: 6px 50px 6px 12px;
+  display: block;
+  text-decoration-line: none;
+  text-decoration-style: none;
+}
+
+.dropdown-content a:hover {
+    /* background-color: #ababab; */
+    color: #fafafa;
+    text-decoration-line: none;
+    text-decoration-style: none;
+}
+
+.hide {display: block;}
+
+/* ******************************************************************** */
+
+/*  */
 .grid-stack {
-    background: none; /* lightgoldenrodyellow;*/
+    background: #6a6a6a; /* lightgoldenrodyellow;*/
 }
 
 .grid-stack-item-content {
-    color: #2c3e50;
-    border: solid lightgrey 2px;
     /* text-align: center; */
+    overflow-y: hidden!important;
+    color: #ababab; /* text color */
+    border: solid #565656 1px;
     overflow: hidden;
-    background-color: #fff;
-    box-shadow: 2px 2px 2px lightgrey;
+    scrollbar-width: none !important;
+    background-color: #6a6a6a;
+    /* box-shadow: 2px 2px 2px lightgrey; */
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -17,52 +117,22 @@
 
 .title-bar {
     padding: 3px;
-    background: #f0f0f0;
+    background: #606060;
 }
 
 .graph-title {
     font: 16px sans-serif;
     text-anchor: start;
     text-align: left;
-    color: #988;
-}
-.navbar-inverse {
-    background-color: #222;
-    border-color: #080808;
-}
-.navbar .navbar-brand {
-    font-weight: bold;
-    font-size: 25px;
-    color: #FFFFFF;
-}
-.grid-stack-item-content {
-    overflow-y: hidden!important;
-}
-
-.grid-stack-item-content {
-    color: #2c3e50;
-    border: solid lightgrey 2px;
-    /* text-align: center; */
-    overflow: hidden;
-    scrollbar-width: none !important;
-    background-color: #fff;
-    box-shadow: 2px 2px 2px lightgrey;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+    background-color: #6a6a6a;
+    /* color: #988; */
 }
 
 .grid-stack-item-content::-webkit-scrollbar {
     width: 0 !important
 }
 
-html, body {
-    scrollbar-width: none !important;
-}
 
-.grid-stack {
-    background: none; /* lightgoldenrodyellow;*/
-}
 
 #state_map-content {
     height: calc(100% - 30px);
@@ -80,16 +150,17 @@ html, body {
 }
 
 .ocean {
-	fill: #bfd7e4;
+	fill: #cdcdcd ;
+    /* #bfd7e4; */
 }
 
 .graticule {
   fill: none;
-  stroke: #efefef;
+  stroke: #dfdfdf;
   stroke-width: 0.4;
 }
 
-.world_symbol {
+.world_symbol, .state_symbol, .US_symbol {
   fill: #de2d26;
   fill-opacity: 0.85;
   stroke-width: 0.3;
@@ -100,64 +171,52 @@ html, body {
 	stroke-width: 3;
 	fill-opacity: 0.95;
 	stroke-opacity: 0.8;
-    }
+}
     
-.US_symbol {
-    fill: #de2d26;
-    fill-opacity: 0.85;
-    stroke-width: 0.3;
-    stroke: #fff;
-  }
-  
 .US_symbol.highlight {
     stroke-width: 3;
     fill-opacity: 0.95;
     stroke-opacity: 0.8;
-    }
+}
 
-/* hoverline for world cases plot */
-.hover-line-world {
-    stroke: #f5f;
+.state_symbol.highlight {
+    stroke-width: 3;
+    fill-opacity: 0.95;
+    stroke-opacity: 0.8;
+}
+
+/* hoverline for timeline charts */
+.hover-line {
+    stroke: #353535;
     fill: none;
     stroke-width: 2px;
-    left: 10px;
     shape-rendering: crispEdges;
     opacity: 0.5;
 }
 
-.hover-line-US {
-    stroke: #f5f;
-    fill: none;
-    stroke-width: 2px;
-    left: 10px;
-    shape-rendering: crispEdges;
-    opacity: 0.5;
+.text-label {
+	font: 12px Helvetica, sans-serif;
+	fill: #ababab;
 }
 
-
-.text_label {
-	font: 11px Helvetica, sans-serif;
-	color: #999;
+.hover-text  {
+	font: 18px Helvetica, sans-serif;
+	fill: red;
 }
 
 .land {
 	/* stroke: #cacaca; */
 }
 
+/* time line */
 .line {
     fill: none;
-    stroke: #777;
+    stroke: #ababab;
     stroke-width: 1;
 }
 
 /* world curves highlight */
-.line.world_highlight {
-    stroke: red;
-    stroke-width: 3;
-}
-
-/* world curves highlight */
-.line.US_highlight {
+.line.world_highlight, .US_highlight, .state_highlight {
     stroke: red;
     stroke-width: 3;
 }
@@ -176,4 +235,46 @@ html, body {
 .focus circle {
 	fill: none;
 	stroke: steelblue;
+}
+
+
+/* w3 schools */
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fafafa;
+  font-size: 16px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 65%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
 }
