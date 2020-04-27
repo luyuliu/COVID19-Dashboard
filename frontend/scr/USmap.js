@@ -184,7 +184,7 @@ function ready(all_data) {
             d3.select(this).classed("highlight", true);
             
             var ind = parseInt(US_toXScale.invert(cur_date_us)) + 1;
-            US_info_labels[0].text(`${state_abbr_inv[cur_us_state]} ${case_date_format(cur_us_date)} [Day ${ind}]`);
+            US_info_labels[0].text(`${state_abbr_inv[cur_us_state]} ${case_date_format(cur_date_us)} [Day ${ind}]`);
             US_info_labels[1].text(`${case_names[cur_case]}: ${us_all_cases[cur_us_state][cur_case][ind]}`);
         })
         .on("mouseout", function (d) {
