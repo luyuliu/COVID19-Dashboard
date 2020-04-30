@@ -8,6 +8,7 @@ var maptype = 'geojson';
 var state_map_width = $(state_map_container_id).width();
 var state_map_height = $(state_map_container_id).height()/4*3;
 
+var state_state_bounds = null;
 
 var statemap_legend_width = $(state_affiliation_id).width(),
     statemap_legend_height = $(state_affiliation_id).height();
@@ -159,7 +160,7 @@ function ready(all_data) {
         .attr("id", "state-legend")
         .attr("transform", "translate(0,30)");
 
-    var legend_linear = d3.legendColor()
+    var state_legend_linear = d3.legendColor()
         .labelFormat(d3.format(".2f"))
         .labels(d3.legendHelpers.thresholdLabels)
         // .useClass(true)
@@ -168,7 +169,7 @@ function ready(all_data) {
         .orient('horizontal');
 
     statemap_legend_svg.select("#state-legend")
-        .call(legend_linear);
+        .call(state_legend_linear);
 
     // // Legend title 
     // legendg.append("text")
@@ -218,12 +219,12 @@ function ready(all_data) {
             }
             var val = state_geojson.features[i]["properties"][state_current_mapping_var];
             if (val != null)
-                all_mapping_vars[i] = val;
+                state_all_mapping_vars[i] = val;
         }
-        bounds = get_var_bounds(all_mapping_vars);
+        state_bounds = get_var_bounds(state_all_mapping_vars);
 
         state_color_scheme = d3.scaleThreshold()
-            .domain(bounds)
+            .domain(state_bounds)
             .range(d3.schemeGreys[4]);
 
         d3.selectAll(".state-land").transition()
@@ -233,7 +234,7 @@ function ready(all_data) {
             })
 
         // Update legend
-        legend_linear = d3.legendColor()
+        state_legend_linear = d3.legendColor()
             .labelFormat(d3.format(".2f"))
             .labels(d3.legendHelpers.thresholdLabels)
             // .useClass(true)
@@ -242,7 +243,7 @@ function ready(all_data) {
             .orient('horizontal');
 
         statemap_legend_svg.select("#state-legend")
-            .call(legend_linear);
+            .call(state_legend_linear);
     }
 
     //////////////////////////////////////////////////////////////////////////

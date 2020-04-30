@@ -17,6 +17,8 @@ var US_map_margin = { top: 10, right: 10, bottom: 20, left: 10 };
 var US_info_labels = null;
 var cur_us_US = "NY";
 
+var US_bounds = null;
+
 var US_projection = d3.geoAlbersUsa()
     .scale(US_map_width * 5 / 4)
     .translate([US_map_width / 2, US_map_height / 2]);
@@ -100,9 +102,9 @@ function ready(all_data) {
         }
         var val = US_geojson.features[i]["properties"][US_current_mapping_var];
         if (val != null)
-            all_mapping_vars[i] = val;
+        US_all_mapping_vars[i] = val;
     }
-    US_bounds = get_var_bounds(all_mapping_vars);
+    US_bounds = get_var_bounds(US_all_mapping_vars);
     var US_color_scheme = d3.scaleThreshold()
         .domain(US_bounds)
         .range(d3.schemeGreys[4]);
@@ -168,7 +170,7 @@ function ready(all_data) {
         .attr("id", "US-legend")
         .attr("transform", "translate(0,30)");
 
-    var legend_linear = d3.legendColor()
+    var US_legend_linear = d3.legendColor()
         .labelFormat(d3.format(".2f"))
         .labels(d3.legendHelpers.thresholdLabels)
         // .useClass(true)
@@ -177,7 +179,7 @@ function ready(all_data) {
         .orient('horizontal');
 
     USmap_legend_svg.select("#US-legend")
-        .call(legend_linear);
+        .call(US_legend_linear);
 
     // // Legend title 
     // legendg.append("text")
@@ -227,12 +229,12 @@ function ready(all_data) {
             }
             var val = US_geojson.features[i]["properties"][US_current_mapping_var];
             if (val != null)
-                all_mapping_vars[i] = val;
+            US_all_mapping_vars[i] = val;
         }
-        bounds = get_var_bounds(all_mapping_vars);
+        US_bounds = get_var_bounds(US_all_mapping_vars);
 
         US_color_scheme = d3.scaleThreshold()
-            .domain(bounds)
+            .domain(US_bounds)
             .range(d3.schemeGreys[4]);
 
         d3.selectAll(".US-land").transition()
@@ -242,7 +244,7 @@ function ready(all_data) {
             })
 
         // Update legend
-        legend_linear = d3.legendColor()
+        US_legend_linear = d3.legendColor()
             .labelFormat(d3.format(".2f"))
             .labels(d3.legendHelpers.thresholdLabels)
             // .useClass(true)
@@ -251,7 +253,7 @@ function ready(all_data) {
             .orient('horizontal');
 
         USmap_legend_svg.select("#US-legend")
-            .call(legend_linear);
+            .call(US_legend_linear);
     }
 
     //////////////////////////////////////////////////////////////////////////
