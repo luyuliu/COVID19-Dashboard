@@ -8,8 +8,8 @@ var US_offset = 0
 var US_map_width = $(US_grid_container_id).width() - US_offset;
 var US_map_height = ($(US_grid_container_id).height() - US_offset)/4*3;
 
-var US_map_width = $(us_map_id).width() - 10;
-var US_map_height = $(us_map_id).height() - 10;
+var US_map_width = $(US_map_id).width() - 10;
+var US_map_height = $(US_map_id).height() - 10;
 
 var US_map_margin = { top: 10, right: 10, bottom: 20, left: 10 };
 
