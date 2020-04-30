@@ -24,32 +24,8 @@
     font: 16px sans-serif;
     text-anchor: start;
     text-align: left;
-    color: #988;
-}
-.navbar-inverse {
-    background-color: #222;
-    border-color: #080808;
-}
-.navbar .navbar-brand {
-    font-weight: bold;
-    font-size: 25px;
-    color: #FFFFFF;
-}
-.grid-stack-item-content {
-    overflow-y: hidden!important;
-}
-
-.grid-stack-item-content {
-    color: #2c3e50;
-    border: solid lightgrey 2px;
-    /* text-align: center; */
-    overflow: hidden;
-    scrollbar-width: none !important;
-    background-color: #fff;
-    box-shadow: 2px 2px 2px lightgrey;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+    /* background-color: #6a6a6a; */
+    /* color: #988; */
 }
 
 .grid-stack-item-content::-webkit-scrollbar {
@@ -64,7 +40,7 @@ html, body {
     background: none; /* lightgoldenrodyellow;*/
 }
 
-#state_map-content {
+/* #state_map-content {
     height: calc(100% - 30px);
     width: 100%;
 }
@@ -77,7 +53,7 @@ html, body {
 #world_map-content {
     height: calc(100% - 30px);
     width: 100%;
-}
+} */
 
 .ocean {
 	fill: #bfd7e4;
@@ -176,4 +152,81 @@ html, body {
 .focus circle {
 	fill: none;
 	stroke: steelblue;
+}
+
+
+/* w3 schools */
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fafafa;
+  font-size: 16px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 65%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.grid-container{
+  height: calc(100% - 30px);
+  width: 100%;
+}
+
+.map-content{
+  height: 75%;
+  width: 100%;
+}
+
+.map-affiliation-content{
+  height: 25%;
+  width: 100%;
+}
+
+.map-affiliation-content{
+  height: 25%;
+  width: 100%;
+}
+
+.plot-content{
+  height: 100%;
+  width: 100%;
+}
+
+.plot-affiliation-content{
+  height: 0%;
+  width: 100%;
+}
+
+.plot-affiliation-content{
+  height: 0%;
+  width: 100%;
 }

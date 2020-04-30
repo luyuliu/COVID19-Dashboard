@@ -1,5 +1,12 @@
-var maptype = 'geojson';
+var US_grid_container_id = "#US_map-grid-container";
+var US_map_id = "#US_map-content";
+var US_plot_id = "#US_plot-content";
 
+var maptype = 'geojson';
+var US_offset = 0
+
+var US_map_width = $(US_grid_container_id).width() - US_offset;
+var US_map_height = ($(US_grid_container_id).height() - US_offset)/4*3;
 
 var US_map_width = $('#US_map-content').width() - 10;
 var US_map_height = US_map_width / 4 * 3;
@@ -7,33 +14,66 @@ var US_map_height = US_map_width / 4 * 3;
 var US_map_margin = { top: 10, right: 10, bottom: 20, left: 10 };
 
 var US_projection = d3.geoAlbersUsa()
-    .scale(US_map_width * 4 / 3)
+    .scale(US_map_width * 5 / 4)
     .translate([US_map_width / 2, US_map_height / 2]);
 
 
 var US_path = d3.geoPath()
     .projection(US_projection);
 
-
-var US_svg = d3.select("#US_map-content").append("svg")
-    .attr("width", US_map_width + US_map_margin.left + US_map_margin.right)
-    .attr("height", US_map_height + US_map_margin.top + US_map_margin.bottom)
+var US_svg = d3.select(US_map_id).append("svg")
+    .attr("width", US_map_width)
+    .attr("height", US_map_height)
     .append("g")
     .attr("transform", "translate(" + US_map_margin.left + "," + US_map_margin.top + ")");
 
 
 var US_promises = [
-    d3.json("https://luyuliu.github.io/COVID19-Dashboard/data/us.geojson"),
-    d3.json("https://luyuliu.github.io/COVID19-Dashboard/data/covid-19-us-centroids.geojson"),
-    d3.json("https://luyuliu.github.io/COVID19-Dashboard/data/all-cases-data-processed-states.json")
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/us-states-attributes.geojson"),
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/covid-19-us-centroids.geojson"),
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/all-cases-data-processed-states.json"),
+    d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/state_abbr_inv.json")
 ];
 
 Promise.all(US_promises).then(ready);
 
 function ready(all_data) {
-    var us_geojson = all_data[0]
-    var US_centroids = all_data[1];
-    var US_all_cases = all_data[2];
+    var us_geojson = all_data[0];
+    var us_centroids = all_data[1];
+    us_all_cases = all_data[2];
+    state_abbr_inv = all_data[3];
+
+    // set in main.js, reading from a file
+    var US_start_date = start_date;
+    var US_end_date = end_date;
+    var n = total_days;
+
+    /// GET MAX of cases
+    var case_maxs = [];
+    d3.keys(us_all_cases).forEach(function(d, i) {
+        var val = us_all_cases[d][cur_case].slice(-1)[0]; 
+        case_maxs[i] = val;
+    });
+
+    US_max = d3.max(case_maxs);
+
+///////////////////////////
+    
+    var US_timelines_margin = {top: 50, right: 60, bottom: 30, left: 40};
+    var US_timelines_width = $(US_plot_id).width() - US_timelines_margin.left - US_timelines_margin.right,
+        US_timelines_height = $(US_plot_id).height() - US_timelines_margin.top - US_timelines_margin.bottom - 50; 
+
+    var US_xScale = d3.scaleTime()
+        .domain([case_date_parser(US_start_date), case_date_parser(US_end_date)])
+        .range([0, US_timelines_width]); // output
+
+    var US_toXScale = d3.scaleLinear()
+        .domain([0, n-1])
+        .range([case_date_parser(US_start_date), case_date_parser(US_end_date)]);
+
+    var US_yScale = d3.scaleLinear()
+        .domain([0, US_max]) // input  TODO: get max
+        .range([US_timelines_height, 0]); // output 
 
     //////////////////////////////////////////////////////////////////////////
     // US map
@@ -194,9 +234,9 @@ function ready(all_data) {
         .y(function (d) { return US_yScale(d.y); }) // set the y values for the line generator 
         .curve(d3.curveMonotoneX) // apply smoothing to the line
 
-    US_timelines_svg = d3.select("#US_plot").append("svg")
-        .attr("width", US_timelines_width + US_timelines_margin.left + US_timelines_margin.right)
-        .attr("height", US_timelines_height + US_timelines_margin.top + US_timelines_margin.bottom)
+    US_timelines_svg = d3.select(US_plot_id).append("svg")
+        .attr("width", $(US_plot_id).width())
+        .attr("height", $(US_plot_id).height())
         .append("g")
         .attr("transform", "translate(" + US_timelines_margin.left + "," + US_timelines_margin.top + ")");
 
