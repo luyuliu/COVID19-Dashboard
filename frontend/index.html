@@ -102,7 +102,7 @@
     var spans = document.getElementsByClassName("close"); // Get the <span> element that closes the modal
 
     // When the user clicks on <span> (x), close the modal
-    spans.forEach(function(d) {
+    Array.from(spans).forEach(function(d) {
         d.onclick = function() {
             this.parentNode.parentNode.style.display = "none";
         }
