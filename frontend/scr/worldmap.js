@@ -195,7 +195,7 @@ function data_ready(alldata) { // TODO: LONG function!
     var world_regions = topojson.feature(world0, world0.objects.countries);
 
     all_mapping_vars = [];
-    list_mapping_var = []
+    list_mapping_var = [];
     current_mapping_var = "POP_SR";
     for (i = 0; i < world_regions.features.length; i++) {
         if (i == 0) {
@@ -217,7 +217,6 @@ function data_ready(alldata) { // TODO: LONG function!
     var world_color_scheme = d3.scaleThreshold()
         .domain(bounds)
         .range(d3.schemeGreys[4]);
-    console.log(list_mapping_var)
 
     worldmap_svg.append("path")
         .datum({ type: "Sphere" })

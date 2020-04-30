@@ -1,11 +1,16 @@
 var state_map_container_id = "#state_map-grid-container";
 var state_map_id = "#state_map-content";
 var state_plot_id = "#state_plot-content";
+var state_affiliation_id = "#state_map-affiliation";
 
 var maptype = 'geojson';
 
 var state_map_width = $(state_map_container_id).width();
 var state_map_height = $(state_map_container_id).height()/4*3;
+
+
+var statemap_legend_width = $(state_affiliation_id).width(),
+    statemap_legend_height = $(state_affiliation_id).height();
 
 var state_map_margin = { top: 10, right: 10, bottom: 10, left: 10 };
 
@@ -72,14 +77,28 @@ function ready(all_data) {
     // State map
     /////////////////////////////////////////////////////////////////////////
 
-    all_mapping_vars = [];
+    state_all_mapping_vars = [];
+    state_list_mapping_var = [];
     state_current_mapping_var = "MED_HH_INC";
     for (i=0; i<state_geojson.features.length; i++) {
+        if (i == 0) {
+            var properties = state_geojson.features[i]["properties"];
+            for (var key in properties) {
+                var node = properties[key];
+                console.log(+node)
+                if (!isNaN(+node)) {
+                    state_list_mapping_var.push(key);
+                }
+            }
+        }
 		var val = state_geojson.features[i]["properties"][state_current_mapping_var];
 		if (val != null)
-        	all_mapping_vars[i] = val;
+        	state_all_mapping_vars[i] = val;
     }
-    state_bounds = get_var_bounds(all_mapping_vars);
+    state_bounds = get_var_bounds(state_all_mapping_vars);
+    var state_color_scheme = d3.scaleThreshold()
+        .domain(state_bounds)
+        .range(d3.schemeGreys[4]);
 
     if (maptype === 'geojson') {
         var us = state_geojson;
@@ -89,10 +108,10 @@ function ready(all_data) {
             .data(state_geojson.features)
             .enter().append("path")
             .attr("d", state_path)
-            // .style("fill", "white")
+            .attr("class", "state-land")
             .style("fill", function(d, i) {
-    			// if (i==0) alert("world again");
-                return getColorx(d["properties"][state_current_mapping_var], state_bounds);
+    			// if (i==0) alert("state again");
+                return state_color_scheme(d["properties"][state_current_mapping_var]);
             })
             .style("stroke", "#aaa")
             .style("stroke-width", 0.5)
@@ -107,7 +126,7 @@ function ready(all_data) {
                 d3.select(this)
                     // .transition(t)
                     // .style("fill", "white");
-                    .style("fill", getColorx(d["properties"][state_current_mapping_var], state_bounds));
+                    .style("fill", state_color_scheme(d["properties"][state_current_mapping_var]));
             });;
     }
     else if (maptype === 'topojson') {
@@ -127,6 +146,106 @@ function ready(all_data) {
 
     }
 
+    
+    //////////////////////////////////////////////////////////////////////////
+    // legend
+    /////////////////////////////////////////////////////////////////////////
+
+    const statemap_legend_svg = d3.select(state_affiliation_id)
+        .append("svg")
+        .attr("width", statemap_legend_width)
+        .attr("height", statemap_legend_height);
+
+    var legendg = statemap_legend_svg.append("g")
+        .attr("id", "state-legend")
+        .attr("transform", "translate(0,30)");
+
+    var legend_linear = d3.legendColor()
+        .labelFormat(d3.format(".2f"))
+        .labels(d3.legendHelpers.thresholdLabels)
+        // .useClass(true)
+        .scale(state_color_scheme)
+        .shapeWidth(statemap_legend_width / 4.1)
+        .orient('horizontal');
+
+    statemap_legend_svg.select("#state-legend")
+        .call(legend_linear);
+
+    // // Legend title 
+    // legendg.append("text")
+    //     .attr("class", "caption")
+    //     .attr("x", 0)
+    //     .attr("y", -6)
+    //     .attr("fill", "#000")
+    //     .attr("font-size", "20px")
+    //     .attr("text-anchor", "start")
+    //     .attr("font-weight", "bold")
+    //     .text(state_current_mapping_var)
+
+    var state_dropdown = d3.select(state_affiliation_id)
+        .insert("select", "svg")
+        .attr("id", "state-choreopleth-select")
+        .attr("class", "select-css")
+        .on("change", stateDropdownChange);
+
+        state_dropdown.selectAll("option")
+        .data(state_list_mapping_var)
+        .enter().append("option")
+        .attr("value", function (d) { return d; })
+        .text(function (d) {
+            return d; // capitalize 1st letter
+        })
+        .property("selected", function (d) {
+            if (d == state_current_mapping_var) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        })
+
+    // Update choreopleth map
+    function stateDropdownChange(e) {
+        state_current_mapping_var = $("#state-choreopleth-select").val();
+        for (i = 0; i < state_geojson.features.length; i++) {
+            if (i == 0) {
+                var properties = state_geojson.features[i]["properties"];
+                for (var key in properties) {
+                    var node = properties[key];
+                    console.log(+node)
+                    if (!isNaN(+node)) {
+                        state_list_mapping_var.push(key);
+                    }
+                }
+            }
+            var val = state_geojson.features[i]["properties"][state_current_mapping_var];
+            if (val != null)
+                all_mapping_vars[i] = val;
+        }
+        bounds = get_var_bounds(all_mapping_vars);
+
+        state_color_scheme = d3.scaleThreshold()
+            .domain(bounds)
+            .range(d3.schemeGreys[4]);
+
+        d3.selectAll(".state-land").transition()
+            .duration(500)
+            .style("fill", function (d) {
+                return state_color_scheme(d["properties"][state_current_mapping_var])
+            })
+
+        // Update legend
+        legend_linear = d3.legendColor()
+            .labelFormat(d3.format(".2f"))
+            .labels(d3.legendHelpers.thresholdLabels)
+            // .useClass(true)
+            .scale(state_color_scheme)
+            .shapeWidth(statemap_legend_width / 4.1)
+            .orient('horizontal');
+
+        statemap_legend_svg.select("#state-legend")
+            .call(legend_linear);
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // centroids
