@@ -1,7 +1,7 @@
 var world_grid_container_id = "#world_map-grid-container";
 var world_map_id = "#world_map-content";
 var world_plot_id = "#world_plot-content";
-var varworld_affiliation_id = "#world_map-affiliation"
+var world_affiliation_id = "#world_map-affiliation"
 
 var all_mapping_vars = [];
 
@@ -10,8 +10,8 @@ var bounds; // bounds for choropleth map classes
 var worldmap_width = $(world_grid_container_id).width(),
     worldmap_height = $(world_grid_container_id).height() / 4 * 3;
 
-var worldmap_legend_width = $(varworld_affiliation_id).width(),
-    worldmap_legend_height = $(varworld_affiliation_id).height();
+var worldmap_legend_width = $(world_affiliation_id).width(),
+    worldmap_legend_height = $(world_affiliation_id).height();
 
 // scale globe to size of window
 var globe_scale = Math.min(worldmap_width, worldmap_height) / 3;
@@ -149,8 +149,8 @@ function data_ready(alldata) { // TODO: LONG function!
 
     /// GET MAX of cases
     var case_maxs = [];
-    d3.keys(all_cases).forEach(function(d, i) {
-        var val = all_cases[d][cur_case].slice(-1)[0]; 
+    d3.keys(all_cases).forEach(function (d, i) {
+        var val = all_cases[d][cur_case].slice(-1)[0];
         case_maxs[i] = val;
     });
 
@@ -158,11 +158,11 @@ function data_ready(alldata) { // TODO: LONG function!
 
     var world_cases = []; // TODO: summarize world cases!
 
-///////////////////////////
+    ///////////////////////////
 
-    var timelines_margin = {top: 50, right: 60, bottom: 30, left: 40};
+    var timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
     var timelines_width = $(world_plot_id).width() - timelines_margin.left - timelines_margin.right,
-        timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom - 50; 
+        timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom - 50;
 
     // TODO: get dates from file -- DONE
     // var start_date = "01-22-2020";
@@ -177,7 +177,7 @@ function data_ready(alldata) { // TODO: LONG function!
 
     // index -> date
     var toXScale = d3.scaleLinear()
-        .domain([0, n-1])
+        .domain([0, n - 1])
         .range([case_date_parser(start_date), case_date_parser(end_date)]);
 
     var yScale = d3.scaleLinear()
@@ -195,8 +195,19 @@ function data_ready(alldata) { // TODO: LONG function!
     var world_regions = topojson.feature(world0, world0.objects.countries);
 
     all_mapping_vars = [];
+    list_mapping_var = []
     current_mapping_var = "POP_SR";
     for (i = 0; i < world_regions.features.length; i++) {
+        if (i == 0) {
+            var properties = world_regions.features[i]["properties"];
+            for (var key in properties) {
+                var node = properties[key];
+                console.log(+node)
+                if (!isNaN(+node)) {
+                    list_mapping_var.push(key);
+                }
+            }
+        }
         var val = world_regions.features[i]["properties"][current_mapping_var];
         if (val != null)
             all_mapping_vars[i] = val;
@@ -205,7 +216,8 @@ function data_ready(alldata) { // TODO: LONG function!
 
     var world_color_scheme = d3.scaleThreshold()
         .domain(bounds)
-        .range(colors);
+        .range(d3.schemeGreys[4]);
+    console.log(list_mapping_var)
 
     worldmap_svg.append("path")
         .datum({ type: "Sphere" })
@@ -226,7 +238,7 @@ function data_ready(alldata) { // TODO: LONG function!
         .data(world_regions.features)
         .enter()
         .append("path")
-        .attr("class", "land")
+        .attr("class", "world-land")
         .attr("d", path)
         .style("fill", function (d, i) {
             // if (i==0) alert("world again");
@@ -253,60 +265,88 @@ function data_ready(alldata) { // TODO: LONG function!
     // legend
     /////////////////////////////////////////////////////////////////////////
 
-    var worldmap_legend_svg = d3.select(world_map_id)
+    const worldmap_legend_svg = d3.select(world_affiliation_id)
         .append("svg")
         .attr("width", worldmap_legend_width)
         .attr("height", worldmap_legend_height);
 
-    worldmap_legend_svg.append("g")
+    var legendg = worldmap_legend_svg.append("g")
         .attr("id", "world-legend")
-        .attr("transform", "translate(20,20)");
+        .attr("transform", "translate(0,30)");
 
     var legend_linear = d3.legendColor()
         .labelFormat(d3.format(".2f"))
         .labels(d3.legendHelpers.thresholdLabels)
-        .useClass(true)
+        // .useClass(true)
         .scale(world_color_scheme)
-        // .orient('horizontal');
+        .shapeWidth(worldmap_legend_width / 4.1)
+        .orient('horizontal');
 
     worldmap_legend_svg.select("#world-legend")
         .call(legend_linear);
-    // // Create element for legend
-    // var g = worldmap_legend_svg.append("g")
-    //     .attr("class", "key")
-    //     .attr("transform", "translate(0,0)");
 
-    // // Legend color scale
-    // g.selectAll("rect")
-    //     .data(color.range().map(function (d) {
-    //         d = color.invertExtent(d);
-    //         if (d[0] == null) d[0] = x.domain()[0];
-    //         if (d[1] == null) d[1] = x.domain()[1];
-    //         return d;
-    //     }))
-    //     .enter().append("rect")
-    //     .attr("height", 8)
-    //     .attr("x", function (d) { return x(d[0]); })
-    //     .attr("width", function (d) { return x(d[1]) - x(d[0]); })
-    //     .attr("fill", function (d) { return world_color_scheme(d[0]); });
-
-    // // Legend title - "Unemployment rate"
-    // g.append("text")
+    // // Legend title 
+    // legendg.append("text")
     //     .attr("class", "caption")
-    //     .attr("x", x.range()[0])
+    //     .attr("x", 0)
     //     .attr("y", -6)
     //     .attr("fill", "#000")
+    //     .attr("font-size", "20px")
     //     .attr("text-anchor", "start")
     //     .attr("font-weight", "bold")
-    //     .text("Unemployment rate");
+    //     .text(current_mapping_var)
 
-    // // Legend markings - 2%, 3%, etc.
-    // g.call(d3.axisBottom(x)
-    //     .tickSize(13)
-    //     .tickFormat(function (x, i) { return i ? x : x + "%"; })
-    //     .tickValues(color.domain()))
-    //     .select(".domain")
-    //     .remove();
+    var dropdown = d3.select(world_affiliation_id)
+        .insert("select", "svg")
+        .attr("id", "world-choreopleth-select")
+        .attr("class", "select-css")
+        .on("change", worldDropdownChange);
+
+    dropdown.selectAll("option")
+        .data(list_mapping_var)
+        .enter().append("option")
+        .attr("value", function (d) { return d; })
+        .text(function (d) {
+            return d; // capitalize 1st letter
+        })
+        .property("selected", function (d) {
+            if (d == current_mapping_var) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        })
+
+    function worldDropdownChange(e) {
+        current_mapping_var = $("#world-choreopleth-select").val();
+        for (i = 0; i < world_regions.features.length; i++) {
+            if (i == 0) {
+                var properties = world_regions.features[i]["properties"];
+                for (var key in properties) {
+                    var node = properties[key];
+                    console.log(+node)
+                    if (!isNaN(+node)) {
+                        list_mapping_var.push(key);
+                    }
+                }
+            }
+            var val = world_regions.features[i]["properties"][current_mapping_var];
+            if (val != null)
+                all_mapping_vars[i] = val;
+        }
+        bounds = get_var_bounds(all_mapping_vars);
+
+        world_color_scheme = d3.scaleThreshold()
+            .domain(bounds)
+            .range(d3.schemeGreys[4]);
+
+        d3.selectAll(".world-land").transition()
+            .duration(500)
+            .style("fill", function (d) {
+                return world_color_scheme(d["properties"][current_mapping_var])
+            })
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // centroids
