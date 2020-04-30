@@ -34,27 +34,13 @@ var t = d3.transition(); // smooth
 var colors = ["#f7f7f7", "#cccccc", "#969696", "#525252"];
 var timelines_svg = null;
 
-function getColorx(val, bounds) {
-    for (i=1; i<bounds.length; i++)
-	if (val >= bounds[i])
-	    return colors[bounds.length-i-1];
-    return '#ffffff';
-}
-
-function get_var_bounds(mapdata) {
-    mapdata.sort(d3.ascending) ;
-    minx = mapdata[0];
-    maxx = mapdata.slice(-1)[0];
-    if (minx<1 && minx>0) minx = 0;
-    bounds = [maxx, d3.quantile(mapdata, 0.67), d3.quantile(mapdata, 0.33), minx];
-    // console.log(bounds)
-}
+var world_info_labels = null;
 
 var radius = d3.scaleSqrt()
     .domain([0, 1e4])
     .range([0, 8]);
 
-var worldmap_svg = d3.select("#world_map-content")
+var worldmap_svg = d3.select(world_map_id)
     .append("svg")
     .attr("width", worldmap_width)
     .attr("height", worldmap_height);
@@ -100,15 +86,9 @@ var zoom = d3.zoom()
 
 worldmap_svg.call(zoom);
 
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
 
-
-// var cur_date = 76; // will be actual date
-var cur_case = 'confirmed';
+var cur_case = "confirmed";
+var cur_world_region = "USA";
 
 // TODO: add a date file here 
 var promises = [
@@ -167,6 +147,47 @@ function data_ready(alldata) { // TODO: LONG function!
 
     // alert(all_cases['USA'][cur_case].length + " " + total_days)
 
+    /// GET MAX of cases
+    var case_maxs = [];
+    d3.keys(all_cases).forEach(function(d, i) {
+        var val = all_cases[d][cur_case].slice(-1)[0]; 
+        case_maxs[i] = val;
+    });
+
+    world_max = d3.max(case_maxs);
+
+    var world_cases = []; // TODO: summarize world cases!
+
+///////////////////////////
+
+    var timelines_margin = {top: 50, right: 60, bottom: 30, left: 40};
+    var timelines_width = $(world_plot_id).width() - timelines_margin.left - timelines_margin.right,
+        timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom - 50; 
+
+    // TODO: get dates from file -- DONE
+    // var start_date = "01-22-2020";
+    // var end_date = "04-12-2020";
+
+    var n = total_days;
+
+    // date -> x-coordinate
+    var xScale = d3.scaleTime()
+        .domain([case_date_parser(start_date), case_date_parser(end_date)])
+        .range([0, timelines_width]); // output
+
+    // index -> date
+    var toXScale = d3.scaleLinear()
+        .domain([0, n-1])
+        .range([case_date_parser(start_date), case_date_parser(end_date)]);
+
+    var yScale = d3.scaleLinear()
+        .domain([0, world_max]) // input 
+        .range([timelines_height, 0]); // output 
+
+
+
+    // alert(all_cases['USA'][cur_case].length + " " + total_days)
+
     /////////////////////////////////////////////////////////////////////////////
     // World choropleth map
     /////////////////////////////////////////////////////////////////////////////
@@ -180,7 +201,7 @@ function data_ready(alldata) { // TODO: LONG function!
         if (val != null)
             all_mapping_vars[i] = val;
     }
-    get_var_bounds(all_mapping_vars);
+    bounds = get_var_bounds(all_mapping_vars);
 
     var world_color_scheme = d3.scaleThreshold()
         .domain(bounds)
@@ -227,7 +248,6 @@ function data_ready(alldata) { // TODO: LONG function!
         });;
 
     // alert(all_cases["Mainland China"]["confirmed"]);
-
 
     //////////////////////////////////////////////////////////////////////////
     // legend
@@ -327,16 +347,19 @@ function data_ready(alldata) { // TODO: LONG function!
                 }
                 else return false;
             });
-            timelines_svg.selectAll(".text_label").style("display", function(dd) {
-                if (dd.label == d.properties.NAME || country_names.includes(dd.label)) 
-                    return "block";
-                else
-                    return "none";
-            }); 
+            // no need to label curves since we have other labels in the plot
+            // timelines_svg.selectAll(".text-label").style("display", function(dd) {
+            //     if (dd.label == d.properties.NAME || country_names.includes(dd.label)) 
+            //         return "block";
+            //     else
+            //         return "none";
+            // }); 
             worldmap_svg.selectAll(".world_symbol").classed("highlight", false); // clear 
             d3.select(this).classed("highlight", true);
-            d3.select(this).moveToFront();
-
+            // d3.select(this).raise(); // don't move to front, unless we want to put back
+            var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+            world_info_labels[0].text(`${cur_world_region} ${case_date_format(cur_date_world)} [Day ${ind}]`);
+            world_info_labels[1].text(`${case_names[cur_case]}: ${all_cases[cur_world_region][cur_case][ind]}`);
         })
         .on("mouseout", function (d) {
             timelines_svg.selectAll(".line").classed("world_highlight", false);
@@ -351,38 +374,12 @@ function data_ready(alldata) { // TODO: LONG function!
         ;
 
     /////////////////////////////////////////////////////////////////////////////
-    // Multiple Line chart 
+    // Line chart 
     /////////////////////////////////////////////////////////////////////////////
-    
-    var timelines_margin = {top: 10, right: 150, bottom: 50, left: 50};
-    var timelines_width = worldmap_width /6*5; // should change
-    var timelines_height = timelines_width/2;
-
-    var xScale = d3.scaleLinear()
-        .domain([0, n-1]) // input
-        .range([0, timelines_width]); // output
-
-    // TODO: get dates from file
-    var start_date = "01-22-2020";
-    var end_date = "04-12-2020";
-
-    var n = all_cases["USA"][cur_case].length; // TODO: get n 
-
-    var xScale = d3.scaleTime()
-        .domain([case_date_parser(start_date), case_date_parser(end_date)])
-        .range([0, timelines_width]); // output
-
-    var toXScale = d3.scaleLinear()
-        .domain([0, n-1])
-        .range([case_date_parser(start_date), case_date_parser(end_date)])
-        ;
-    
-    var yScale = d3.scaleLinear()
-        .domain([0, 6e5]) // input  TODO: get max
-        .range([timelines_height, 0]); // output 
 
     var country_names = ["Mainland China", "USA", "Italy", "Japan"];
 
+    // just get those for the cur_case
     var sub_dataset = {};
     d3.keys(all_cases).forEach(function (d, i) {
         // if (country_names.includes(d))
@@ -394,18 +391,19 @@ function data_ready(alldata) { // TODO: LONG function!
         })
     });
 
-    // not useful
-    var line_color = d3.scaleOrdinal(d3.schemeCategory10);
-    line_color.domain(d3.keys(sub_dataset));
+    // alert(sub_dataset['USA'].length)
+    // not used
+    // var line_color = d3.scaleOrdinal(d3.schemeCategory10);
+    // line_color.domain(d3.keys(sub_dataset));
 
     var line_generator = d3.line()
         .x(function (d) { return xScale(d.x); }) // set the x values for the line generator
         .y(function (d) { return yScale(d.y); }) // set the y values for the line generator 
         .curve(d3.curveMonotoneX) // apply smoothing to the line
 
-    timelines_svg = d3.select("#world_plot").append("svg")
-        .attr("width", timelines_width + timelines_margin.left + timelines_margin.right)
-        .attr("height", timelines_height + timelines_margin.top + timelines_margin.bottom)
+    timelines_svg = d3.select(world_plot_id).append("svg")
+        .attr("width", $(world_plot_id).width())
+        .attr("height", $(world_plot_id).height())
         .append("g")
         .attr("transform", "translate(" + timelines_margin.left + "," + timelines_margin.top + ")")
         ;
@@ -414,16 +412,15 @@ function data_ready(alldata) { // TODO: LONG function!
         .attr("class", "x axis")
         .attr("transform", "translate(0," + timelines_height + ")")
         .call(d3.axisBottom(xScale).ticks(6)); // Create an axis component with d3.axisBottom
-
     timelines_svg.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(yScale).ticks(4, "s")) // Create an axis component with d3.axisLeft
         ;
 
     timelines_svg.append("path")
-        .datum(sub_dataset) // 10. Binds data to the line 
+        .data(sub_dataset) // 10. Binds data to the line 
         .attr("class", "line") // Assign a class for styling 
-        .attr("d", line); // 11. Calls the line generator 
+        .attr("d", line_generator); // 11. Calls the line generator 
 
     timelines_svg.append("rect")
         .attr("class", "overlay")
@@ -436,10 +433,10 @@ function data_ready(alldata) { // TODO: LONG function!
     /////////////////////////////////////////////////////////////////////////////
 
     var timelines_hoverLine = timelines_svg.append("g")
-        .attr("class", "hover-line-world")
+        .attr("class", "hover-line")
         .append("line")
         .attr("id", "hover-line-world")
-        .attr("x1", 10).attr("x2", 10)
+        .attr("x1", xScale(cur_date_world)).attr("x2", xScale(cur_date_world))
         .style("pointer-events", "none") // Stop line interferring with cursor
         .style("opacity", 1);
 
@@ -483,7 +480,6 @@ function data_ready(alldata) { // TODO: LONG function!
 
                 US_info_labels[0].text(`${state_abbr_inv[cur_us_state]} ${case_date_format(cur_date_world)} [Day ${ind}]`);
                 US_info_labels[1].text(`${case_names[cur_case]}: ${us_all_cases[cur_us_state][cur_case][ind]}`);
-
                 state_info_labels[0].text(`${fips_to_name[cur_state_county]} ${case_date_format(cur_date_world)} [Day ${ind}]`);
                 state_info_labels[1].text(`${case_names[cur_case]}: ${state_all_cases[cur_state_county][cur_case][ind]}`);
 
@@ -574,9 +570,8 @@ function data_ready(alldata) { // TODO: LONG function!
         })
         ;
 
-
     timelines_labels = timelines_lines.append("text")
-        .attr("class", "text_label")
+        .attr("class", "text-label")
         // .style("fill", function(d) { return line_color(d); })
         .text(function (d) {
             // if (country_names.includes(d))

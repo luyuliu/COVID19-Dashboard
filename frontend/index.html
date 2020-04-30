@@ -28,8 +28,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.all.js"></script>
   <script src="https://d3js.org/d3.v5.min.js"></script> 
-  <script src="js/d3-interpolate-path.js"></script>
-  <script src="js/d3-line-chunked.js"></script>
+  <!-- <script src="js/d3-interpolate-path.js"></script> -->
+  <!-- <script src="js/d3-line-chunked.js"></script> -->
   <script src="js/colorbrewer.min.x.js"></script>
   <script src="js/geojson.min.js"></script>
   <script src="js/intro.min.js"></script>
@@ -40,49 +40,99 @@
   <!-- <script src="js/leaflet-heatmap.js"></script> -->
   <script src="https://d3js.org/topojson.v3.min.js"></script>
 
+  <!-- <script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script> -->
+  <!-- <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script> -->
+  <!-- <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script> -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.js"></script> -->
+  <!-- <script src="https://kit.fontawesome.com/88fc83302a.js"></script> -->
 
-  <script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script>
-  <script
-    src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
-  <script
-    src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.js"></script>
-  <script src="https://kit.fontawesome.com/88fc83302a.js"></script>
-
-  <link href="css/leaflet.css" rel="stylesheet" />
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.css" /> -->
+  <!-- <link href="css/leaflet.css" rel="stylesheet" /> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.min.css" />
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
-    integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" -->
+    <!-- integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous"> -->
   <link rel="stylesheet" href="scr/main.css">
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/introjs.min.css">
+  <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
+  <!-- <link rel="stylesheet" href="css/introjs.min.css"> -->
 </head>
 
 <body>
-
-  <!-- navigation bar -->
-  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-
-      <div class="navbar-header" id="mapheader">
-        <a class="navbar-brand mapheader" id="about-btn" href="#">COVID-19 Dashboard</a>
-      </div>
-      <div class="navbar-collapse collapse">
-
-      </div>
-      <!--/.navbar-collapse -->
+    
+    <div class="mynav">
+        <div class="containerdd" onclick="hamburger(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div id="myDropdown" class="dropdown-content">
+                <a onclick="settings.style.display = 'block';">Settings</a>
+                <a onclick="about.style.display = 'block';">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+        <a>COVID-19 Dashboard</a>
     </div>
-  </div>
+
+    <!-- Settings -->
+    <div id="settings" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <p>Sync: choices</p>
+          <p>Dark mode</p>
+          <p>Projections: some choices</p>
+          <p>Cases: more choices</p>
+          <p>Type: Raw, rate, or difference</p>
+        </div>
+    </div>
+    
+    <!-- ABOUT -->
+    <div id="about" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <p>About: THANK YOU!</p>
+        </div>
+    </div>
+    
+    <script>
+    var settings = document.getElementById("settings"); // Get the modal    
+    var about = document.getElementById("about"); // Get the modal    
+    var spans = document.getElementsByClassName("close"); // Get the <span> element that closes the modal
+
+    // When the user clicks on <span> (x), close the modal
+    spans.forEach(function(d) {
+        d.onclick = function() {
+            this.parentNode.parentNode.style.display = "none";
+        }
+    })
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == settings)
+        settings.style.display = "none";
+    if (event.target == about)
+      about.style.display = "none";
+    }
+    </script>
+
+  
+    <script>
+
+    function hamburger(x) {
+        x.classList.toggle("change");
+        document.getElementById("myDropdown").classList.toggle("hide");
+    }
+    </script>
+
 
   <div id="grid-container" class="grid-stack"></div>
 
-  <script src="scr/timelines.js"></script>
-  <!-- <script src="scr/worldmap_oop.js"></script> -->
   <script src="scr/main.js"></script>
+  <!-- <script src="scr/worldmap_oop.js"></script> -->
   <script src="scr/worldmap.js"></script>
   <script src="scr/USmap.js"></script>
-  <script src="scr/scatterplot.js"></script>
+  <script src="scr/state-map.js"></script>
+  <!-- <script src="scr/scatterplot.js"></script> -->
 </body>
 
 </html>
