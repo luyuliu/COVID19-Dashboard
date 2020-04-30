@@ -220,7 +220,6 @@ function ready(all_data) {
                 var properties = US_geojson.features[i]["properties"];
                 for (var key in properties) {
                     var node = properties[key];
-                    console.log(+node)
                     if (!isNaN(+node)) {
                         US_list_mapping_var.push(key);
                     }

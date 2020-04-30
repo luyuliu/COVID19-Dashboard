@@ -324,7 +324,6 @@ function data_ready(alldata) { // TODO: LONG function!
                 var properties = world_regions.features[i]["properties"];
                 for (var key in properties) {
                     var node = properties[key];
-                    console.log(+node)
                     if (!isNaN(+node)) {
                         list_mapping_var.push(key);
                     }
