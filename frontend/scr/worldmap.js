@@ -318,6 +318,7 @@ function data_ready(alldata) { // TODO: LONG function!
             }
         })
 
+    // Update choreopleth map
     function worldDropdownChange(e) {
         current_mapping_var = $("#world-choreopleth-select").val();
         for (i = 0; i < world_regions.features.length; i++) {
@@ -346,6 +347,18 @@ function data_ready(alldata) { // TODO: LONG function!
             .style("fill", function (d) {
                 return world_color_scheme(d["properties"][current_mapping_var])
             })
+
+        // Update legend
+        legend_linear = d3.legendColor()
+            .labelFormat(d3.format(".2f"))
+            .labels(d3.legendHelpers.thresholdLabels)
+            // .useClass(true)
+            .scale(world_color_scheme)
+            .shapeWidth(worldmap_legend_width / 4.1)
+            .orient('horizontal');
+
+        worldmap_legend_svg.select("#world-legend")
+            .call(legend_linear);
     }
 
     //////////////////////////////////////////////////////////////////////////
