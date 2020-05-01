@@ -225,36 +225,37 @@ function updateGraph() {
 // Link county-level datasets
 function convert_county_data(ses, cases) {
     var data = [],
-        keys = Object.keys(ses);
+        keys1 = Object.keys(cases);
     
-    keys.forEach(function(key) {
+    keys1.forEach(function(key) {
         var item = {},
-            obj = ses[key];
-
-        item['countyFIPS'] = key,
-        item['county'] = obj['county'],
-        item['stateFIPS'] = obj['stateFIPS'],
-        item['PCT_CHLDN'] = obj['PCT_CHLDN'],
-        item['PCT_YOUTH'] = obj['PCT_YOUTH'], 
-        item['PCT_AD'] = obj['PCT_AD'], 
-        item['PCT_SR'] = obj['PCT_SR']
-        item['PCT_WHT'] = obj['PCT_WHT'];
-        item['PCT_NWHT'] = obj['PCT_NWHT'];
-        item['MED_HH_INC'] = obj['MED_HH_INC'];
-        item['PCT_BLW_POV_RT'] = obj['PCT_BLW_POV_RT'];
-        
-        item['CONFIRMED'] = null,
-        item['DEATHS'] = null,
-        keys_2 = Object.keys(cases);
-        keys_2.forEach(function(key) {
-            var item_2 = {},
-                obj_2 = cases[key];
-            if (obj_2['countyFIPS'] == item['countyFIPS']){
-                item['CONFIRMED'] = obj_2['confirmed'][obj_2['confirmed'].length - 1],
-                item['DEATHS'] = obj_2['deaths'][obj_2['deaths'].length - 1]; 
-            }
+            obj1 = cases[key];
+        keys2.forEach(function(key) {
+        	obj2 = obj1[key];
+        	
+        	item['countyFIPS'] = key,
+        	item['CONFIRMED'] = obj2['confirmed'][obj2['confirmed'].length - 1],
+            item['DEATHS'] = obj2['deaths'][obj2['deaths'].length - 1]; 
+            
+            keys3 = Object.keys(ses);
+	        keys3.forEach(function(key) {
+	        	obj3 = ses[key];
+	        	
+		        if (obj3['countyFIPS'] == item['countyFIPS']){
+			        item['county'] = obj['county'],
+			        item['stateFIPS'] = obj['stateFIPS'],
+			        item['PCT_CHLDN'] = obj['PCT_CHLDN'],
+			        item['PCT_YOUTH'] = obj['PCT_YOUTH'], 
+			        item['PCT_AD'] = obj['PCT_AD'], 
+			        item['PCT_SR'] = obj['PCT_SR']
+			        item['PCT_WHT'] = obj['PCT_WHT'];
+			        item['PCT_NWHT'] = obj['PCT_NWHT'];
+			        item['MED_HH_INC'] = obj['MED_HH_INC'];
+			        item['PCT_BLW_POV_RT'] = obj['PCT_BLW_POV_RT']; 
+	            }
+	        });
+			data.push(item);
         });
-    data.push(item);
-    });
+	});
     return data;
 }
