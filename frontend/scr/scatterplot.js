@@ -33,7 +33,7 @@ var se_ind = document.querySelector('#se_ind').value;
 
 // load data
 d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/us-counties-attributes.json").then(function(data_ind) { 
-	d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/raw-covid-19-data-us-counties-usafacts.json").then(function(data_cases) { 
+	d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/all-cases-data-processed-counties.json").then(function(data_cases) { 
 	data = convert_county_data(data_ind, data_cases);
 	drawGraph(se_ind, data);
 	});
@@ -225,36 +225,48 @@ function updateGraph() {
 // Link county-level datasets
 function convert_county_data(ses, cases) {
     var data = [],
-        keys1 = Object.keys(cases);
+    	keys1 = Object.keys(cases);
     
     keys1.forEach(function(key) {
-        var item = {},
-            obj1 = cases[key];
+        var obj1 = cases[key],
+        	keys2 = Object.keys(obj1);
+        
         keys2.forEach(function(key) {
+        	var item = {},
         	obj2 = obj1[key];
         	
         	item['countyFIPS'] = key,
         	item['CONFIRMED'] = obj2['confirmed'][obj2['confirmed'].length - 1],
-            item['DEATHS'] = obj2['deaths'][obj2['deaths'].length - 1]; 
+            item['DEATHS'] = obj2['deaths'][obj2['deaths'].length - 1];
             
+            item['state'] = null,
+        	item['stateFIPS'] = null,
+    		item['PCT_CHLDN'] = null,
+	        item['PCT_YOUTH'] = null, 
+	        item['PCT_AD'] = null, 
+	        item['PCT_SR'] = null,
+	        item['PCT_WHT'] = null,
+	        item['PCT_NWHT'] = null,
+	        item['MED_HH_INC'] = null,
+	        item['PCT_BLW_POV_RT'] = null;
+	        
             keys3 = Object.keys(ses);
 	        keys3.forEach(function(key) {
 	        	obj3 = ses[key];
 	        	
-		        if (obj3['countyFIPS'] == item['countyFIPS']){
-			        item['county'] = obj['county'],
-			        item['stateFIPS'] = obj['stateFIPS'],
-			        item['PCT_CHLDN'] = obj['PCT_CHLDN'],
-			        item['PCT_YOUTH'] = obj['PCT_YOUTH'], 
-			        item['PCT_AD'] = obj['PCT_AD'], 
-			        item['PCT_SR'] = obj['PCT_SR']
-			        item['PCT_WHT'] = obj['PCT_WHT'];
-			        item['PCT_NWHT'] = obj['PCT_NWHT'];
-			        item['MED_HH_INC'] = obj['MED_HH_INC'];
-			        item['PCT_BLW_POV_RT'] = obj['PCT_BLW_POV_RT']; 
-	            }
+		        if (key == item['countyFIPS']) {
+		        	item['state'] = obj3['state'],
+			        item['stateFIPS'] = obj3['stateFIPS'],
+			        item['PCT_CHLDN'] = obj3['PCT_CHLDN'],
+			        item['PCT_YOUTH'] = obj3['PCT_YOUTH'], 
+			        item['PCT_AD'] = obj3['PCT_AD'], 
+			        item['PCT_SR'] = obj3['PCT_SR'],
+			        item['PCT_WHT'] = obj3['PCT_WHT'],
+			        item['PCT_NWHT'] = obj3['PCT_NWHT'],
+			        item['MED_HH_INC'] = obj3['MED_HH_INC'],
+					item['PCT_BLW_POV_RT'] = obj3['PCT_BLW_POV_RT']; }
 	        });
-			data.push(item);
+	        data.push(item);
         });
 	});
     return data;
