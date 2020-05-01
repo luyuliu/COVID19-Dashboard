@@ -3,7 +3,7 @@ var scatter_plot_id = "#scatter_plot-content";
 var scatter_plot_affiliation_id = "#scatter_plot-affiliation";
 
 
-var margin = { top: 10, right: 10, bottom: 40, left: 10 };
+var margin = { top: 10, right: 10, bottom: 40, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;
 var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom -50;
 
@@ -19,7 +19,7 @@ var se_ind_list = [["pct_chldn", "Percentage of Children (Aged 0 - 14) (%)"], ["
 var se_ind_dropdown = d3.select(scatter_plot_affiliation_id)
     .insert("select", "svg")
     .attr("id", "se_ind")
-    //.attr("class", "select-css")
+    .attr("class", "select-css")
     .on("change", updateGraph);
 
 se_ind_dropdown.selectAll("option")
@@ -33,7 +33,7 @@ var se_ind = document.querySelector('#se_ind').value;
 
 // load data
 d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/us-counties-attributes.json").then(function(data_ind) { 
-	d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/all-cases-data-processed-counties.json").then(function(data_cases) { 
+	d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/raw-covid-19-data-us-counties-usafacts.json").then(function(data_cases) { 
 	data = convert_county_data(data_ind, data_cases);
 	drawGraph(se_ind, data);
 	});
@@ -159,7 +159,7 @@ function drawGraph(se_ind, data) {
 		.attr("class", "label")
 		.attr("transform", "rotate(-90)")
 		.attr("x", -margin.top)
-		.attr("y", -margin.left + 18)
+		.attr("y", -margin.left + 15)
 		.style("text-anchor", "end")
 		.text(y_text)
 
@@ -244,20 +244,17 @@ function convert_county_data(ses, cases) {
         item['PCT_BLW_POV_RT'] = obj['PCT_BLW_POV_RT'];
         
         item['CONFIRMED'] = null,
+        item['DEATHS'] = null,
         keys_2 = Object.keys(cases);
-        
         keys_2.forEach(function(key) {
             var item_2 = {},
-            	obj_2 = cases[key];
-                key_3 = Object.keys(obj_2);
-            key_3.forEach(function(key) {
-	            obj_3 = obj_2[key];
-	            if (key == item['countyFIPS']) {
-	                item['CONFIRMED'] = obj_3['confirmed'][obj_3['confirmed'].length - 1]}
-            });
-        data.push(item);
+                obj_2 = cases[key];
+            if (obj_2['countyFIPS'] == item['countyFIPS']){
+                item['CONFIRMED'] = obj_2['confirmed'][obj_2['confirmed'].length - 1],
+                item['DEATHS'] = obj_2['deaths'][obj_2['deaths'].length - 1]; 
+            }
         });
-    
+    data.push(item);
     });
     return data;
 }
