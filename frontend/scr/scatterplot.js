@@ -7,8 +7,17 @@ var margin = { top: 10, right: 10, bottom: 40, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;
 var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom -50;
 
+var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-color = d3.scaleOrdinal(d3.schemeCategory10);
+var curr_state = "OH";
+
+
+// add the graph canvas to the body of the webpage
+var sp_svg = d3.select(scatter_plot_id).append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
 var se_ind_list = [["pct_chldn", "Percentage of Children (Aged 0 - 14) (%)"], ["pct_youth", "Percentage of Youth (Aged 15 - 24) (%)"],
@@ -44,7 +53,7 @@ function drawGraph(se_ind, data) {
 	d3.select(scatter_plot_id).selectAll("svg").remove();
 
 	// add the graph canvas to the body of the webpage
-	var svg = d3.select(scatter_plot_id).append("svg")
+	var sp_svg = d3.select(scatter_plot_id).append("svg")
 	    .attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
 	    .append("g")
@@ -139,11 +148,11 @@ function drawGraph(se_ind, data) {
 	y.domain([d3.min(data, y_value) - 1, maxValue - 1]);
 
 	// x-axis
-	svg.append("g")
+	sp_svg.append("g")
 		.attr("class", "x axis")
 		.call(xAxis)
 		.attr("transform", "translate(0," + height + ")")
-	svg.append("text")
+	sp_svg.append("text")
 		.attr("transform", "translate(0," + height + ")")
 		.attr("class", "label")
 		.attr("x", width)
@@ -152,10 +161,10 @@ function drawGraph(se_ind, data) {
 		.text(x_text);
 
 	// y-axis
-	svg.append("g")
+	sp_svg.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
-	svg.append("text")
+	sp_svg.append("text")
 		.attr("class", "label")
 		.attr("transform", "rotate(-90)")
 		.attr("x", -margin.top)
@@ -164,26 +173,27 @@ function drawGraph(se_ind, data) {
 		.text(y_text)
 
 	// draw dots
-	svg.selectAll(".dot")
+	console.log(curr_state);
+	sp_svg.selectAll(".dot")
 	  .data(data)
 	  .enter().append("circle")
-	  .attr("class", function (d) { return "dot " + d.stateFIPS} )
+	  .attr("class", function (d) { return "dot " + d.state} )
 	  .attr("cx", xMap)
 	  .attr("cy", yMap)
 	  .attr("r", function(d) { 
-          if (d.stateFIPS == 39) { // please replace the fixed stateFIPS with the selected one
+          if (d.state == curr_state) {
               return 3;
           } else {
               return 2;}
            })
 	  .style("opacity", function(d) { 
-	              if (d.stateFIPS == 39) { // please replace the fixed stateFIPS with the selected one
+	              if (d.state == curr_state) {
 	                  return 1.0;
 	              } else {
 	                  return 0.5;}
 	               })
 	  .style("fill", function(d) { 
-	              if (d.stateFIPS == 39) { // please replace the fixed stateFIPS with the selected one
+	              if (d.state == curr_state) {
 	                  return "gold";
 	              } else {
 	                  return "lightgrey";}
@@ -191,7 +201,7 @@ function drawGraph(se_ind, data) {
 
 
 	// draw legend
-	var legend = svg.selectAll(".legend")
+	var legend = sp_svg.selectAll(".legend")
 	  .data(color.domain())
 	  .enter().append("g")
 	  .attr("class", "legend")
@@ -215,12 +225,30 @@ function drawGraph(se_ind, data) {
 	  .text(function(d) { return d; });
 }
 
+function highlightDots(state) {
+	curr_state = state;
+    d3.select("svg").selectAll(".dot")
+    	.transition()
+    	.duration(200)
+    	.attr("r", 2)
+    	.style("opacity", 0.5)
+    	.style("fill", "lightgrey")
+    
+    d3.select("svg").selectAll("." + curr_state)
+    	.transition()
+    	.duration(200)
+    	.attr("r", 3)
+    	.style("opacity", 1)
+    	.style("fill", "gold")
+}
+
 function updateGraph() {
 	//d3.select("#graph-div").selectAll("svg").remove();
-	var se_ind = document.querySelector('#se_ind').value;
+	se_ind = document.querySelector('#se_ind').value;
 	
 	drawGraph(se_ind, data);
 }
+
 
 // Link county-level datasets
 function convert_county_data(ses, cases) {
@@ -250,11 +278,13 @@ function convert_county_data(ses, cases) {
 	        item['MED_HH_INC'] = null,
 	        item['PCT_BLW_POV_RT'] = null;
 	        
+	        t = 0;
             keys3 = Object.keys(ses);
 	        keys3.forEach(function(key) {
 	        	obj3 = ses[key];
 	        	
 		        if (key == item['countyFIPS']) {
+		        	t = 1;
 		        	item['state'] = obj3['state'],
 			        item['stateFIPS'] = obj3['stateFIPS'],
 			        item['PCT_CHLDN'] = obj3['PCT_CHLDN'],
@@ -266,7 +296,9 @@ function convert_county_data(ses, cases) {
 			        item['MED_HH_INC'] = obj3['MED_HH_INC'],
 					item['PCT_BLW_POV_RT'] = obj3['PCT_BLW_POV_RT']; }
 	        });
-	        data.push(item);
+	        if (t == 1){
+	        	data.push(item);
+	        }
         });
 	});
     return data;

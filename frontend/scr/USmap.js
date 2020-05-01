@@ -294,6 +294,7 @@ function ready(all_data) {
                 }
                 else return false;
             });
+            
             // US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
             //     if (dd.label == d.properties.postal || US_names.includes(dd.label))
             //         return "block";
@@ -306,6 +307,9 @@ function ready(all_data) {
             var ind = parseInt(US_toXScale.invert(cur_date_us)) + 1;
             US_info_labels[0].text(`${US_abbr_inv[cur_us_US]} ${case_date_format(cur_date_us)} [Day ${ind}]`);
             US_info_labels[1].text(`${case_names[cur_case]}: ${us_all_cases[cur_us_US][cur_case][ind]}`);
+            
+            highlightDots(cur_us_US);
+        
         })
         .on("mouseout", function (d) {
             US_timelines_svg.selectAll(".line").classed("US_highlight", false);
