@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html> -->
 <html lang="en">
 
 <head>
@@ -66,9 +66,9 @@
             <div class="bar2"></div>
             <div class="bar3"></div>
             <div id="myDropdown" class="dropdown-content">
-                <a onclick="settings.style.display = 'block';">Settings</a>
+                <!-- <a onclick="settings.style.display = 'block';">Settings</a> -->
                 <a onclick="about.style.display = 'block';">About</a>
-                <a href="#contact">Contact</a>
+                <!-- <a href="#contact">Contact</a> -->
             </div>
         </div>
         <a>COVID-19 Dashboard</a>
@@ -92,7 +92,27 @@
         <!-- Modal content -->
         <div class="modal-content">
           <span class="close">&times;</span>
-          <p>About: THANK YOU!</p>
+              <h2>Welcome to the COVID-19 Dashboard!</h2>
+              <p>
+
+    This dashboard visualizes the spatio-temporal pattern of COVID-19 pandemic evolution for each day. The confirmed COVID-19 case statistics are shown as red proportional symbols in three scales: each country in the world (left), each state in the United States (middle), and each county in a selected state (right). Each map also has a choropleth color basemap that shows a selected relevant social-economic indicator. The line chart beneath each map demonstrates the temporal change of the confirmed case with interactivity with the proportional symbols. The scatter plot on the bottom-left corner represents county-level interrelationship between total confirmed cases and a selected socio-economic variable.
+
+</p>
+
+<p>
+    Data source: The world map is based on the 1:110M administrative data from the <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/">Natural Earth</a>. Maps for the United States are based on the Census Bureau's 2018 <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html">Cartographic Boundary Files Shapefile</a> at 1:20M scale.
+    The country-level and US state-level COVID-19 confirmed case data come from the <a href="https://nssac.bii.virginia.edu/covid-19/dashboard/">UVA COVID-19 dashboard</a> and the <a href="https://github.com/CSSEGISandData/COVID-19">JHU COVID-19 dashboard GitHub</a>.  The county-level COVID-19 data comes from the <a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/"> USAFacts COVID-19 map</a>. The Covid-19 datasets updated daily. State and county social-economic indicators are collected from American Community Survey 5-year data (2014 -2018).
+</p>
+
+<p>
+    Development Team: Luyu Liu, Yue Lin, Armita Kar, and Ningchuan Xiao.
+</p>
+
+<p>
+
+    Open-source code access and license: https://github.com/luyuliu/COVID19-Dashboard under the MIT license.
+          
+          </p>
         </div>
     </div>
     
@@ -134,7 +154,7 @@
   <script src="scr/worldmap.js"></script>
   <script src="scr/USmap.js"></script>
   <script src="scr/state-map.js"></script>
-  <script src="scr/scatterplot.js"></script>
+  <!-- <script src="scr/scatterplot.js"></script> -->
 </body>
 
 </html>
