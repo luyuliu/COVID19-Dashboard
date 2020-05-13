@@ -41,8 +41,8 @@ se_ind_dropdown.selectAll("option")
 var se_ind = document.querySelector('#se_ind').value;
 
 // load data
-d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/us-counties-attributes.json").then(function(data_ind) { 
-	d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/all-cases-data-processed-counties.json").then(function(data_cases) { 
+d3.json("data/us-counties-attributes.json").then(function(data_ind) { 
+	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
 	data = convert_county_data(data_ind, data_cases);
 	drawGraph(se_ind, data);
 	});
@@ -194,7 +194,7 @@ function drawGraph(se_ind, data) {
 	               })
 	  .style("fill", function(d) { 
 	              if (d.state == curr_state) {
-	                  return "gold";
+	                  return "red";
 	              } else {
 	                  return "lightgrey";}
 	               });
@@ -227,6 +227,7 @@ function drawGraph(se_ind, data) {
 
 function highlightDots(state) {
 	curr_state = state;
+
     d3.select("svg").selectAll(".dot")
     	.transition()
     	.duration(200)
@@ -239,7 +240,7 @@ function highlightDots(state) {
     	.duration(200)
     	.attr("r", 3)
     	.style("opacity", 1)
-    	.style("fill", "gold")
+    	.style("fill", "red")
 }
 
 function updateGraph() {

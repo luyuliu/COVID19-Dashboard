@@ -31,10 +31,10 @@ var graticule = d3.geoGraticule();
 var path = d3.geoPath().projection(projection);
 var t = d3.transition(); // smooth
 
-var colors = ["#f7f7f7", "#cccccc", "#969696", "#525252"];
 var timelines_svg = null;
 
 var world_info_labels = null;
+var world_summary_info_labels = null;
 
 var radius = d3.scaleSqrt()
     .domain([0, 1e4])
@@ -92,9 +92,9 @@ var cur_world_region = "USA";
 
 // TODO: add a date file here 
 var promises = [
-    d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/covid-19-world-iso3dissolved-centroids.geojson"),
-    d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/all-cases-data-processed.json"),
-    d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/ne_110m_admin0sov_joined.topo.json"),
+    d3.json("data/covid-19-world-iso3dissolved-centroids.geojson"),
+    d3.json("data/all-cases-data-processed.json"),
+    d3.json("data/ne_110m_admin0sov_joined.topo.json"),
     // d3.json("data/all-cases-data-dates.json")
 ];
 
@@ -107,15 +107,28 @@ function data_ready(alldata) { // TODO: LONG function!
     world0 = alldata[2];
 
     /// GET MAX of cases
+    /// get sums for the world
+    
+    // total_days is one day less since not inclusive
+    // use the size of the array in all_cases
+    actual_len = all_cases[d3.keys(all_cases)[0]]['confirmed'].length;
+    world_cases_sum = {
+        "confirmed": Array(actual_len).fill(0), 
+        "deaths": Array(actual_len).fill(0), 
+        "recovered": Array(actual_len).fill(0)}
     var case_maxs = [];
-    d3.keys(all_cases).forEach(function (d, i) {
+    
+    d3.keys(all_cases).forEach(function (d, i) { // go through all countries
         var val = all_cases[d][cur_case].slice(-1)[0];
         case_maxs[i] = val;
+        for (j=0; j< all_cases[d]["confirmed"].length; j++) {
+            world_cases_sum["confirmed"][j] += all_cases[d]["confirmed"][j]
+            world_cases_sum["deaths"][j] += all_cases[d]["deaths"][j]
+            world_cases_sum["recovered"][j] += all_cases[d]["recovered"][j]
+        }
     });
 
     world_max = d3.max(case_maxs);
-
-    var world_cases = []; // TODO: summarize world cases!
 
     ///////////////////////////
 
@@ -156,8 +169,6 @@ function data_ready(alldata) { // TODO: LONG function!
 
     world_max = d3.max(case_maxs);
 
-    var world_cases = []; // TODO: summarize world cases!
-
     ///////////////////////////
 
     var timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
@@ -184,15 +195,51 @@ function data_ready(alldata) { // TODO: LONG function!
         .domain([0, world_max]) // input 
         .range([timelines_height, 0]); // output 
 
+    var radius = d3.scaleSqrt()
+        .domain([0, world_max])
+        .range([0, 90]);
+
+    //////////////////////////////////////////////////////////////////////////
+    // info on title bar
+    /////////////////////////////////////////////////////////////////////////
+    
+    ind = world_cases_sum["confirmed"].length-1;
+    // var s1 = world_cases_sum["confirmed"][ind]
+    // var s0 = ind==0 ? 0 : world_cases_sum["confirmed"][ind-1]
+    // var s2 = world_cases_sum["deaths"][ind]
+    // var s3 = world_cases_sum["recovered"][ind]
+    // 
+    // var title_info = `
+    // ${case_date_format_full(cur_date_world)} <br/>
+    // <span style="color: red">${d3.format(",")(s1)}</span> confirmed (+${s1-s0})<br/> 
+    // ${d3.format(",")(s2)} deaths<br/>
+    // ${d3.format(",")(s3)} recovered`
+    // d3.selectAll("#world-info").html(title_info)
+    update_title_info("#world-info", 
+        cur_date_world, 
+        world_cases_sum["confirmed"][ind], 
+        ind==0 ? 0 : world_cases_sum["confirmed"][ind-1], 
+        world_cases_sum["deaths"][ind], 
+        ind==0 ? 0 : world_cases_sum["deaths"][ind-1], 
+        world_cases_sum["recovered"][ind], 
+        ind==0 ? 0 : world_cases_sum["recovered"][ind-1]
+    )
 
 
-    // alert(all_cases['USA'][cur_case].length + " " + total_days)
 
     /////////////////////////////////////////////////////////////////////////////
     // World choropleth map
     /////////////////////////////////////////////////////////////////////////////
 
     var world_regions = topojson.feature(world0, world0.objects.countries);
+
+    var world_map_friendly_names = {
+        "POP_SR": "Senior (%)",
+        "POP_CHLDN": "Children (%)",
+        "POP_AD": "Aldults (%)",
+        "POP_YOUTH": "Youth (%)",
+        "ECON_GNI": "GNI Per Capita"
+    }
 
     all_mapping_vars = [];
     list_mapping_var = [];
@@ -212,10 +259,10 @@ function data_ready(alldata) { // TODO: LONG function!
             all_mapping_vars[i] = val;
     }
     bounds = get_var_bounds(all_mapping_vars);
-
+    
     var world_color_scheme = d3.scaleThreshold()
         .domain(bounds)
-        .range(d3.schemeGreys[4]);
+        .range(d3.schemeGreys[3]);
 
     worldmap_svg.append("path")
         .datum({ type: "Sphere" })
@@ -263,25 +310,71 @@ function data_ready(alldata) { // TODO: LONG function!
     // legend
     /////////////////////////////////////////////////////////////////////////
 
-    const worldmap_legend_svg = d3.select(world_affiliation_id)
-        .append("svg")
-        .attr("width", worldmap_legend_width)
-        .attr("height", worldmap_legend_height);
+    const worldmap_legend_svg = make_legend_svg(world_affiliation_id, worldmap_legend_width, worldmap_legend_height, "world-legend");
+    
+    // 
+    // world_summary_info_labels = [];
+    // var world_summary_labels = [
+    //     {"header": case_date_format_full(cur_date_world), "text": ""},
+    //     {"header": " confirmed", "text":  d3.format(",")(world_cases_sum["confirmed"].slice(-1)[0])},
+    //     {"header": " deaths", "text":  d3.format(",")(world_cases_sum["deaths"].slice(-1)[0])},
+    //     {"header": " recovered", "text":  d3.format(",")(world_cases_sum["recovered"].slice(-1)[0])}
+    // ]
+    // 
+    // world_summary_labels.forEach(function(d, i) {
+    //     ele1 = worldmap_legend_svg
+    //         .append('text')
+    //         .attr("font-size", "22px")
+    //         .attr("fill", "red")
+    //         .attr("x", 150)
+    //         .attr("y", 20+25*i)
+    //         .text(d.text)
+    //     ele2 = ele1.append("tspan")
+    //         .style("fill", "#ababab")
+    //         .text(d.header)
+    //     d["ele1"] = ele1;
+    //     d["ele2"] = ele2;
+    // })
 
-    var legendg = worldmap_legend_svg.append("g")
-        .attr("id", "world-legend")
-        .attr("transform", "translate(0,30)");
+    // var labelss = worldmap_legend_svg.selectAll("world-summary")
+    //     .data(world_summary_labels)
+    //     .enter()
+    //     .append("text")
+    //     .attr("fill", "#ababab")
+    //     .attr("font-size", "22px")
+    //     .attr("x", 150)
+    //     .attr("y", function(d, i) { return 20+25*i;})
+    //     .text(function(d) {return d.header})
+    //     .append("tspan")
+    //     .style("fill", "red")
+    //     .text(function(d) { return d.text})
 
-    var legend_linear = d3.legendColor()
-        .labelFormat(d3.format(".2f"))
-        .labels(d3.legendHelpers.thresholdLabels)
-        // .useClass(true)
-        .scale(world_color_scheme)
-        .shapeWidth(worldmap_legend_width / 4.1)
-        .orient('horizontal');
+    // world_summary_labels.forEach(function(d, i) {
+    //     world_summary_info_labels[0] = worldmap_legend_svg
+    //         .append('text')
+    //         .attr("class", "hover-text")
+    //         .attr("style", "font-size: 20px")
+    //         .attr("x", 150)
+    //         .attr("y", 20+25*i)
+    //         .text(d.text);
+    // })
+    // 
+    // 
 
-    worldmap_legend_svg.select("#world-legend")
-        .call(legend_linear);
+
+
+    // var legend_linear = d3.legendColor()
+    //     .labelFormat(d3.format(".0f"))
+    //     .labels(d3.legendHelpers.thresholdLabels)
+    //     // .useClass(true)
+    //     .scale(world_color_scheme)
+    //     .shapeWidth(worldmap_legend_width / 4.1)
+    //     .orient('vertical');
+    // 
+    // worldmap_legend_svg.select("#world-legend")
+    //     .call(legend_linear);
+
+    var legendg = make_legend(worldmap_legend_svg, "#world-legend", world_color_scheme, worldmap_legend_width, "vertical");
 
     // // Legend title 
     // legendg.append("text")
@@ -305,7 +398,7 @@ function data_ready(alldata) { // TODO: LONG function!
         .enter().append("option")
         .attr("value", function (d) { return d; })
         .text(function (d) {
-            return d; // capitalize 1st letter
+            return world_map_friendly_names[d]; 
         })
         .property("selected", function (d) {
             if (d == current_mapping_var) {
@@ -337,7 +430,7 @@ function data_ready(alldata) { // TODO: LONG function!
 
         world_color_scheme = d3.scaleThreshold()
             .domain(bounds)
-            .range(d3.schemeGreys[4]);
+            .range(d3.schemeGreys[3]);
 
         d3.selectAll(".world-land").transition()
             .duration(500)
@@ -345,25 +438,28 @@ function data_ready(alldata) { // TODO: LONG function!
                 return world_color_scheme(d["properties"][current_mapping_var])
             })
 
-        // Update legend
-        legend_linear = d3.legendColor()
-            .labelFormat(d3.format(".2f"))
-            .labels(d3.legendHelpers.thresholdLabels)
-            // .useClass(true)
-            .scale(world_color_scheme)
-            .shapeWidth(worldmap_legend_width / 4.1)
-            .orient('horizontal');
+        make_legend(worldmap_legend_svg, "#world-legend", world_color_scheme, worldmap_legend_width, "vertical");
 
-        worldmap_legend_svg.select("#world-legend")
-            .call(legend_linear);
+        // // Update legend
+        // legend_linear = d3.legendColor()
+        //     .labelFormat(d3.format(".2f"))
+        //     .labels(d3.legendHelpers.thresholdLabels)
+        //     // .useClass(true)
+        //     .scale(world_color_scheme)
+        //     .shapeWidth(worldmap_legend_width / 4.1)
+        //     .orient('vertical');
+        // 
+        // worldmap_legend_svg.select("#world-legend")
+        //     .call(legend_linear);
     }
 
     //////////////////////////////////////////////////////////////////////////
     // centroids
     /////////////////////////////////////////////////////////////////////////
+    
     worldmap_svg.selectAll(".symbol")
         // .data(world_centroids.features)
-        .data(world_centroids.features.sort(function (a, b) {
+        .data(world_centroids.features.sort(function (a, b) { // specify and sort data
             if (a.properties && b.properties) {
                 na = a.properties.NAME;
                 nb = b.properties.NAME;
@@ -408,8 +504,13 @@ function data_ready(alldata) { // TODO: LONG function!
             d3.select(this).classed("highlight", true);
             // d3.select(this).raise(); // don't move to front, unless we want to put back
             var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
-            world_info_labels[0].text(`${cur_world_region} ${case_date_format(cur_date_world)} [Day ${ind}]`);
-            world_info_labels[1].text(`${case_names[cur_case]}: ${all_cases[cur_world_region][cur_case][ind]}`);
+
+            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+
+
+            // world_info_labels[0].text(`${cur_world_region} ${case_date_format(cur_date_world)} [Day ${ind}]`);
+            // var val = d3.format(",")(`${all_cases[cur_world_region][cur_case][ind]}`)
+            // world_info_labels[1].text(`${case_names[cur_case]}: ${val}`);
         })
         .on("mouseout", function (d) {
             timelines_svg.selectAll(".line").classed("world_highlight", false);
@@ -527,16 +628,60 @@ function data_ready(alldata) { // TODO: LONG function!
             if (sync_time_lines) {
                 hover_line_symbol(US_svg, ".US_symbol", US_path, "postal", us_all_cases, ind, xpos, "#hover-line-US", radius);
                 hover_line_symbol(state_svg, ".state_symbol", state_path, "GEOID", state_all_cases, ind, xpos, "#hover-line-state", state_radius);
-
-                US_info_labels[0].text(`${state_abbr_inv[cur_us_state]} ${case_date_format(cur_date_world)} [Day ${ind}]`);
-                US_info_labels[1].text(`${case_names[cur_case]}: ${us_all_cases[cur_us_state][cur_case][ind]}`);
-                state_info_labels[0].text(`${fips_to_name[cur_state_county]} ${case_date_format(cur_date_world)} [Day ${ind}]`);
-                state_info_labels[1].text(`${case_names[cur_case]}: ${state_all_cases[cur_state_county][cur_case][ind]}`);
+                
+                update_info_labels(US_info_labels, us_abbr_inv[cur_us_state], cur_date_world, ind, cur_case, us_all_cases[cur_us_state][cur_case][ind]);
+                update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_world, ind, cur_case, state_all_cases[cur_state_county][cur_case][ind]);
+                
+                update_title_info("#us-info", 
+                    cur_date_world, 
+                    all_cases["USA"]["confirmed"][ind], 
+                    ind==0 ? 0 : all_cases["USA"]["confirmed"][ind-1], 
+                    all_cases["USA"]["deaths"][ind], 
+                    ind==0 ? 0 : all_cases["USA"]["deaths"][ind-1], 
+                    all_cases["USA"]["recovered"][ind], 
+                    ind==0 ? 0 : all_cases["USA"]["recovered"][ind-1]
+                )
+                update_title_info("#state-info", 
+                    cur_date_world, 
+                    us_all_cases[the_state]["confirmed"][ind],
+                    ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
+                    us_all_cases[the_state]["deaths"][ind], 
+                    ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
+                    null, 
+                    null
+                )
 
             }
-            world_info_labels[0].text(`${cur_world_region} ${case_date_format(cur_date_world)} [Day ${ind}]`);
-            world_info_labels[1].text(`${case_names[cur_case]}: ${all_cases[cur_world_region][cur_case][ind]}`);
+            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+            
+            // world_summary_labels[0].ele2.text(case_date_format_full(cur_date_world))
+            // world_summary_labels[1].ele1.text(d3.format(",")(world_cases_sum["confirmed"][ind]))
+            // world_summary_labels[1].ele2.text(" confirmed")
+            // world_summary_labels[2].ele1.text(d3.format(",")(world_cases_sum["deaths"][ind]))
+            // world_summary_labels[2].ele2.text("deaths")
+            // world_summary_labels[3].ele1.text(d3.format(",")(world_cases_sum["recovered"][ind]))
+            // world_summary_labels[3].ele2.text("recovered")
 
+            // var s1 = world_cases_sum["confirmed"][ind]
+            // var s0 = ind==0 ? 0 : world_cases_sum["confirmed"][ind-1]
+            // 
+            // var title_info = `
+            // ${case_date_format_full(cur_date_world)} <br/>
+            // <span style="color: red">${d3.format(",")(world_cases_sum["confirmed"][ind])}</span> confirmed (+${s1-s0})<br/> ${d3.format(",")(world_cases_sum["deaths"][ind])} deaths<br/>
+            // ${d3.format(",")(world_cases_sum["recovered"][ind])} recovered`
+            // 
+            // d3.selectAll("#world-info").html(title_info)
+
+            update_title_info("#world-info", 
+                cur_date_world, 
+                world_cases_sum["confirmed"][ind], 
+                ind==0 ? 0 : world_cases_sum["confirmed"][ind-1], 
+                world_cases_sum["deaths"][ind], 
+                ind==0 ? 0 : world_cases_sum["deaths"][ind-1], 
+                world_cases_sum["recovered"][ind], 
+                ind==0 ? 0 : world_cases_sum["recovered"][ind-1]
+            )
+            
 
             // worldmap_svg.selectAll(".world_symbol")
             //   .attr("d", path.pointRadius(function(d, i) {
@@ -651,6 +796,7 @@ function data_ready(alldata) { // TODO: LONG function!
     //         .attr("class", "label")
     //         .text(function (d) { return d; });
     // 
+
     world_info_labels = []
     world_info_labels[0] = timelines_svg
         .append('text')
@@ -664,4 +810,8 @@ function data_ready(alldata) { // TODO: LONG function!
         .attr("style", "font-size: 22px")
         .attr("x", 20)
         .attr("y", 20);
+
+
+
+
 }

@@ -1,3 +1,10 @@
+// friendly names to display type of cases
+var case_names = {
+    "confirmed": "Confirmed",
+    "deaths": "Death",
+    "recovered": "Recovered"
+}
+
 class Setup {
     constructor() {
 
@@ -20,9 +27,9 @@ class Setup {
             'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "world_plot", title: "World cases", type: "plot" },
             'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_plot", title: "US cases", type: "plot" },
             'state_plot':   { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "state_plot", title: "State cases", type: "plot" },
-            'world_map':    { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "world_map", title: "World", type: "map" },
-            'US_map':       { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "US_map", title: "United States", type: "map" },
-            'state_map':    { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "state_map", title: "Counties", type: "map" },
+            'world_map':    { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "world_map", title: '<div id="world-info">World</div>', type: "map" },
+            'US_map':       { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "US_map", title: '<div id="us-info">United States</div>', type: "map" },
+            'state_map':    { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "state_map", title: '<select id="select-state"></select><div id="state-info"></div>', type: "map" },
         };
 
         this.defaultStateID = "OH";
@@ -220,7 +227,7 @@ function get_var_bounds(mapdata) {
     if (minx<1 && minx>0) minx = 0;
     // return [maxx, d3.quantile(mapdata, 0.67), d3.quantile(mapdata, 0.33), minx];
     
-    return [minx, d3.quantile(mapdata, 0.33), d3.quantile(mapdata, 0.67), maxx];
+    return [d3.quantile(mapdata, 0.33), d3.quantile(mapdata, 0.67), maxx];
     // console.log(bounds)
 }
 
@@ -231,6 +238,67 @@ function getColorx(val, bounds) {
     return '#ffffff';
 }
 
+// date the info on the title bar
+function update_title_info(the_id, the_date, casenum1, casenum10, casenum2, casenum20, casenum3, casenum30) {
+    var title_info = `${case_date_format_full(the_date)} <br/>
+        <span style="color: red">${d3.format(",")(casenum1)}</span> confirmed (+${d3.format(",")(casenum1-casenum10)})<br/>
+        ${d3.format(",")(casenum2)} deaths (+${d3.format(",")(casenum2-casenum20)})`
+    if (casenum3 != null) 
+        title_info += `<br/>${d3.format(",")(casenum3)} recovered (+${d3.format(",")(casenum3-casenum30)})`
+    d3.selectAll(the_id).html(title_info)
+}
+
+// update the labels on the plot 
+function update_info_labels(labs, place, datev, datei, casename, val) {
+    labs[0].text(`${place} ${case_date_format_MD(datev)} (Day ${datei})`);
+    labs[1].text(`${case_names[casename]}: ${d3.format(",")(val)}`);
+}
+
+function make_legend_svg(container_id, w, h, the_id) {
+    var the_svg = d3.select(container_id)
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h)
+    the_svg.append("g")
+        .attr("id", the_id)
+        .attr("transform", "translate(25, 5)")
+        .attr("class", "legend")
+        
+    return the_svg;
+}
+
+// make or update legend
+function make_legend(the_ele, the_id, color_scheme, width, orientation) {
+    var a_legend = d3.legendColor().ascending(false)
+        .labelFormat(d3.format(",.1f"))
+        .labels(function({i, genLength, generatedLabels, labelDelimiter}) {
+            if (i === 0) {
+                const values = generatedLabels[i].split(` ${labelDelimiter} `)
+                return `< ${values[1]}`
+            } else if (i === genLength - 1) {
+                const values = generatedLabels[i].split(` ${labelDelimiter} `)
+                return `≥ ${values[0]}`
+            }
+            else {
+                const values = generatedLabels[i].split(` ${labelDelimiter} `)
+                return `${values[0]} - ${values[1]}`
+            }
+            return generatedLabels[i]
+            })
+        // .useClass(true)
+        .scale(color_scheme)
+        .shapeWidth(width / 3.5)
+        .shapePadding(-2)
+        .shapeHeight(10)
+        .orient("horizontal");
+
+    the_ele.select(the_id)
+        .call(a_legend);
+    
+    return a_legend;
+}
+
+
 // ---------------- Setup ---------------- //
 
 var start_date = null;
@@ -238,30 +306,28 @@ var end_date = null;
 var cur_date_world = null;
 var cur_date_us = null;
 var cur_date_state = null;
-var sync_time_lines = false;
+var sync_time_lines = true;
 var fips_to_name = null;
-var state_abbr_inv = null;
+var us_abbr_inv = null;
+var total_days = null;
+var state_start_date = null;
+var state_end_date = null;
 
 var case_date_parser = d3.timeParse("%m-%d-%Y");
 var case_date_parser_inv = d3.timeFormat("%m-%d-%Y");
 var case_date_format = d3.timeFormat("%m/%d");
+var case_date_format_MD = d3.timeFormat("%B %d");
+var case_date_format_full = d3.timeFormat("%B %d, %Y");
 
-// friendly names to display type of cases
-var case_names = {
-    "confirmed": "Confirmed",
-    "deaths": "Death",
-    "recovered": "Recovered"
-}
-
-d3.json("https://luyuliu.github.io/COVID19-Dashboard/frontend/data/all-cases-data-dates.json").then(function(data) {
+d3.json("data/all-cases-data-dates.json").then(function(data) {
     start_date = data['first'];
     end_date = data['last'];
-    // d2 = d3.timeDay.offset(case_date_parser(end_date), 1);
     cur_date_world = case_date_parser(end_date);
     cur_date_us = case_date_parser(end_date);
     cur_date_state = case_date_parser(end_date);
-    // end_date = case_date_parser_inv(d2);
+    state_start_date = start_date;
+    state_end_date = end_date;
     total_days = d3.timeDay.count(case_date_parser(start_date), case_date_parser(end_date)); 
 });
 
-var setup = new Setup();
+new Setup();

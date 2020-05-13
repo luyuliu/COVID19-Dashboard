@@ -8,14 +8,7 @@ var maptype = 'geojson';
 var state_map_width = $(state_map_container_id).width();
 var state_map_height = $(state_map_container_id).height()/4*3;
 
-var state_timelines_margin = {top: 50, right: 60, bottom: 30, left: 40};
-var state_timelines_width = $(state_plot_id).width() - state_timelines_margin.left - state_timelines_margin.right,
-    state_timelines_height = $(state_plot_id).height() - state_timelines_margin.top - state_timelines_margin.bottom - 50; 
-
 var state_bounds = null;
-var state_dropdown = null;
-var state_timelines_hoverLine = null;
-var state_timelines_lines = null;
 
 var statemap_legend_width = $(state_affiliation_id).width(),
     statemap_legend_height = $(state_affiliation_id).height();
@@ -23,31 +16,28 @@ var statemap_legend_width = $(state_affiliation_id).width(),
 var state_map_margin = { top: 10, right: 10, bottom: 10, left: 10 };
 
 var state_info_labels = null;
-var cur_state_county = null; // "39049"; // TODO: get this automatically, using the max value and median
+var cur_state_county = "39049";
 
-var the_state = 'OH',
+var the_state = 'NY',
     state_geojson_fname = the_state + "_geog.geojson",
     state_centroids_fname = the_state + "_centroids.geojson";
-
-// 36.854458, -119.764541    
-var state_projection_params = { 
-    "CA": {"angles": [120, -36.1, 0], "scale": 1600},
-    "DC": {"angles": [77.03, -38.87, 0], "scale": 80000},
-    "IA": {"angles": [93.5, -41.8, 0], "scale": 4000},
-    "MD": {"angles": [77.5, -38.7, 0], "scale": 6000},
-    "OH": {"angles": [83, -39.8, 0], "scale": 4000},
-    "NY": {"angles": [76, -42.6, 0], "scale": 2500},
-    "VA": {"angles": [79.5, -37.5, 0], "scale": 3000}
+    
+var state_projection_angles = { 
+    "OH": [83, -40, 0],
+    "NY": [76, -42.6, 0]
 }
 
-var mystates = d3.keys(state_projection_params);
+var state_projection = d3.geoOrthographic().rotate(state_projection_angles[the_state]) // λ, ϕ, γ
+    .scale(2500) // percent within rectangle of width x height
+    .translate([state_map_width/2-state_map_margin.left-state_map_margin.right, 
+        state_map_height/2+state_map_margin.top+state_map_margin.bottom]);
 
-var state_path = null; // set in init_state
+var state_radius = d3.scaleSqrt()
+    .domain([0, 3e3])
+    .range([0, 20]);
 
-
-var state_xScale = null;
-var state_toXScale = null;
-var state_yScale = null;
+var state_path = d3.geoPath()
+    .projection(state_projection);
 
 var state_svg = d3.select(state_map_id).append("svg")
     .attr("width", state_map_width)
@@ -55,9 +45,6 @@ var state_svg = d3.select(state_map_id).append("svg")
     .append("g")
     .attr("transform", "translate(" + state_map_margin.left + "," + state_map_margin.top + ")");
 
-var state_radius = null;
-
-var statemap_legend_svg = null;
     
 var state_map_friendly_names = {"TOT_POP": "Total Population",
     "TOT_HH": "Total Household",
@@ -103,99 +90,53 @@ function init_choropleth(the_var, geojson_data, var_list, all_var) {
 }
 
 
-d3.select("#select-state")
-    .on("change", function (e) {
-        the_state = $("#select-state").val();
-        state_geojson_fname = the_state + "_geog.geojson",
-        state_centroids_fname = the_state + "_centroids.geojson";
-        init_state(1);
-    })
-    .selectAll("option")
-    .data(mystates)
-    .enter()
-    .append("option")
-    .attr("value", function(d) {return d;})
-    .property("selected", function(d) { return d == the_state; })
-    .text(function(d) { return d; })
-    ;
 
-function init_state(status) {
-    var state_projection = d3.geoOrthographic().rotate(state_projection_params[the_state].angles) // λ, ϕ, γ
-        .scale(state_projection_params[the_state].scale) // percent within rectangle of width x height
-        .translate([state_map_width/2-state_map_margin.left-state_map_margin.right, 
-            state_map_height/2+state_map_margin.top+state_map_margin.bottom]);
+var state_promises = [
+    d3.json("data/state-counties/" + state_geojson_fname),
+    d3.json("data/state-counties/" + state_centroids_fname),
+    d3.json("data/all-cases-data-processed-counties.json")
+];
 
-    state_path = d3.geoPath()
-        .projection(state_projection);
+Promise.all(state_promises).then(ready);
+var state_all_cases = null;
+var mystates = ["OH", "NY"]
 
-    if (status == 0) {
-
-        state_timelines_svg = d3.select(state_plot_id).append("svg")
-            .attr("width", state_timelines_width + state_timelines_margin.left + state_timelines_margin.right)
-            .attr("height", state_timelines_height + state_timelines_margin.top + state_timelines_margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + state_timelines_margin.left + "," + state_timelines_margin.top + ")");
-
-    }
-
-    if (status == 1) { // need to remove svg elements and redo them in the ready function
-        state_svg.selectAll(".states").remove();
-        state_svg.selectAll(".symbol").remove();
-        state_svg.selectAll(".state_symbol").remove();
-        statemap_legend_svg.remove();
-        state_dropdown.remove(); 
-        
-        state_timelines_svg.selectAll(".x.axis").remove();
-        state_timelines_svg.selectAll(".y.axis").remove();
-        state_timelines_svg.selectAll(".text-label").remove();
-        state_timelines_svg.selectAll(".hover-text").remove();
-        state_timelines_svg.selectAll(".overlay").remove();
-        state_timelines_svg.selectAll(".hover-rect").remove();
-        state_timelines_lines.remove();
-        state_timelines_hoverLine.remove();
-    }
-
-    var state_promises = [
-        d3.json("data/state-counties/" + state_geojson_fname),
-        d3.json("data/state-counties/" + state_centroids_fname),
-        d3.json("data/all-cases-data-processed-counties.json")
-    ];
-
-    Promise.all(state_promises).then(ready_state);
-
+function init_state_everything(any_state) {
+    
+    
 }
 
+function ready(all_data) {
 
-var state_geojson = null;
-var state_centroids = null;
-var state_all_cases = null;
-var sorted_case_lasts = null;
+    d3.select("#select-state")
+        .on("change", on_change_select_state)
+        .selectAll("option")
+        .data(mystates)
+            .enter()
+            .append("option")
+            .attr("value", function(d) {return d;})
+            .property("selected", function(d) { return d == the_state; })
+            .text(function(d) { return d; });
 
-init_state(0);
 
+    function on_change_select_state(e) {
+        new_state = $("#select-state").val();
+    }
 
+    
+    var state_geojson = all_data[0]
+    var state_centroids = all_data[1];
 
-function ready_state(all_data) {
-
-    state_geojson = all_data[0]
-    state_centroids = all_data[1];
     state_all_cases = all_data[2][the_state];
 
-    /// GET MAX of cases, and geog
-    /// accurately, use the last value of each county, so may not necessarily be the max
-    var case_lasts = [];
+    /// GET MAX of cases
+    var case_maxs = [];
     d3.keys(state_all_cases).forEach(function(d, i) {
         var val = state_all_cases[d][cur_case].slice(-1)[0]; 
-        case_lasts[i] = {"cnty": d, "val": val};
+        case_maxs[i] = val;
     });
 
-    sorted_case_lasts = case_lasts.slice().sort((a, b) => d3.descending(a.val, b.val))
-    state_max = sorted_case_lasts[0].val;
-
-    cur_state_county = sorted_case_lasts[0].cnty; // "39049"; // TODO: get this automatically, using the max value and median
-    mid = parseInt(sorted_case_lasts.length/2);
-    
-    var state_names = [cur_state_county, sorted_case_lasts[mid].cnty]; // max and middle
+    state_max = d3.max(case_maxs);
 
     /// GET a dictionary FIPS -> NAME
     fips_to_name = {}
@@ -216,12 +157,6 @@ function ready_state(all_data) {
         null, 
         null
     )
-
-
-    state_radius = d3.scaleSqrt()
-        .domain([0, state_max])
-        .range([0, 30]);
-
 
     //////////////////////////////////////////////////////////////////////////
     // State choropleth map
@@ -303,7 +238,7 @@ function ready_state(all_data) {
     // legend
     /////////////////////////////////////////////////////////////////////////
 
-    statemap_legend_svg = make_legend_svg(state_affiliation_id, statemap_legend_width, statemap_legend_height, "state-legend");
+    const statemap_legend_svg = make_legend_svg(state_affiliation_id, statemap_legend_width, statemap_legend_height, "state-legend");
 
     make_legend(statemap_legend_svg, "#state-legend", state_color_scheme, statemap_legend_width, "vertical");
 
@@ -329,13 +264,13 @@ function ready_state(all_data) {
     //     .attr("font-weight", "bold")
     //     .text(state_current_mapping_var)
 
-    state_dropdown = d3.select(state_affiliation_id)
+    var state_dropdown = d3.select(state_affiliation_id)
         .insert("select", "svg")
         .attr("id", "state-choreopleth-select")
         .attr("class", "select-css")
         .on("change", stateDropdownChange);
 
-    state_dropdown.selectAll("option")
+        state_dropdown.selectAll("option")
         .data(state_list_mapping_var)
         .enter().append("option")
         .attr("value", function (d) { return d; })
@@ -464,45 +399,39 @@ function ready_state(all_data) {
     // Multiple Line chart 
     /////////////////////////////////////////////////////////////////////////////
 
+    var state_timelines_margin = {top: 50, right: 60, bottom: 30, left: 40};
+    var state_timelines_width = $(state_plot_id).width() - state_timelines_margin.left - state_timelines_margin.right,
+        state_timelines_height = $(state_plot_id).height() - state_timelines_margin.top - state_timelines_margin.bottom - 50; 
 
     // var state_xScale = d3.scaleLinear()
     //     .domain([0, state_length - 1]) // input
     //     .range([0, state_timelines_width]); // output
     // 
     // TODO: get dates from file
+    var state_start_date = start_date;
+    var state_end_date = end_date;
 
-    // var state_start_date = start_date;
-    // var state_end_date = end_date;
-    // 
     var n = total_days;
-    
-    state_xScale = d3.scaleTime()
+
+    var state_xScale = d3.scaleTime()
         .domain([case_date_parser(state_start_date), case_date_parser(state_end_date)])
         .range([0, state_timelines_width]); // output
-    
-    state_toXScale = d3.scaleLinear()
+
+    var state_toXScale = d3.scaleLinear()
         .domain([0, n-1])
         .range([case_date_parser(state_start_date), case_date_parser(state_end_date)])
         ;
-    
-    state_yScale = d3.scaleLinear()
+
+    var state_yScale = d3.scaleLinear()
         .domain([0, state_max]) // input  TODO: get max
         .range([state_timelines_height, 0]); // output 
-    
-    state_timelines_svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + state_timelines_height + ")")
-        .call(d3.axisBottom(state_xScale).ticks(6)); // Create an axis component with d3.axisBottom
-    
-    state_timelines_svg.append("g")
-        .attr("class", "y axis")
-        .call(d3.axisLeft(state_yScale).ticks(4, "s")) // Create an axis component with d3.axisLeft
-        ;
+
+    var state_names = ["39049"];  // TODO: get these automatically for county FIPS (sort state_all_cases)
 
     var state_sub_dataset = {};
     d3.keys(state_all_cases).forEach(function (d, i) {
         // if (state_names.includes(d))
-        state_sub_dataset[d] = d3.range(total_days).map(function (i) {
+        state_sub_dataset[d] = d3.range(n).map(function (i) {
             return {
                 x: +state_toXScale(i),
                 y: state_all_cases[d][cur_case][i]
@@ -510,27 +439,47 @@ function ready_state(all_data) {
         })
     });
 
+    // not useful
+    var state_line_color = d3.scaleOrdinal(d3.schemeCategory10);
+    state_line_color.domain(d3.keys(state_sub_dataset));
+
     var state_line = d3.line()
         .x(function (d) { return state_xScale(d.x); }) // set the x values for the line generator
         .y(function (d) { return state_yScale(d.y); }) // set the y values for the line generator 
         .curve(d3.curveMonotoneX) // apply smoothing to the line
 
+    state_timelines_svg = d3.select(state_plot_id).append("svg")
+        .attr("width", state_timelines_width + state_timelines_margin.left + state_timelines_margin.right)
+        .attr("height", state_timelines_height + state_timelines_margin.top + state_timelines_margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + state_timelines_margin.left + "," + state_timelines_margin.top + ")");
+
+    state_timelines_svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + state_timelines_height + ")")
+        .call(d3.axisBottom(state_xScale).ticks(6)); // Create an axis component with d3.axisBottom
+
+    state_timelines_svg.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(state_yScale).ticks(4, "s")) // Create an axis component with d3.axisLeft
+        ;
+
     state_timelines_svg.append("path")
         .datum(state_sub_dataset) // 10. Binds data to the line 
         .attr("class", "line") // Assign a class for styling 
-        // .attr("d", state_line); // 11. Calls the line generator 
+        .attr("d", state_line); // 11. Calls the line generator 
 
-    // state_timelines_svg.append("rect")
-    //     .attr("class", "overlay")
-    //     .attr("width", state_timelines_width)
-    //     .attr("height", state_timelines_height)
-    // 
+    state_timelines_svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", state_timelines_width)
+        .attr("height", state_timelines_height)
+
 
     /////////////////////////////////////////////////////////////////////////////
     // hover lines on the line chart
     /////////////////////////////////////////////////////////////////////////////
 
-    state_timelines_hoverLine = state_timelines_svg.append("g")
+    var state_timelines_hoverLine = state_timelines_svg.append("g")
         .attr("class", "hover-line")
         .append("line")
         .attr("id", "hover-line-state")
@@ -541,7 +490,6 @@ function ready_state(all_data) {
     state_timelines_hoverLine.attr("y1", 0).attr("y2", state_timelines_height + 10);
 
     state_timelines_rect = state_timelines_svg.append("rect")
-        .attr("class", "hover-rect")
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", state_timelines_width)
@@ -564,10 +512,6 @@ function ready_state(all_data) {
                     }
                     return state_radius(0);
                 }));
-                
-                
-            // cur_state_county must be set correctly
-
             update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_state, ind, cur_case, state_all_cases[cur_state_county][cur_case][ind]);
 
             // var s1 = us_all_cases[the_state]["confirmed"][ind]
@@ -605,7 +549,9 @@ function ready_state(all_data) {
     // labels
     /////////////////////////////////////////////////////////////////////////////
 
-    state_timelines_lines = state_timelines_svg.selectAll(".lines")
+    var state_timelines_lines = null;
+
+    var state_timelines_lines = state_timelines_svg.selectAll(".lines")
         .data(d3.keys(state_sub_dataset))
         .enter().append("g")
         .attr("class", "lines")
@@ -651,6 +597,7 @@ function ready_state(all_data) {
 
     state_timelines_lines.append("text")
         .attr("class", "text-label")
+        // .style("fill", function(d) { return state_line_color(d); })
         .text(function (d) {
             // if (state_names.includes(d))
             return fips_to_name[d];
