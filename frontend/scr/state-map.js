@@ -10,7 +10,7 @@ var state_map_height = $(state_map_container_id).height()/4*3;
 
 var state_timelines_margin = {top: 50, right: 60, bottom: 30, left: 40};
 var state_timelines_width = $(state_plot_id).width() - state_timelines_margin.left - state_timelines_margin.right,
-    state_timelines_height = $(state_plot_id).height() - state_timelines_margin.top - state_timelines_margin.bottom - 50; 
+    state_timelines_height = $(state_plot_id).height() - state_timelines_margin.top - state_timelines_margin.bottom; 
 
 var state_bounds = null;
 var state_dropdown = null;
@@ -31,8 +31,11 @@ var the_state = 'OH',
 
 // 36.854458, -119.764541    
 var state_projection_params = { 
+    "AK": {"angles": [160, -60, 0], "scale": 600},
     "CA": {"angles": [120, -36.1, 0], "scale": 1600},
     "DC": {"angles": [77.03, -38.87, 0], "scale": 80000},
+    "FL": {"angles": [83.5, -27.5, 0], "scale": 2000},
+    "HI": {"angles": [158, -20.2, 0], "scale": 2000},
     "IA": {"angles": [93.5, -41.8, 0], "scale": 4000},
     "MD": {"angles": [77.5, -38.7, 0], "scale": 6000},
     "OH": {"angles": [83, -39.8, 0], "scale": 4000},
@@ -202,6 +205,7 @@ function ready_state(all_data) {
     state_geojson.features.forEach(function(d) {
         fips_to_name[d.properties.GEOID] = d.properties.NAME;
     })
+    fips_to_name["00"] = "State Wide";
 
     //////////////////////////////////////////////////////////////////////////
     // info on title bar
