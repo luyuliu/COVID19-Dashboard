@@ -1,0 +1,24 @@
+{
+"type": "FeatureCollection",
+"name": "NV_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "32029" }, "geometry": { "type": "Point", "coordinates": [ -119.52502, 39.44876 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32011" }, "geometry": { "type": "Point", "coordinates": [ -116.26832, 39.98101 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32009" }, "geometry": { "type": "Point", "coordinates": [ -117.632, 37.78437 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32033" }, "geometry": { "type": "Point", "coordinates": [ -114.89996, 39.44157 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32015" }, "geometry": { "type": "Point", "coordinates": [ -117.03971, 39.93322 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32017" }, "geometry": { "type": "Point", "coordinates": [ -114.87904, 37.64268 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32001" }, "geometry": { "type": "Point", "coordinates": [ -118.33946, 39.58106 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32510" }, "geometry": { "type": "Point", "coordinates": [ -119.74802, 39.15509 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32027" }, "geometry": { "type": "Point", "coordinates": [ -118.40057, 40.44004 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32019" }, "geometry": { "type": "Point", "coordinates": [ -119.18705, 39.01778 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32021" }, "geometry": { "type": "Point", "coordinates": [ -118.43445, 38.53841 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32003" }, "geometry": { "type": "Point", "coordinates": [ -115.01302, 36.21459 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32007" }, "geometry": { "type": "Point", "coordinates": [ -115.35776, 41.14531 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32031" }, "geometry": { "type": "Point", "coordinates": [ -119.66316, 40.66563 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32013" }, "geometry": { "type": "Point", "coordinates": [ -118.11094, 41.40692 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32023" }, "geometry": { "type": "Point", "coordinates": [ -116.47227, 38.04264 ] } },
+{ "type": "Feature", "properties": { "GEOID": "32005" }, "geometry": { "type": "Point", "coordinates": [ -119.61713, 38.91286 ] } }
+]
+}

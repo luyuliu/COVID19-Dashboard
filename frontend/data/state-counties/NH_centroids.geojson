@@ -1,0 +1,17 @@
+{
+"type": "FeatureCollection",
+"name": "NH_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "33001" }, "geometry": { "type": "Point", "coordinates": [ -71.41684, 43.51637 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33017" }, "geometry": { "type": "Point", "coordinates": [ -71.02336, 43.29183 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33019" }, "geometry": { "type": "Point", "coordinates": [ -72.22203, 43.36094 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33007" }, "geometry": { "type": "Point", "coordinates": [ -71.30633, 44.69064 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33009" }, "geometry": { "type": "Point", "coordinates": [ -71.82057, 43.9378 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33013" }, "geometry": { "type": "Point", "coordinates": [ -71.68116, 43.29663 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33015" }, "geometry": { "type": "Point", "coordinates": [ -71.12883, 42.985 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33005" }, "geometry": { "type": "Point", "coordinates": [ -72.25311, 42.92016 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33003" }, "geometry": { "type": "Point", "coordinates": [ -71.2043, 43.87499 ] } },
+{ "type": "Feature", "properties": { "GEOID": "33011" }, "geometry": { "type": "Point", "coordinates": [ -71.72002, 42.91538 ] } }
+]
+}

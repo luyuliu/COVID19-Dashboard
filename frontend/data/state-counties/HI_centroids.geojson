@@ -1,0 +1,16 @@
+{
+"type": "FeatureCollection",
+"name": "HI_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "15005" }, "geometry": { "type": "Point", "coordinates": [ -156.95836, 21.17882 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15003" }, "geometry": { "type": "Point", "coordinates": [ -157.97122, 21.45803 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15007" }, "geometry": { "type": "Point", "coordinates": [ -159.5246, 22.05768 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15007" }, "geometry": { "type": "Point", "coordinates": [ -160.15666, 21.89692 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15001" }, "geometry": { "type": "Point", "coordinates": [ -155.52102, 19.60121 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15009" }, "geometry": { "type": "Point", "coordinates": [ -156.33715, 20.79304 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15009" }, "geometry": { "type": "Point", "coordinates": [ -156.61019, 20.54905 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15009" }, "geometry": { "type": "Point", "coordinates": [ -156.92977, 20.8367 ] } },
+{ "type": "Feature", "properties": { "GEOID": "15009" }, "geometry": { "type": "Point", "coordinates": [ -157.01913, 21.13394 ] } }
+]
+}

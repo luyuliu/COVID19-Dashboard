@@ -1,0 +1,22 @@
+{
+"type": "FeatureCollection",
+"name": "AZ_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "04011" }, "geometry": { "type": "Point", "coordinates": [ -109.24053, 33.21499 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04023" }, "geometry": { "type": "Point", "coordinates": [ -110.84791, 31.52509 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04017" }, "geometry": { "type": "Point", "coordinates": [ -110.3219, 35.39978 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04021" }, "geometry": { "type": "Point", "coordinates": [ -111.34495, 32.90526 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04009" }, "geometry": { "type": "Point", "coordinates": [ -109.88822, 32.93167 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04001" }, "geometry": { "type": "Point", "coordinates": [ -109.48924, 35.39465 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04027" }, "geometry": { "type": "Point", "coordinates": [ -113.90667, 32.76896 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04003" }, "geometry": { "type": "Point", "coordinates": [ -109.75161, 31.87935 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04019" }, "geometry": { "type": "Point", "coordinates": [ -111.789, 32.09713 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04015" }, "geometry": { "type": "Point", "coordinates": [ -113.75779, 35.70472 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04005" }, "geometry": { "type": "Point", "coordinates": [ -111.77072, 35.83883 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04007" }, "geometry": { "type": "Point", "coordinates": [ -110.81328, 33.8019 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04012" }, "geometry": { "type": "Point", "coordinates": [ -113.981, 33.72854 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04013" }, "geometry": { "type": "Point", "coordinates": [ -112.49181, 33.34836 ] } },
+{ "type": "Feature", "properties": { "GEOID": "04025" }, "geometry": { "type": "Point", "coordinates": [ -112.55386, 34.59934 ] } }
+]
+}

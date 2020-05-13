@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "RI_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "44001" }, "geometry": { "type": "Point", "coordinates": [ -71.28652, 41.71018 ] } },
+{ "type": "Feature", "properties": { "GEOID": "44007" }, "geometry": { "type": "Point", "coordinates": [ -71.57754, 41.87065 ] } },
+{ "type": "Feature", "properties": { "GEOID": "44009" }, "geometry": { "type": "Point", "coordinates": [ -71.57395, 41.189 ] } },
+{ "type": "Feature", "properties": { "GEOID": "44009" }, "geometry": { "type": "Point", "coordinates": [ -71.61729, 41.47929 ] } },
+{ "type": "Feature", "properties": { "GEOID": "44005" }, "geometry": { "type": "Point", "coordinates": [ -71.2657, 41.5642 ] } },
+{ "type": "Feature", "properties": { "GEOID": "44003" }, "geometry": { "type": "Point", "coordinates": [ -71.57642, 41.67106 ] } }
+]
+}

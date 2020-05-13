@@ -1,0 +1,30 @@
+{
+"type": "FeatureCollection",
+"name": "WY_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "56045" }, "geometry": { "type": "Point", "coordinates": [ -104.56749, 43.83961 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56041" }, "geometry": { "type": "Point", "coordinates": [ -110.54758, 41.28782 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56021" }, "geometry": { "type": "Point", "coordinates": [ -104.68875, 41.30703 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56019" }, "geometry": { "type": "Point", "coordinates": [ -106.58452, 44.04057 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56001" }, "geometry": { "type": "Point", "coordinates": [ -105.72354, 41.65499 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56029" }, "geometry": { "type": "Point", "coordinates": [ -109.58528, 44.52157 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56003" }, "geometry": { "type": "Point", "coordinates": [ -107.99604, 44.52405 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56037" }, "geometry": { "type": "Point", "coordinates": [ -108.88279, 41.65944 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56025" }, "geometry": { "type": "Point", "coordinates": [ -106.79789, 42.9618 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56009" }, "geometry": { "type": "Point", "coordinates": [ -105.50819, 42.97272 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56017" }, "geometry": { "type": "Point", "coordinates": [ -108.44232, 43.71931 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56043" }, "geometry": { "type": "Point", "coordinates": [ -107.68019, 43.90452 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56035" }, "geometry": { "type": "Point", "coordinates": [ -109.91309, 42.76558 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56007" }, "geometry": { "type": "Point", "coordinates": [ -106.93261, 41.69358 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56011" }, "geometry": { "type": "Point", "coordinates": [ -104.56977, 44.58855 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56039" }, "geometry": { "type": "Point", "coordinates": [ -110.58908, 43.93522 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56013" }, "geometry": { "type": "Point", "coordinates": [ -108.62969, 43.04184 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56015" }, "geometry": { "type": "Point", "coordinates": [ -104.35348, 42.08798 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56023" }, "geometry": { "type": "Point", "coordinates": [ -110.6564, 42.26376 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56027" }, "geometry": { "type": "Point", "coordinates": [ -104.47589, 43.05608 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56031" }, "geometry": { "type": "Point", "coordinates": [ -104.96633, 42.13299 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56005" }, "geometry": { "type": "Point", "coordinates": [ -105.54744, 44.24886 ] } },
+{ "type": "Feature", "properties": { "GEOID": "56033" }, "geometry": { "type": "Point", "coordinates": [ -106.88624, 44.79049 ] } }
+]
+}

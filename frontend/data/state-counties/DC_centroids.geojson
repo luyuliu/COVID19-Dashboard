@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "DC_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "11001" }, "geometry": { "type": "Point", "coordinates": [ -77.01656, 38.90418 ] } }
+]
+}

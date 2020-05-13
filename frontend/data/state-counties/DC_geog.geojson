@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "DC_GEOG",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "11001", "NAME": "District of Columbia", "TOT_POP": "684498", "TOT_HH": "281322", "PCT_CHLDN": "15.4", "PCT_YOUTH": "13.4", "PCT_AD": "59.2", "PCT_SR": "12", "PCT_WHT": "43.3", "PCT_NWHT": "56.7", "MED_HH_INC": "82604", "PCT_BLW_POV_RT": "12.9", "PCT_AGRI": "0.1", "PCT_CONST": "2.7", "PCT_MFG": "1.3", "PCT_WHLS_TRA": "0.5", "PCT_RET_TRA": "4.7", "PCT_TRANS": "3.1", "PCT_INFO": "3.8", "PCT_FIN": "6.7", "PCT_PRO": "23.4", "PCT_EDU": "18.5", "PCT_REC": "9.9", "PCT_OTHERS": "9", "PCT_PUB_ADMIN": "16.2" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -77.11976, 38.93434 ], [ -77.04102, 38.99555 ], [ -77.00255, 38.96553 ], [ -76.90939, 38.89285 ], [ -76.9795, 38.83781 ], [ -77.03901, 38.79165 ], [ -77.03907, 38.84127 ], [ -77.0391, 38.86811 ], [ -77.0902, 38.90421 ], [ -77.11976, 38.93434 ] ] ] ] } }
+]
+}

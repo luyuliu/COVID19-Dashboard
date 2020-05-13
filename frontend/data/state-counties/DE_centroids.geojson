@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "DE_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "10001" }, "geometry": { "type": "Point", "coordinates": [ -75.56885, 39.08647 ] } },
+{ "type": "Feature", "properties": { "GEOID": "10005" }, "geometry": { "type": "Point", "coordinates": [ -75.39031, 38.66144 ] } },
+{ "type": "Feature", "properties": { "GEOID": "10003" }, "geometry": { "type": "Point", "coordinates": [ -75.64055, 39.57993 ] } }
+]
+}

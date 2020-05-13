@@ -1,0 +1,25 @@
+{
+"type": "FeatureCollection",
+"name": "ME_centroids",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
+"features": [
+{ "type": "Feature", "properties": { "GEOID": "23027" }, "geometry": { "type": "Point", "coordinates": [ -69.12062, 44.48583 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23001" }, "geometry": { "type": "Point", "coordinates": [ -70.2038, 44.16648 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23009" }, "geometry": { "type": "Point", "coordinates": [ -68.38402, 44.59816 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23023" }, "geometry": { "type": "Point", "coordinates": [ -69.85075, 43.95416 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23019" }, "geometry": { "type": "Point", "coordinates": [ -68.6502, 45.40195 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23007" }, "geometry": { "type": "Point", "coordinates": [ -70.44381, 44.9733 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23003" }, "geometry": { "type": "Point", "coordinates": [ -68.59841, 46.65926 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23031" }, "geometry": { "type": "Point", "coordinates": [ -70.71053, 43.47809 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23025" }, "geometry": { "type": "Point", "coordinates": [ -69.95996, 45.5123 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23011" }, "geometry": { "type": "Point", "coordinates": [ -69.76739, 44.40759 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23029" }, "geometry": { "type": "Point", "coordinates": [ -67.62814, 45.01607 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23021" }, "geometry": { "type": "Point", "coordinates": [ -69.28602, 45.83839 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23017" }, "geometry": { "type": "Point", "coordinates": [ -70.75682, 44.49953 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23013" }, "geometry": { "type": "Point", "coordinates": [ -68.76474, 44.10699 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23013" }, "geometry": { "type": "Point", "coordinates": [ -68.89542, 43.85425 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23013" }, "geometry": { "type": "Point", "coordinates": [ -69.23073, 44.13063 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23005" }, "geometry": { "type": "Point", "coordinates": [ -70.37227, 43.83708 ] } },
+{ "type": "Feature", "properties": { "GEOID": "23015" }, "geometry": { "type": "Point", "coordinates": [ -69.54227, 44.05997 ] } }
+]
+}
