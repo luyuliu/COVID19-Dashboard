@@ -1,6 +1,6 @@
 {
 "type": "FeatureCollection",
-"name": "FL_GEOG",
+"name": "FL_geog",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
 "features": [
 { "type": "Feature", "properties": { "GEOID": "12091", "NAME": "Okaloosa", "TOT_POP": "200737", "TOT_HH": "77403", "PCT_CHLDN": "18.7", "PCT_YOUTH": "12.7", "PCT_AD": "53", "PCT_SR": "15.4", "PCT_WHT": "82.6", "PCT_NWHT": "17.4", "MED_HH_INC": "62048", "PCT_BLW_POV_RT": "8", "PCT_AGRI": "0.5", "PCT_CONST": "7.6", "PCT_MFG": "4.4", "PCT_WHLS_TRA": "1.7", "PCT_RET_TRA": "12.1", "PCT_TRANS": "4.4", "PCT_INFO": "1", "PCT_FIN": "6.5", "PCT_PRO": "12.6", "PCT_EDU": "17.5", "PCT_REC": "15", "PCT_OTHERS": "5.4", "PCT_PUB_ADMIN": "11.4" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -86.78569, 30.99698 ], [ -86.68824, 30.9962 ], [ -86.56349, 30.9952 ], [ -86.38864, 30.99453 ], [ -86.39738, 30.3775 ], [ -86.41208, 30.38035 ], [ -86.63295, 30.3963 ], [ -86.80035, 30.38451 ], [ -86.78569, 30.99698 ] ] ] ] } },
