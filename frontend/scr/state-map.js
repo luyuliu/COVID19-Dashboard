@@ -40,7 +40,8 @@ var state_projection_params = {
     "MD": {"angles": [77.5, -38.7, 0], "scale": 6000},
     "OH": {"angles": [83, -39.8, 0], "scale": 4000},
     "NY": {"angles": [76, -42.6, 0], "scale": 2500},
-    "VA": {"angles": [79.5, -37.5, 0], "scale": 3000}
+    "VA": {"angles": [79.5, -37.5, 0], "scale": 3000},
+    "CT": {"angles": [73.1, 41.6, 0], "scale": 8000}
 }
 
 var mystates = d3.keys(state_projection_params);
