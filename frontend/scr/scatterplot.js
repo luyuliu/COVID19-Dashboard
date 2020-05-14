@@ -76,6 +76,9 @@ function drawGraph(se_ind, data) {
 	    } else if (se_ind == 'pct_blw_pov_rt'){
 	        return d.PCT_BLW_POV_RT;
 	    }
+        else if (se_ind == 'TOT_POP') {
+            return d.TOT_POP;
+        }
 	};
 
 	var x_text = function(d) {
@@ -96,6 +99,9 @@ function drawGraph(se_ind, data) {
 	    } else if (se_ind == 'pct_blw_pov_rt'){
 	        return 'Population Below Poverty Line (%)';
 	    }
+        else if (se_ind == 'TOT_POP') {
+            return 'Total population';
+        }
 	};
 
 	var x = d3.scaleLinear().range([0, width]),
@@ -106,7 +112,7 @@ function drawGraph(se_ind, data) {
 	// set up y
 	var y_value = function(d) {return d.CONFIRMED;};
 
-	var y_text = function(d) {return 'Confirmed cases';};
+	var y_text = function(d) {return 'Confirmed cases (per 1000)';};
 
 	var y = d3.scaleLinear().range([height, 0]),
 	    yMap = function(d) { return y(y_value(d));},
@@ -130,6 +136,9 @@ function drawGraph(se_ind, data) {
 	    } else if (se_ind == 'pct_blw_pov_rt'){
 	        d.PCT_BLW_POV_RT = +d.PCT_BLW_POV_RT;
 	    }
+        else if (ss_ind == 'TOT_POP') {
+            d.TOT_POP = +d.TOT_POP;
+        }
 	    
 	    d.CONFIRMED = +d.CONFIRMED;
     });
@@ -139,11 +148,13 @@ function drawGraph(se_ind, data) {
 
 	var y_array = data.map(y_value);
 	y_array.sort(d3.ascending);
-	var q1 = d3.quantile(y_array, 0.25),
-	    q3 = d3.quantile(y_array, 0.75),
+	var q1 = d3.quantile(y_array,.10),
+	    q3 = d3.quantile(y_array, .99),
 	    iqr = q3 - q1,
-	    maxValue = q3 + iqr * 8;
-	y.domain([d3.min(data, y_value) - 1, maxValue - 1]);
+	    maxValue = q3,// + iqr * 8;
+        minValue = d3.min(data, y_value)
+        // maxValue = d3.max(y_array);
+	y.domain([minValue, maxValue]);
 
 	// x-axis
 	sp_svg.append("g")
@@ -280,6 +291,7 @@ function convert_county_data(ses, cases) {
 	        item['PCT_NWHT'] = null,
 	        item['MED_HH_INC'] = null,
 	        item['PCT_BLW_POV_RT'] = null;
+            item['TOT_POP'] = null;
 	        
 	        t = 0;
             keys3 = Object.keys(ses);
@@ -297,7 +309,10 @@ function convert_county_data(ses, cases) {
 			        item['PCT_WHT'] = obj3['PCT_WHT'],
 			        item['PCT_NWHT'] = obj3['PCT_NWHT'],
 			        item['MED_HH_INC'] = obj3['MED_HH_INC'],
-					item['PCT_BLW_POV_RT'] = obj3['PCT_BLW_POV_RT']; }
+					item['PCT_BLW_POV_RT'] = obj3['PCT_BLW_POV_RT']; 
+                    item['TOT_POP'] = obj3['TOT_POP'];
+                    item['CONFIRMED'] = 1000*item['CONFIRMED']/obj3['TOT_POP'];
+                }
 	        });
 	        if (t == 1){
 	        	data.push(item);
