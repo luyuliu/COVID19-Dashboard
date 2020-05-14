@@ -4,11 +4,16 @@ class Setup {
         this.squareWidth = 4;
         this.squareWidthNarrow = 4;
         this.squareHeight = 1;
+        var baseCellHeight = window.innerWidth / 3;
+        if (window.innerWidth < 700){
+            baseCellHeight = window.innerWidth;
+        }
+
 
         this.options = {
             verticalMargin: 10,
             handle: ".title-bar",
-            cellHeight: window.innerWidth / 3 / 4,
+            cellHeight: baseCellHeight / 4,
             disableResize: true
         };
 

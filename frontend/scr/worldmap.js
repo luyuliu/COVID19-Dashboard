@@ -8,7 +8,7 @@ var all_mapping_vars = [];
 var bounds; // bounds for choropleth map classes
 
 var worldmap_width = $(world_grid_container_id).width(),
-    worldmap_height = $(world_grid_container_id).height()-135; // need 135 for both dropdown and legend
+    worldmap_height = $(world_grid_container_id).height() - 135; // need 135 for both dropdown and legend
 
 var worldmap_legend_width = $(world_affiliation_id).width(),
     worldmap_legend_height = $(world_affiliation_id).height();
@@ -42,6 +42,7 @@ var radius = d3.scaleSqrt()
 
 var worldmap_svg = d3.select(world_map_id)
     .append("svg")
+    .attr("id", "world_svg")
     .attr("width", worldmap_width)
     .attr("height", worldmap_height);
 
@@ -96,15 +97,16 @@ function world_ready() { // TODO: LONG function!
     // use the size of the array in all_cases
     actual_len = all_cases[d3.keys(all_cases)[0]]['confirmed'].length;
     world_cases_sum = {
-        "confirmed": Array(actual_len).fill(0), 
-        "deaths": Array(actual_len).fill(0), 
-        "recovered": Array(actual_len).fill(0)}
+        "confirmed": Array(actual_len).fill(0),
+        "deaths": Array(actual_len).fill(0),
+        "recovered": Array(actual_len).fill(0)
+    }
     var case_maxs = [];
-    
+
     d3.keys(all_cases).forEach(function (d, i) { // go through all countries
         var val = all_cases[d][cur_case].slice(-1)[0];
         case_maxs[i] = val;
-        for (j=0; j< all_cases[d]["confirmed"].length; j++) {
+        for (j = 0; j < all_cases[d]["confirmed"].length; j++) {
             world_cases_sum["confirmed"][j] += all_cases[d]["confirmed"][j]
             world_cases_sum["deaths"][j] += all_cases[d]["deaths"][j]
             world_cases_sum["recovered"][j] += all_cases[d]["recovered"][j]
@@ -185,8 +187,8 @@ function world_ready() { // TODO: LONG function!
     //////////////////////////////////////////////////////////////////////////
     // info on title bar
     /////////////////////////////////////////////////////////////////////////
-    
-    ind = world_cases_sum["confirmed"].length-1;
+
+    ind = world_cases_sum["confirmed"].length - 1;
     // var s1 = world_cases_sum["confirmed"][ind]
     // var s0 = ind==0 ? 0 : world_cases_sum["confirmed"][ind-1]
     // var s2 = world_cases_sum["deaths"][ind]
@@ -198,14 +200,14 @@ function world_ready() { // TODO: LONG function!
     // ${d3.format(",")(s2)} deaths<br/>
     // ${d3.format(",")(s3)} recovered`
     // d3.selectAll("#world-info").html(title_info)
-    update_title_info("#world-info", 
-        cur_date_world, 
-        world_cases_sum["confirmed"][ind], 
-        ind==0 ? 0 : world_cases_sum["confirmed"][ind-1], 
-        world_cases_sum["deaths"][ind], 
-        ind==0 ? 0 : world_cases_sum["deaths"][ind-1], 
-        world_cases_sum["recovered"][ind], 
-        ind==0 ? 0 : world_cases_sum["recovered"][ind-1]
+    update_title_info("#world-info",
+        cur_date_world,
+        world_cases_sum["confirmed"][ind],
+        ind == 0 ? 0 : world_cases_sum["confirmed"][ind - 1],
+        world_cases_sum["deaths"][ind],
+        ind == 0 ? 0 : world_cases_sum["deaths"][ind - 1],
+        world_cases_sum["recovered"][ind],
+        ind == 0 ? 0 : world_cases_sum["recovered"][ind - 1]
     )
 
 
@@ -242,7 +244,7 @@ function world_ready() { // TODO: LONG function!
             all_mapping_vars[i] = val;
     }
     bounds = get_var_bounds(all_mapping_vars);
-    
+
     var world_color_scheme = d3.scaleThreshold()
         .domain(bounds)
         .range(d3.schemeGreys[3]);
@@ -294,7 +296,7 @@ function world_ready() { // TODO: LONG function!
     /////////////////////////////////////////////////////////////////////////
 
     var worldmap_legend_svg = make_legend_svg(world_affiliation_id, worldmap_legend_width, worldmap_legend_height, "world-legend");
-    
+
     var legendg = make_legend(worldmap_legend_svg, "#world-legend", world_color_scheme, worldmap_legend_width, "vertical");
 
     var dropdown = d3.select(world_affiliation_id)
@@ -308,7 +310,7 @@ function world_ready() { // TODO: LONG function!
         .enter().append("option")
         .attr("value", function (d) { return d; })
         .text(function (d) {
-            return world_map_friendly_names[d]; 
+            return world_map_friendly_names[d];
         })
         .property("selected", function (d) {
             if (d == current_mapping_var) {
@@ -366,7 +368,7 @@ function world_ready() { // TODO: LONG function!
     //////////////////////////////////////////////////////////////////////////
     // centroids
     /////////////////////////////////////////////////////////////////////////
-    
+
     worldmap_svg.selectAll(".symbol")
         // .data(world_centroids.features)
         .data(world_centroids.features.sort(function (a, b) { // specify and sort data
@@ -433,6 +435,12 @@ function world_ready() { // TODO: LONG function!
             d3.select(this).classed("highlight", false);
         })
         ;
+
+    var dropdown = d3.select("#world_svg")
+        .insert("select", "svg")
+        .attr("id", "world-choreopleth-select")
+        .attr("class", "select-css")
+        .on("change", worldDropdownChange);
 
     /////////////////////////////////////////////////////////////////////////////
     // Line chart 
@@ -538,32 +546,32 @@ function world_ready() { // TODO: LONG function!
             if (sync_time_lines) {
                 hover_line_symbol(US_svg, ".US_symbol", US_path, "postal", us_all_cases, ind, xpos, "#hover-line-US", radius);
                 hover_line_symbol(state_svg, ".state_symbol", state_path, "GEOID", state_all_cases, ind, xpos, "#hover-line-state", state_radius);
-                
+
                 update_info_labels(US_info_labels, us_abbr_inv[cur_us_state], cur_date_world, ind, cur_case, us_all_cases[cur_us_state][cur_case][ind]);
                 update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_world, ind, cur_case, state_all_cases[cur_state_county][cur_case][ind]);
-                
-                update_title_info("#us-info", 
-                    cur_date_world, 
-                    all_cases["USA"]["confirmed"][ind], 
-                    ind==0 ? 0 : all_cases["USA"]["confirmed"][ind-1], 
-                    all_cases["USA"]["deaths"][ind], 
-                    ind==0 ? 0 : all_cases["USA"]["deaths"][ind-1], 
-                    all_cases["USA"]["recovered"][ind], 
-                    ind==0 ? 0 : all_cases["USA"]["recovered"][ind-1]
+
+                update_title_info("#us-info",
+                    cur_date_world,
+                    all_cases["USA"]["confirmed"][ind],
+                    ind == 0 ? 0 : all_cases["USA"]["confirmed"][ind - 1],
+                    all_cases["USA"]["deaths"][ind],
+                    ind == 0 ? 0 : all_cases["USA"]["deaths"][ind - 1],
+                    all_cases["USA"]["recovered"][ind],
+                    ind == 0 ? 0 : all_cases["USA"]["recovered"][ind - 1]
                 )
-                update_title_info("#state-info", 
-                    cur_date_world, 
+                update_title_info("#state-info",
+                    cur_date_world,
                     us_all_cases[the_state]["confirmed"][ind],
-                    ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
-                    us_all_cases[the_state]["deaths"][ind], 
-                    ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
-                    null, 
+                    ind == 0 ? 0 : us_all_cases[the_state]["confirmed"][ind - 1],
+                    us_all_cases[the_state]["deaths"][ind],
+                    ind == 0 ? 0 : us_all_cases[the_state]["deaths"][ind - 1],
+                    null,
                     null
                 )
 
             }
             update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
-            
+
             // world_summary_labels[0].ele2.text(case_date_format_full(cur_date_world))
             // world_summary_labels[1].ele1.text(d3.format(",")(world_cases_sum["confirmed"][ind]))
             // world_summary_labels[1].ele2.text(" confirmed")
@@ -582,16 +590,16 @@ function world_ready() { // TODO: LONG function!
             // 
             // d3.selectAll("#world-info").html(title_info)
 
-            update_title_info("#world-info", 
-                cur_date_world, 
-                world_cases_sum["confirmed"][ind], 
-                ind==0 ? 0 : world_cases_sum["confirmed"][ind-1], 
-                world_cases_sum["deaths"][ind], 
-                ind==0 ? 0 : world_cases_sum["deaths"][ind-1], 
-                world_cases_sum["recovered"][ind], 
-                ind==0 ? 0 : world_cases_sum["recovered"][ind-1]
+            update_title_info("#world-info",
+                cur_date_world,
+                world_cases_sum["confirmed"][ind],
+                ind == 0 ? 0 : world_cases_sum["confirmed"][ind - 1],
+                world_cases_sum["deaths"][ind],
+                ind == 0 ? 0 : world_cases_sum["deaths"][ind - 1],
+                world_cases_sum["recovered"][ind],
+                ind == 0 ? 0 : world_cases_sum["recovered"][ind - 1]
             )
-            
+
 
             // worldmap_svg.selectAll(".world_symbol")
             //   .attr("d", path.pointRadius(function(d, i) {
