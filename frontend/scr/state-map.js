@@ -3,12 +3,16 @@ var state_map_id = "#state_map-content";
 var state_plot_id = "#state_plot-content";
 var state_affiliation_id = "#state_map-affiliation";
 
+var the_state = 'OH',
+    state_geojson_fname = the_state + "_geog.geojson",
+    state_centroids_fname = the_state + "_centroids.geojson";
+
 var maptype = 'geojson';
 
 var state_map_width = $(state_map_container_id).width();
-var state_map_height = $(state_map_container_id).height()/4*3;
+var state_map_height = $(state_map_container_id).height() - 135;
 
-var state_timelines_margin = {top: 50, right: 60, bottom: 30, left: 40};
+var state_timelines_margin = {top: 50, right: 60, bottom: 60, left: 40};
 var state_timelines_width = $(state_plot_id).width() - state_timelines_margin.left - state_timelines_margin.right,
     state_timelines_height = $(state_plot_id).height() - state_timelines_margin.top - state_timelines_margin.bottom; 
 
@@ -25,15 +29,11 @@ var state_map_margin = { top: 10, right: 10, bottom: 10, left: 10 };
 var state_info_labels = null;
 var cur_state_county = null; // "39049"; // TODO: get this automatically, using the max value and median
 
-var the_state = 'OH',
-    state_geojson_fname = the_state + "_geog.geojson",
-    state_centroids_fname = the_state + "_centroids.geojson";
-
 // 36.854458, -119.764541    
 var state_projection_params = { 
     "AK": {"angles": [160, -60, 0], "scale": 600},
     "CA": {"angles": [120, -36.1, 0], "scale": 1600},
-    "DC": {"angles": [77.03, -38.87, 0], "scale": 80000},
+    "DC": {"angles": [77.03, -38.87, 0], "scale": 75000},
     "FL": {"angles": [83.5, -27.5, 0], "scale": 2000},
     "HI": {"angles": [158, -20.2, 0], "scale": 2000},
     "IA": {"angles": [93.5, -41.8, 0], "scale": 4000},
@@ -47,10 +47,14 @@ var mystates = d3.keys(state_projection_params);
 
 var state_path = null; // set in init_state
 
-
 var state_xScale = null;
 var state_toXScale = null;
 var state_yScale = null;
+
+var state_geojson = null;
+var state_centroids = null;
+var state_all_cases = null;
+var sorted_case_lasts = null;
 
 var state_svg = d3.select(state_map_id).append("svg")
     .attr("width", state_map_width)
@@ -105,7 +109,6 @@ function init_choropleth(the_var, geojson_data, var_list, all_var) {
 
 }
 
-
 d3.select("#select-state")
     .on("change", function (e) {
         the_state = $("#select-state").val();
@@ -122,6 +125,8 @@ d3.select("#select-state")
     .text(function(d) { return d; })
     ;
 
+// status = 0 --- first every call
+// status = 1 --- switch to diff state
 function init_state(status) {
     var state_projection = d3.geoOrthographic().rotate(state_projection_params[the_state].angles) // λ, ϕ, γ
         .scale(state_projection_params[the_state].scale) // percent within rectangle of width x height
@@ -163,22 +168,12 @@ function init_state(status) {
         d3.json("data/state-counties/" + state_centroids_fname),
         d3.json("data/all-cases-data-processed-counties.json")
     ];
-
-    Promise.all(state_promises).then(ready_state);
+    
+    Promise.all(state_promises).then(state_ready);
 
 }
 
-
-var state_geojson = null;
-var state_centroids = null;
-var state_all_cases = null;
-var sorted_case_lasts = null;
-
-init_state(0);
-
-
-
-function ready_state(all_data) {
+function state_ready(all_data) {
 
     state_geojson = all_data[0]
     state_centroids = all_data[1];
@@ -207,25 +202,25 @@ function ready_state(all_data) {
     })
     fips_to_name["00"] = "State Wide";
 
-    //////////////////////////////////////////////////////////////////////////
-    // info on title bar
-    /////////////////////////////////////////////////////////////////////////
-
-    update_title_info("#state-info", 
-        cur_date_state, 
-        us_all_cases[the_state]["confirmed"][ind],
-        ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
-        us_all_cases[the_state]["deaths"][ind], 
-        ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
-        null, 
-        null
-    )
-
 
     state_radius = d3.scaleSqrt()
         .domain([0, state_max])
         .range([0, 30]);
 
+    /////////////////////////////////////////////////////////////////////////////
+    // Necessary scales  
+    /////////////////////////////////////////////////////////////////////////////
+
+    var n = total_days;
+    
+    state_xScale = d3.scaleTime()
+        .domain([case_date_parser(state_start_date), case_date_parser(state_end_date)])
+        .range([0, state_timelines_width]); // output
+    
+    state_toXScale = d3.scaleLinear()
+        .domain([0, n-1])
+        .range([case_date_parser(state_start_date), case_date_parser(state_end_date)])
+        ;
 
     //////////////////////////////////////////////////////////////////////////
     // State choropleth map
@@ -421,10 +416,11 @@ function ready_state(all_data) {
         // .attr("d", path)
         .attr("d", state_path.pointRadius(function (d, i) {
             if (d.properties) {
-                name = d.properties.GEOID;
+                name = d.properties.GEOID; // xxxx
                 if (state_all_cases[name]) {
                     // console.log(d, i, state_all_cases[state_abbr[name]])
-                    return state_radius(state_all_cases[name][cur_case].slice(-1)[0]);
+                    var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+                    return state_radius(state_all_cases[name][cur_case][ind]);
                 }
             }
             return state_radius(0);
@@ -467,28 +463,6 @@ function ready_state(all_data) {
     /////////////////////////////////////////////////////////////////////////////
     // Multiple Line chart 
     /////////////////////////////////////////////////////////////////////////////
-
-
-    // var state_xScale = d3.scaleLinear()
-    //     .domain([0, state_length - 1]) // input
-    //     .range([0, state_timelines_width]); // output
-    // 
-    // TODO: get dates from file
-
-    // var state_start_date = start_date;
-    // var state_end_date = end_date;
-    // 
-    var n = total_days;
-    
-    state_xScale = d3.scaleTime()
-        .domain([case_date_parser(state_start_date), case_date_parser(state_end_date)])
-        .range([0, state_timelines_width]); // output
-    
-    state_toXScale = d3.scaleLinear()
-        .domain([0, n-1])
-        .range([case_date_parser(state_start_date), case_date_parser(state_end_date)])
-        ;
-    
     state_yScale = d3.scaleLinear()
         .domain([0, state_max]) // input  TODO: get max
         .range([state_timelines_height, 0]); // output 
@@ -534,11 +508,13 @@ function ready_state(all_data) {
     // hover lines on the line chart
     /////////////////////////////////////////////////////////////////////////////
 
-    state_timelines_hoverLine = state_timelines_svg.append("g")
+    state_timelines_hoverLine = state_timelines_svg
+        .append("g")
         .attr("class", "hover-line")
         .append("line")
         .attr("id", "hover-line-state")
-        .attr("x1", state_xScale(case_date_parser(state_end_date))).attr("x2", state_xScale(case_date_parser(state_end_date)))
+        .attr("x1", state_xScale(cur_date_state))
+        .attr("x2", state_xScale(cur_date_state))
         .style("pointer-events", "none") // Stop line interferring with cursor
         .style("opacity", 1); 
 
@@ -574,16 +550,6 @@ function ready_state(all_data) {
 
             update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_state, ind, cur_case, state_all_cases[cur_state_county][cur_case][ind]);
 
-            // var s1 = us_all_cases[the_state]["confirmed"][ind]
-            // var s0 = ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1]
-            // var s2 = us_all_cases[the_state]["deaths"][ind]
-            // 
-            // var title_info = `
-            // ${case_date_format_full(cur_date_state)} <br/>
-            // <span style="color: red">${d3.format(",")(s1)}</span> confirmed (+${s1-s0})<br/> 
-            // ${d3.format(",")(s2)} deaths`
-            // d3.selectAll("#state-info").html(title_info)
-
             update_title_info("#state-info", 
                 cur_date_state, 
                 us_all_cases[the_state]["confirmed"][ind],
@@ -604,6 +570,20 @@ function ready_state(all_data) {
         })
         ;
 
+    //////////////////////////////////////////////////////////////////////////
+    // info on title bar
+    /////////////////////////////////////////////////////////////////////////
+    var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+    
+    update_title_info("#state-info", 
+        cur_date_state, 
+        us_all_cases[the_state]["confirmed"][ind],
+        ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
+        us_all_cases[the_state]["deaths"][ind], 
+        ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
+        null, 
+        null
+    )
 
     /////////////////////////////////////////////////////////////////////////////
     // labels

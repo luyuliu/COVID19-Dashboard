@@ -3,14 +3,13 @@ var scatter_plot_id = "#scatter_plot-content";
 var scatter_plot_affiliation_id = "#scatter_plot-affiliation";
 
 
-var margin = { top: 10, right: 10, bottom: 40, left: 50 };
+var margin = { top: 10, right: 10, bottom: 20, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;
-var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom -50;
+var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom -30;
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 var curr_state = "OH";
-
 
 // add the graph canvas to the body of the webpage
 var sp_svg = d3.select(scatter_plot_id).append("svg")
@@ -20,10 +19,10 @@ var sp_svg = d3.select(scatter_plot_id).append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-var se_ind_list = [["pct_chldn", "Percentage of Children (Aged 0 - 14) (%)"], ["pct_youth", "Percentage of Youth (Aged 15 - 24) (%)"],
-				["pct_ad", "Percentage of Adults (Aged 25 - 64) (%)"], ["pct_sr", "Percentage of Seniors (Aged above 64) (%)"],
-				["pct_wht", "Percentage of White Population (%)"], ["pct_nwht", "Percentage of Non-White Population (%)"],
-				["med_hh_inc", "Median Household Income (U.S. Dollar)"], ["pct_blw_pov_rt", "Percentage of Population Below Poverty Line (%)"]];
+var se_ind_list = [["pct_chldn", "Children (Aged 0 - 14) (%)"], ["pct_youth", "Youth (Aged 15 - 24) (%)"],
+				["pct_ad", "Adults (Aged 25 - 64) (%)"], ["pct_sr", "Seniors (Aged above 64) (%)"],
+				["pct_wht", "White Population (%)"], ["pct_nwht", "Non-White Population (%)"],
+				["med_hh_inc", "Median Household Income (U.S. Dollar)"], ["pct_blw_pov_rt", "Population Below Poverty Line (%)"]];
 
 var se_ind_dropdown = d3.select(scatter_plot_affiliation_id)
     .insert("select", "svg")
@@ -37,14 +36,13 @@ se_ind_dropdown.selectAll("option")
     .attr("value", (d) => d[0])
     .text((d) => d[1]);
 
-
 var se_ind = document.querySelector('#se_ind').value;
 
 // load data
 d3.json("data/us-counties-attributes.json").then(function(data_ind) { 
 	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
-	data = convert_county_data(data_ind, data_cases);
-	drawGraph(se_ind, data);
+    	data = convert_county_data(data_ind, data_cases);
+    	drawGraph(se_ind, data);
 	});
 });
 
@@ -82,21 +80,21 @@ function drawGraph(se_ind, data) {
 
 	var x_text = function(d) {
 	    if (se_ind == 'pct_chldn'){
-	        return 'Percentage of Children (Aged 0 - 14) (%)';
+	        return 'Children (Aged 0 - 14) (%)';
 	    } else if (se_ind == 'pct_youth'){
-	        return 'Percentage of Youth (Aged 15 - 24) (%)';
+	        return 'Youth (Aged 15 - 24) (%)';
 	    } else if (se_ind == 'pct_ad'){
-	        return 'Percentage of Adults (Aged 25 - 64) (%)';
+	        return 'Adults (Aged 25 - 64) (%)';
 	    } else if (se_ind == 'pct_sr'){
-	        return 'Percentage of Seniors (Aged above 64) (%)';
+	        return 'Seniors (Aged above 64) (%)';
 	    } else if (se_ind == 'pct_wht'){
-	        return 'Percentage of White Population (%)';
+	        return 'White Population (%)';
 	    } else if (se_ind == 'pct_nwht'){
-	        return 'Percentage of Non-white Population (%)';
+	        return 'Non-white Population (%)';
 	    } else if (se_ind == 'med_hh_inc'){
-	        return 'Median Household Income (U.S. Dollar)';
+	        return 'Median Household Income ($)';
 	    } else if (se_ind == 'pct_blw_pov_rt'){
-	        return 'Percentage of Population Below Poverty Line (%)';
+	        return 'Population Below Poverty Line (%)';
 	    }
 	};
 
@@ -108,7 +106,7 @@ function drawGraph(se_ind, data) {
 	// set up y
 	var y_value = function(d) {return d.CONFIRMED;};
 
-	var y_text = function(d) {return 'Total Confirmed (Person)';};
+	var y_text = function(d) {return 'Confirmed cases';};
 
 	var y = d3.scaleLinear().range([height, 0]),
 	    yMap = function(d) { return y(y_value(d));},
@@ -152,22 +150,22 @@ function drawGraph(se_ind, data) {
 		.attr("class", "x axis")
 		.call(xAxis)
 		.attr("transform", "translate(0," + height + ")")
-	sp_svg.append("text")
-		.attr("transform", "translate(0," + height + ")")
-		.attr("class", "label")
-		.attr("x", width)
-		.attr("y", margin.top + 20)
-		.style("text-anchor", "end")
-		.text(x_text);
+	// sp_svg.append("text")
+	// 	.attr("transform", "translate(0," + height + ")")
+	// 	.attr("class", "label")
+	// 	.attr("x", width)
+	// 	.attr("y", margin.top)
+	// 	.style("text-anchor", "end")
+	// 	.text(x_text);
 
 	// y-axis
 	sp_svg.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
 	sp_svg.append("text")
-		.attr("class", "label")
+		.attr("class", "text-label")
 		.attr("transform", "rotate(-90)")
-		.attr("x", -margin.top)
+		.attr("x", -margin.bottom-15)
 		.attr("y", -margin.left + 15)
 		.style("text-anchor", "end")
 		.text(y_text)

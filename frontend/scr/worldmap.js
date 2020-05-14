@@ -1,14 +1,14 @@
 var world_grid_container_id = "#world_map-grid-container";
 var world_map_id = "#world_map-content";
 var world_plot_id = "#world_plot-content";
-var world_affiliation_id = "#world_map-affiliation"
+var world_affiliation_id = "#world_map-affiliation" // TODO: program this, and other id's?
 
 var all_mapping_vars = [];
 
 var bounds; // bounds for choropleth map classes
 
 var worldmap_width = $(world_grid_container_id).width(),
-    worldmap_height = $(world_grid_container_id).height() / 4 * 3;
+    worldmap_height = $(world_grid_container_id).height()-135; // need 135 for both dropdown and legend
 
 var worldmap_legend_width = $(world_affiliation_id).width(),
     worldmap_legend_height = $(world_affiliation_id).height();
@@ -90,25 +90,8 @@ worldmap_svg.call(zoom);
 var cur_case = "confirmed";
 var cur_world_region = "USA";
 
-// TODO: add a date file here 
-var promises = [
-    d3.json("data/covid-19-world-iso3dissolved-centroids.geojson"),
-    d3.json("data/all-cases-data-processed.json"),
-    d3.json("data/ne_110m_admin0sov_joined.topo.json"),
-    // d3.json("data/all-cases-data-dates.json")
-];
+function world_ready() { // TODO: LONG function!
 
-Promise.all(promises).then(data_ready);
-
-function data_ready(alldata) { // TODO: LONG function!
-
-    world_centroids = alldata[0];
-    all_cases = alldata[1];
-    world0 = alldata[2];
-
-    /// GET MAX of cases
-    /// get sums for the world
-    
     // total_days is one day less since not inclusive
     // use the size of the array in all_cases
     actual_len = all_cases[d3.keys(all_cases)[0]]['confirmed'].length;
@@ -132,9 +115,9 @@ function data_ready(alldata) { // TODO: LONG function!
 
     ///////////////////////////
 
-    var timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
+    var timelines_margin = { top: 50, right: 60, bottom: 60, left: 40 };
     var timelines_width = $(world_plot_id).width() - timelines_margin.left - timelines_margin.right,
-        timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom - 50;
+        timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom;
 
     // TODO: get dates from file -- DONE
     // var start_date = "01-22-2020";
@@ -171,9 +154,9 @@ function data_ready(alldata) { // TODO: LONG function!
 
     ///////////////////////////
 
-    var timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
-    var timelines_width = $(world_plot_id).width() - timelines_margin.left - timelines_margin.right,
-        timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom - 50;
+    // var timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
+    // var timelines_width = $(world_plot_id).width() - timelines_margin.left - timelines_margin.right,
+    //     timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom - 50;
 
     // TODO: get dates from file -- DONE
     // var start_date = "01-22-2020";
@@ -310,82 +293,9 @@ function data_ready(alldata) { // TODO: LONG function!
     // legend
     /////////////////////////////////////////////////////////////////////////
 
-    const worldmap_legend_svg = make_legend_svg(world_affiliation_id, worldmap_legend_width, worldmap_legend_height, "world-legend");
+    var worldmap_legend_svg = make_legend_svg(world_affiliation_id, worldmap_legend_width, worldmap_legend_height, "world-legend");
     
-    // 
-    // world_summary_info_labels = [];
-    // var world_summary_labels = [
-    //     {"header": case_date_format_full(cur_date_world), "text": ""},
-    //     {"header": " confirmed", "text":  d3.format(",")(world_cases_sum["confirmed"].slice(-1)[0])},
-    //     {"header": " deaths", "text":  d3.format(",")(world_cases_sum["deaths"].slice(-1)[0])},
-    //     {"header": " recovered", "text":  d3.format(",")(world_cases_sum["recovered"].slice(-1)[0])}
-    // ]
-    // 
-    // world_summary_labels.forEach(function(d, i) {
-    //     ele1 = worldmap_legend_svg
-    //         .append('text')
-    //         .attr("font-size", "22px")
-    //         .attr("fill", "red")
-    //         .attr("x", 150)
-    //         .attr("y", 20+25*i)
-    //         .text(d.text)
-    //     ele2 = ele1.append("tspan")
-    //         .style("fill", "#ababab")
-    //         .text(d.header)
-    //     d["ele1"] = ele1;
-    //     d["ele2"] = ele2;
-    // })
-
-    // var labelss = worldmap_legend_svg.selectAll("world-summary")
-    //     .data(world_summary_labels)
-    //     .enter()
-    //     .append("text")
-    //     .attr("fill", "#ababab")
-    //     .attr("font-size", "22px")
-    //     .attr("x", 150)
-    //     .attr("y", function(d, i) { return 20+25*i;})
-    //     .text(function(d) {return d.header})
-    //     .append("tspan")
-    //     .style("fill", "red")
-    //     .text(function(d) { return d.text})
-
-    // world_summary_labels.forEach(function(d, i) {
-    //     world_summary_info_labels[0] = worldmap_legend_svg
-    //         .append('text')
-    //         .attr("class", "hover-text")
-    //         .attr("style", "font-size: 20px")
-    //         .attr("x", 150)
-    //         .attr("y", 20+25*i)
-    //         .text(d.text);
-    // })
-    // 
-    // 
-
-
-
-    // var legend_linear = d3.legendColor()
-    //     .labelFormat(d3.format(".0f"))
-    //     .labels(d3.legendHelpers.thresholdLabels)
-    //     // .useClass(true)
-    //     .scale(world_color_scheme)
-    //     .shapeWidth(worldmap_legend_width / 4.1)
-    //     .orient('vertical');
-    // 
-    // worldmap_legend_svg.select("#world-legend")
-    //     .call(legend_linear);
-
     var legendg = make_legend(worldmap_legend_svg, "#world-legend", world_color_scheme, worldmap_legend_width, "vertical");
-
-    // // Legend title 
-    // legendg.append("text")
-    //     .attr("class", "caption")
-    //     .attr("x", 0)
-    //     .attr("y", -6)
-    //     .attr("fill", "#000")
-    //     .attr("font-size", "20px")
-    //     .attr("text-anchor", "start")
-    //     .attr("font-weight", "bold")
-    //     .text(current_mapping_var)
 
     var dropdown = d3.select(world_affiliation_id)
         .insert("select", "svg")

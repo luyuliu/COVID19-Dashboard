@@ -7,7 +7,7 @@ var maptype = 'geojson';
 var US_offset = 0
 
 var US_map_width = $(US_grid_container_id).width() - US_offset;
-var US_map_height = ($(US_grid_container_id).height() - US_offset) / 4 * 3;
+var US_map_height = ($(US_grid_container_id).height() - US_offset) - 135;
 
 var US_map_legend_width = $(US_affiliation_id).width(),
     US_map_legend_height = $(US_affiliation_id).height();
@@ -23,7 +23,6 @@ var US_projection = d3.geoAlbersUsa()
     .scale(US_map_width * 5 / 4)
     .translate([US_map_width / 2, US_map_height / 2]);
 
-
 var US_path = d3.geoPath()
     .projection(US_projection);
 
@@ -33,25 +32,11 @@ var US_svg = d3.select(US_map_id).append("svg")
     .append("g")
     .attr("transform", "translate(" + US_map_margin.left + "," + US_map_margin.top + ")");
 
-var US_promises = [
-    d3.json("data/us-states-attributes.geojson"),
-    d3.json("data/covid-19-us-centroids.geojson"),
-    d3.json("data/all-cases-data-processed-states.json"),
-    d3.json("data/state_abbr_inv.json")
-];
-
 var US_timelines_lines = null;
 var us_all_cases = null;
 
-Promise.all(US_promises).then(ready);
+function us_ready() {
 
-function ready(all_data) {
-    var US_geojson = all_data[0];
-    var us_centroids = all_data[1];
-    us_all_cases = all_data[2];
-    us_abbr_inv = all_data[3];
-
-    // set in main.js, reading from a file
     var US_start_date = start_date;
     var US_end_date = end_date;
     var n = total_days;
@@ -67,9 +52,9 @@ function ready(all_data) {
 
     ///////////////////////////
 
-    var US_timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
+    var US_timelines_margin = { top: 50, right: 60, bottom: 60, left: 40 };
     var US_timelines_width = $(US_plot_id).width() - US_timelines_margin.left - US_timelines_margin.right,
-        US_timelines_height = $(US_plot_id).height() - US_timelines_margin.top - US_timelines_margin.bottom - 50;
+        US_timelines_height = $(US_plot_id).height() - US_timelines_margin.top - US_timelines_margin.bottom;
 
     var US_xScale = d3.scaleTime()
         .domain([case_date_parser(US_start_date), case_date_parser(US_end_date)])
