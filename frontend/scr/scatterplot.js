@@ -171,7 +171,7 @@ function drawGraph(se_ind, data) {
 		.text(y_text)
 
 	// draw dots
-	console.log(curr_state);
+	// console.log(curr_state);
 	sp_svg.selectAll(".dot")
 	  .data(data)
 	  .enter().append("circle")
@@ -192,10 +192,12 @@ function drawGraph(se_ind, data) {
 	               })
 	  .style("fill", function(d) { 
 	              if (d.state == curr_state) {
+                      d3.select(this).raise();
 	                  return "red";
 	              } else {
 	                  return "lightgrey";}
-	               });
+	               })
+        .style("stroke-width", 0);
 
 
 	// draw legend
@@ -238,7 +240,9 @@ function highlightDots(state) {
     	.duration(200)
     	.attr("r", 3)
     	.style("opacity", 1)
-    	.style("fill", "red")
+    	.style("fill", function() {
+            d3.select(this).raise();
+            return "red";})
 }
 
 function updateGraph() {
