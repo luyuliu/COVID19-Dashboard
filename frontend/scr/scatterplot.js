@@ -165,9 +165,9 @@ function drawGraph(se_ind, data) {
 	sp_svg.append("text")
 		.attr("class", "text-label")
 		.attr("transform", "rotate(-90)")
-		.attr("x", -margin.bottom-15)
+		.attr("x", -height/2)
 		.attr("y", -margin.left + 15)
-		.style("text-anchor", "end")
+		.style("text-anchor", "middle")
 		.text(y_text)
 
 	// draw dots
