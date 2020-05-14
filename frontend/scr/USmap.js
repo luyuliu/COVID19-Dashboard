@@ -521,6 +521,7 @@ function us_ready() {
             US_timelines_svg.selectAll(".line").classed("US_highlight", function (dd, i) {
                 if (dd == d) {
                     cur_us_state = d;
+                    highlightDots(cur_us_state);
                     return true;
                 }
                 else return false;
