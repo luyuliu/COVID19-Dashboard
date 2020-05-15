@@ -141,19 +141,6 @@ function world_ready() { // TODO: LONG function!
         .domain([0, world_max]) // input 
         .range([timelines_height, 0]); // output 
 
-
-
-    // alert(all_cases['USA'][cur_case].length + " " + total_days)
-
-    /// GET MAX of cases
-    var case_maxs = [];
-    d3.keys(all_cases).forEach(function (d, i) {
-        var val = all_cases[d][cur_case].slice(-1)[0];
-        case_maxs[i] = val;
-    });
-
-    world_max = d3.max(case_maxs);
-
     ///////////////////////////
 
     // var timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
@@ -436,14 +423,137 @@ function world_ready() { // TODO: LONG function!
         })
         ;
 
-    var dropdown = d3.select("#world_svg")
+    var themeDropdown = d3.select("#world_map-content")
         .insert("select", "svg")
-        .attr("id", "world-choreopleth-select")
-        .attr("class", "select-css")
-        .on("change", worldDropdownChange);
+        .attr("id", "world-theme-select")
+        .attr("class", "select-css theme")
+        .style("position", "absolute")
+        .on("change", worldThemeDropdownChange);
+
+
+    themeDropdown.selectAll("option")
+        .data(case_names_list)
+        .enter().append("option")
+        .attr("value", function (d) { return d; })
+        .text(function (d) {
+            return d;
+        })
+        .property("selected", function (d) {
+            if (d == default_case_name) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        })
+
+    function worldThemeDropdownChange(e) {
+        cur_case = $(this).val();
+
+        d3.selectAll(".world_symbol")
+            // .transition()
+            .style("fill", function (d) {
+                if (cur_case == "confirmed") {
+                    return "#de2d26"
+                }
+                else {
+                    if (cur_case == "recovered"){
+                        return "#30a326"
+                    }
+                    else{
+                        return "#000000"
+                    }
+                }
+            })
+            .attr("d", path.pointRadius(function (d, i) {
+                if (d.properties) {
+                    name = d.properties.NAME;
+                    if (all_cases[name]) {
+                        return radius(all_cases[name][cur_case].slice(-1)[0]);
+                    }
+                }
+                return radius(0);
+            }))
+
+        // Update the labels
+        var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+        // console.log(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind])
+        update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+
+
+        // Create new data for the line chart
+        sub_dataset = {};
+        var case_maxs = [];
+
+        d3.keys(all_cases).forEach(function (d, i) { // go through all countries
+            var val = all_cases[d][cur_case].slice(-1)[0];
+            case_maxs[i] = val;
+        });
+
+        world_max = d3.max(case_maxs);
+
+        d3.keys(all_cases).forEach(function (d, i) {
+            sub_dataset[d] = d3.range(n).map(function (i) {
+                return {
+                    x: +toXScale(i),
+                    y: all_cases[d][cur_case][i]
+                }
+            })
+        });
+
+
+        var yScale = d3.scaleLinear()
+            .domain([0, world_max]) // input 
+            .range([timelines_height, 0]); // output 
+
+        console.log(world_max)
+
+        line_generator = d3.line()
+            .x(function (d) { return xScale(d.x); }) // set the x values for the line generator
+            .y(function (d) { return yScale(d.y); }) // set the y values for the line generator 
+            .curve(d3.curveMonotoneX) // apply smoothing to the line
+
+        d3.selectAll(".world_lines").remove();
+
+        d3.selectAll(".world_line").remove();
+        d3.select("#y_axis_world").call(d3.axisLeft(yScale).ticks(4, "s"))
+
+        timelines_svg.selectAll(".world_line")
+            .data(d3.keys(sub_dataset)).enter()
+            .append("path")
+            .attr("class", "line world_line")
+            .attr("d", function (d) { return line_generator(sub_dataset[d]); })
+            // .style("stroke-width", 1)
+            // .style("stroke", function(d) { 
+            //       if (country_names.includes(d))
+            //           return "#777";
+            //       else
+            //           return "#cdcdcd";})
+            .on("mouseover", function (d) {
+                timelines_svg.selectAll(".line").classed("world_highlight", function (dd, i) {
+                    if (dd == d) {
+                        cur_world_region = d;
+                        d3.select(this.parentNode).raise();
+                        return true;
+                    }
+                    return false;
+                });
+                // timelines_svg.selectAll(".text-label").style("display", function(dd) {
+                //     if (dd.label==d || country_names.includes(dd.label)) return "block";
+                //     else return "none";
+                // });
+                worldmap_svg.selectAll(".world_symbol").classed("highlight", function (dd, i) {
+                    return (dd.properties.NAME == d);
+                });
+
+            });
+
+
+
+    }
 
     /////////////////////////////////////////////////////////////////////////////
-    // Line chart 
+    // Line chart (well not the actual line is at, the actual line is in the label section)
     /////////////////////////////////////////////////////////////////////////////
 
     var country_names = ["Mainland China", "USA", "Italy", "Japan"];
@@ -479,17 +589,19 @@ function world_ready() { // TODO: LONG function!
 
     timelines_svg.append("g")
         .attr("class", "x axis")
+        .attr("id", "x_axis_world")
         .attr("transform", "translate(0," + timelines_height + ")")
         .call(d3.axisBottom(xScale).ticks(6)); // Create an axis component with d3.axisBottom
     timelines_svg.append("g")
         .attr("class", "y axis")
+        .attr("id", "y_axis_world")
         .call(d3.axisLeft(yScale).ticks(4, "s")) // Create an axis component with d3.axisLeft
         ;
 
-    timelines_svg.append("path")
-        .data(sub_dataset) // 10. Binds data to the line 
-        .attr("class", "line") // Assign a class for styling 
-        .attr("d", line_generator); // 11. Calls the line generator 
+    // timelines_svg.append("path")
+    //     .data(sub_dataset) // 10. Binds data to the line 
+    //     .attr("class", "line")// Assign a class for styling 
+    //     .attr("d", line_generator); // 11. Calls the line generator 
 
     timelines_svg.append("rect")
         .attr("class", "overlay")
@@ -511,25 +623,8 @@ function world_ready() { // TODO: LONG function!
 
     timelines_hoverLine.attr("y1", 0).attr("y2", timelines_height + 10);
 
-    function hover_line_symbol(target_svg, obj_id, the_path, the_key, the_data, ind, xpos, hover_line_id, radius_func) {
-        target_svg.selectAll(obj_id)
-            .attr("d", the_path.pointRadius(function (d) {
-                if (d.properties) {
-                    if (the_data[d.properties[the_key]]) {
-                        y = the_data[d.properties[the_key]][cur_case][ind];
-                        return radius_func(y);
-                    }
-                }
-                return radius_func(0);
-            }));
-
-        d3.select(hover_line_id) // select hover-line and change position
-            .attr("x1", xpos)
-            .attr("x2", xpos)
-        // .style("opacity", 1); // Making line visible
-    }
-
     timelines_rect = timelines_svg.append("rect")
+        .attr("id", "world_rect")
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", timelines_width)
@@ -542,13 +637,13 @@ function world_ready() { // TODO: LONG function!
             cur_date_world = xScale.invert(xpos);
             cur_date_us = cur_date_world;
             var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
-            hover_line_symbol(worldmap_svg, ".world_symbol", path, "NAME", all_cases, ind, xpos, "#hover-line-world", radius);
+            hover_line_symbol(worldmap_svg, ".world_symbol", path, "NAME", all_cases, ind, xpos, "#hover-line-world", radius, cur_case);
             if (sync_time_lines) {
-                hover_line_symbol(US_svg, ".US_symbol", US_path, "postal", us_all_cases, ind, xpos, "#hover-line-US", radius);
-                hover_line_symbol(state_svg, ".state_symbol", state_path, "GEOID", state_all_cases, ind, xpos, "#hover-line-state", state_radius);
+                hover_line_symbol(US_svg, ".US_symbol", US_path, "postal", US_all_cases, ind, xpos, "#hover-line-US", radius, US_cur_case);
+                hover_line_symbol(state_svg, ".state_symbol", state_path, "GEOID", state_all_cases, ind, xpos, "#hover-line-state", state_radius, state_cur_case);
 
-                update_info_labels(US_info_labels, us_abbr_inv[cur_us_state], cur_date_world, ind, cur_case, us_all_cases[cur_us_state][cur_case][ind]);
-                update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_world, ind, cur_case, state_all_cases[cur_state_county][cur_case][ind]);
+                update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_world, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
+                update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_world, ind, state_cur_case, state_all_cases[cur_state_county][state_cur_case][ind]);
 
                 update_title_info("#us-info",
                     cur_date_world,
@@ -561,10 +656,10 @@ function world_ready() { // TODO: LONG function!
                 )
                 update_title_info("#state-info",
                     cur_date_world,
-                    us_all_cases[the_state]["confirmed"][ind],
-                    ind == 0 ? 0 : us_all_cases[the_state]["confirmed"][ind - 1],
-                    us_all_cases[the_state]["deaths"][ind],
-                    ind == 0 ? 0 : us_all_cases[the_state]["deaths"][ind - 1],
+                    US_all_cases[the_state]["confirmed"][ind],
+                    ind == 0 ? 0 : US_all_cases[the_state]["confirmed"][ind - 1],
+                    US_all_cases[the_state]["deaths"][ind],
+                    ind == 0 ? 0 : US_all_cases[the_state]["deaths"][ind - 1],
                     null,
                     null
                 )
@@ -637,13 +732,12 @@ function world_ready() { // TODO: LONG function!
 
     var timelines_labels = null;
 
-    var timelines_lines = timelines_svg.selectAll(".lines")
-        .data(d3.keys(sub_dataset))
-        .enter().append("g")
-        .attr("class", "lines")
+    var timelines_lines = timelines_svg.selectAll(".line")
+        .data(d3.keys(sub_dataset));
 
-    timelines_lines.append("path")
-        .attr("class", "line")
+    timelines_lines.enter()
+        .append("path")
+        .attr("class", "line world_line")
         .attr("d", function (d) { return line_generator(sub_dataset[d]); })
         // .style("stroke-width", 1)
         // .style("stroke", function(d) { 
@@ -718,12 +812,14 @@ function world_ready() { // TODO: LONG function!
     world_info_labels = []
     world_info_labels[0] = timelines_svg
         .append('text')
+        .attr("id", "world_hover_text_1")
         .attr("class", "hover-text")
-        .attr("style", "fill: #ababab")
+        .style("fill", "#ababab")
         .attr("x", 20)
         .attr("y", -5);
     world_info_labels[1] = timelines_svg
         .append('text')
+        .attr("id", "world_hover_text_2")
         .attr("class", "hover-text")
         .attr("style", "font-size: 22px")
         .attr("x", 20)

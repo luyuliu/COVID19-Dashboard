@@ -150,10 +150,10 @@ function ready(all_data) {
 
     update_title_info("#state-info", 
         cur_date_state, 
-        us_all_cases[the_state]["confirmed"][ind],
-        ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
-        us_all_cases[the_state]["deaths"][ind], 
-        ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
+        US_all_cases[the_state]["confirmed"][ind],
+        ind==0 ? 0 : US_all_cases[the_state]["confirmed"][ind-1], 
+        US_all_cases[the_state]["deaths"][ind], 
+        ind==0 ? 0 : US_all_cases[the_state]["deaths"][ind-1], 
         null, 
         null
     )
@@ -514,9 +514,9 @@ function ready(all_data) {
                 }));
             update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_state, ind, cur_case, state_all_cases[cur_state_county][cur_case][ind]);
 
-            // var s1 = us_all_cases[the_state]["confirmed"][ind]
-            // var s0 = ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1]
-            // var s2 = us_all_cases[the_state]["deaths"][ind]
+            // var s1 = US_all_cases[the_state]["confirmed"][ind]
+            // var s0 = ind==0 ? 0 : US_all_cases[the_state]["confirmed"][ind-1]
+            // var s2 = US_all_cases[the_state]["deaths"][ind]
             // 
             // var title_info = `
             // ${case_date_format_full(cur_date_state)} <br/>
@@ -526,10 +526,10 @@ function ready(all_data) {
 
             update_title_info("#state-info", 
                 cur_date_state, 
-                us_all_cases[the_state]["confirmed"][ind],
-                ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
-                us_all_cases[the_state]["deaths"][ind], 
-                ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
+                US_all_cases[the_state]["confirmed"][ind],
+                ind==0 ? 0 : US_all_cases[the_state]["confirmed"][ind-1], 
+                US_all_cases[the_state]["deaths"][ind], 
+                ind==0 ? 0 : US_all_cases[the_state]["deaths"][ind-1], 
                 null, 
                 null
             )

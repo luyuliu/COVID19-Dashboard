@@ -209,7 +209,7 @@ html, body {
 }
 
 /* time line */
-.line {
+.line{
     fill: none;
     stroke: #ababab;
     stroke-width: 1;
@@ -412,6 +412,11 @@ select {
 
 .select-css:disabled:hover, .select-css[aria-disabled=true] {
 	border-color: #aaa;
+}
+
+.theme {
+  width: auto;
+  margin-top: 10px;
 }
 
 .choropleth-legend {

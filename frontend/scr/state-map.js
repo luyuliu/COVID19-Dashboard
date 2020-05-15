@@ -56,6 +56,8 @@ var state_centroids = null;
 var state_all_cases = null;
 var sorted_case_lasts = null;
 
+var state_cur_case = "confirmed";
+
 var state_svg = d3.select(state_map_id).append("svg")
     .attr("width", state_map_width)
     .attr("height", state_map_height)
@@ -552,10 +554,10 @@ function state_ready(all_data) {
 
             update_title_info("#state-info", 
                 cur_date_state, 
-                us_all_cases[the_state]["confirmed"][ind],
-                ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
-                us_all_cases[the_state]["deaths"][ind], 
-                ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
+                US_all_cases[the_state]["confirmed"][ind],
+                ind==0 ? 0 : US_all_cases[the_state]["confirmed"][ind-1], 
+                US_all_cases[the_state]["deaths"][ind], 
+                ind==0 ? 0 : US_all_cases[the_state]["deaths"][ind-1], 
                 null, 
                 null
             )
@@ -577,10 +579,10 @@ function state_ready(all_data) {
     
     update_title_info("#state-info", 
         cur_date_state, 
-        us_all_cases[the_state]["confirmed"][ind],
-        ind==0 ? 0 : us_all_cases[the_state]["confirmed"][ind-1], 
-        us_all_cases[the_state]["deaths"][ind], 
-        ind==0 ? 0 : us_all_cases[the_state]["deaths"][ind-1], 
+        US_all_cases[the_state]["confirmed"][ind],
+        ind==0 ? 0 : US_all_cases[the_state]["confirmed"][ind-1], 
+        US_all_cases[the_state]["deaths"][ind], 
+        ind==0 ? 0 : US_all_cases[the_state]["deaths"][ind-1], 
         null, 
         null
     )
