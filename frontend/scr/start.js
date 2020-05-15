@@ -76,4 +76,6 @@ class Setup {
     }
 }
 
+var is_scatter_plot_on = false;
+
 new Setup();

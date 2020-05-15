@@ -2,7 +2,7 @@ var scatter_plot_grid_container_id = "#scatter_plot-grid-container";
 var scatter_plot_id = "#scatter_plot-content";
 var scatter_plot_affiliation_id = "#scatter_plot-affiliation";
 
-is_scatter_plot_on = true; // default: false in main.js
+is_scatter_plot_on = true; // default: false in start.js
  
 var margin = { top: 10, right: 10, bottom: 20, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;

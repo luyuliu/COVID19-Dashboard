@@ -13,8 +13,6 @@ var circle_symbol_fills = {
 
 var default_case_name = "confirmed";
 
-var is_scatter_plot_on = false;
-
 function get_var_bounds(mapdata) {
     mapdata.sort(d3.ascending);
     minx = +mapdata[0];

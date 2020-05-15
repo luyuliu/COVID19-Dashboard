@@ -630,6 +630,10 @@ function us_ready() {
         var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
         update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
+        if (is_scatter_plot_on)
+            highlightDots(cur_US_region);
+
+
     }
     
     US_timelines_lines.enter().append("path")
