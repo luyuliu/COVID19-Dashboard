@@ -132,7 +132,7 @@ var state_map_friendly_names = {
     "PCT_TRANS": "Job in transportation (%)",
     "PCT_INFO": "Job in information (%)",
     "PCT_FIN": "Job in finance (%)",
-    "PCT_PRO": "Job in frofession (%)",
+    "PCT_PRO": "Job in profession (%)",
     "PCT_EDU": "Job in education (%)",
     "PCT_REC": "Job in recreation (%)",
     "PCT_OTHERS": "Job in others (%)",
