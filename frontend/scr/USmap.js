@@ -410,7 +410,7 @@ function us_ready() {
             return d;
         })
         .property("selected", function (d) {
-            if (d == default_case_name) {
+            if (d == US_cur_case) {
                 return true;
             }
             else {

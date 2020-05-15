@@ -440,7 +440,7 @@ function world_ready() { // TODO: LONG function!
             return d;
         })
         .property("selected", function (d) {
-            if (d == default_case_name) {
+            if (d == cur_case) {
                 return true;
             }
             else {
@@ -449,6 +449,7 @@ function world_ready() { // TODO: LONG function!
         })
 
     function worldThemeDropdownChange(e) {
+
         cur_case = $(this).val();
 
         d3.selectAll(".world_symbol")

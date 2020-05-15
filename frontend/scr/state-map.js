@@ -172,7 +172,7 @@ function init_state(status) {
         d3.json("data/state-counties/" + state_centroids_fname),
         d3.json("data/all-cases-data-processed-counties.json")
     ];
-
+    console.log(state_cur_case)
     Promise.all(state_promises).then(state_ready);
 
 }
@@ -419,6 +419,7 @@ function state_ready(all_data) {
         .attr("class", "state_symbol")
         // .attr("d", path)
         .attr("d", state_path.pointRadius(function (d, i) {
+            console.log(state_cur_case)
             if (d.properties) {
                 name = d.properties.GEOID; // xxxx
                 if (state_all_cases[name]) {
@@ -482,7 +483,7 @@ function state_ready(all_data) {
             return d;
         })
         .property("selected", function (d) {
-            if (d == default_case_name) {
+            if (d == state_cur_case) {
                 return true;
             }
             else {
@@ -548,6 +549,11 @@ function state_ready(all_data) {
             .domain([0, state_max]) // input 
             .range([state_timelines_height, 0]); // output 
 
+
+        state_radius = d3.scaleSqrt()
+            .domain([0, state_max])
+            .range([0, 30]);
+
         console.log(state_max)
 
         var state_line = d3.line()
@@ -607,6 +613,7 @@ function state_ready(all_data) {
 
     state_timelines_svg.append("g")
         .attr("class", "y axis")
+        .attr("id", "y_axis_state")
         .call(d3.axisLeft(state_yScale).ticks(4, "s")) // Create an axis component with d3.axisLeft
         ;
 
