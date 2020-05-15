@@ -36,10 +36,6 @@ var timelines_svg = null;
 var world_info_labels = null;
 var world_summary_info_labels = null;
 
-var radius = d3.scaleSqrt()
-    .domain([0, 1e4])
-    .range([0, 8]);
-
 var worldmap_svg = d3.select(world_map_id)
     .append("svg")
     .attr("id", "world_svg")
@@ -264,7 +260,7 @@ function world_ready() { // TODO: LONG function!
             return world_color_scheme(d["properties"][current_mapping_var]);
         })
         // .style("stroke", "#999")
-        .on("mouseover", function (d, i) {
+        .on("mouseover", function (d, i) { // choropleth map
             d3.select(this).interrupt();
             d3.select(this)
                 // .transition(t)
@@ -387,7 +383,7 @@ function world_ready() { // TODO: LONG function!
         .on("mouseenter", function (d) { // d is geojson obj
             timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, function (dd, i) {
                 if (dd == d.properties.NAME) {
-                    d3.select(this.parentNode).raise();
+                    d3.select(this).raise();
                     cur_world_region = dd;
                     return true;
                 }
@@ -448,25 +444,13 @@ function world_ready() { // TODO: LONG function!
             }
         })
 
-    function worldThemeDropdownChange(e) {
+    function worldThemeDropdownChange(e) { // TODO: a lot here are identical to before
 
         cur_case = $(this).val();
 
         d3.selectAll(".world_symbol")
             // .transition()
-            .style("fill", function (d) {
-                if (cur_case == "confirmed") {
-                    return "#de2d26"
-                }
-                else {
-                    if (cur_case == "recovered"){
-                        return "#30a326"
-                    }
-                    else{
-                        return "#000000"
-                    }
-                }
-            })
+            .style("fill", circle_symbol_fills[cur_case])
             .attr("d", path.pointRadius(function (d, i) {
                 if (d.properties) {
                     name = d.properties.NAME;
@@ -508,7 +492,7 @@ function world_ready() { // TODO: LONG function!
             .domain([0, world_max]) // input 
             .range([timelines_height, 0]); // output 
 
-        console.log(world_max)
+        // console.log(world_max)
 
         line_generator = d3.line()
             .x(function (d) { return xScale(d.x); }) // set the x values for the line generator
@@ -516,8 +500,8 @@ function world_ready() { // TODO: LONG function!
             .curve(d3.curveMonotoneX) // apply smoothing to the line
 
         d3.selectAll(".world_lines").remove();
-
         d3.selectAll(".world_line").remove();
+
         d3.select("#y_axis_world").call(d3.axisLeft(yScale).ticks(4, "s"))
 
         timelines_svg.selectAll(".world_line")
@@ -531,31 +515,14 @@ function world_ready() { // TODO: LONG function!
             //           return "#777";
             //       else
             //           return "#cdcdcd";})
-            .on("mouseover", function (d) {
-                timelines_svg.selectAll(".line").classed("world_highlight " + cur_case, function (dd, i) {
-                    if (dd == d) {
-                        cur_world_region = d;
-                        d3.select(this.parentNode).raise();
-                        return true;
-                    }
-                    return false;
-                });
-                // timelines_svg.selectAll(".text-label").style("display", function(dd) {
-                //     if (dd.label==d || country_names.includes(dd.label)) return "block";
-                //     else return "none";
-                // });
-                worldmap_svg.selectAll(".world_symbol").classed("highlight", function (dd, i) {
-                    return (dd.properties.NAME == d);
-                });
-
-            });
+            .on("mouseover", world_lines_mouseover);
 
 
 
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    // Line chart (well not the actual line is at, the actual line is in the label section)
+    // Line chart 1. SVG etc.
     /////////////////////////////////////////////////////////////////////////////
 
     var country_names = ["Mainland China", "USA", "Italy", "Japan"];
@@ -573,9 +540,6 @@ function world_ready() { // TODO: LONG function!
     });
 
     // alert(sub_dataset['USA'].length)
-    // not used
-    // var line_color = d3.scaleOrdinal(d3.schemeCategory10);
-    // line_color.domain(d3.keys(sub_dataset));
 
     var line_generator = d3.line()
         .x(function (d) { return xScale(d.x); }) // set the x values for the line generator
@@ -594,12 +558,14 @@ function world_ready() { // TODO: LONG function!
         .attr("id", "x_axis_world")
         .attr("transform", "translate(0," + timelines_height + ")")
         .call(d3.axisBottom(xScale).ticks(6)); // Create an axis component with d3.axisBottom
+
     timelines_svg.append("g")
         .attr("class", "y axis")
         .attr("id", "y_axis_world")
         .call(d3.axisLeft(yScale).ticks(4, "s")) // Create an axis component with d3.axisLeft
         ;
 
+    // now bind data later
     // timelines_svg.append("path")
     //     .data(sub_dataset) // 10. Binds data to the line 
     //     .attr("class", "line")// Assign a class for styling 
@@ -729,13 +695,33 @@ function world_ready() { // TODO: LONG function!
 
 
     /////////////////////////////////////////////////////////////////////////////
-    // labels
+    // lines
     /////////////////////////////////////////////////////////////////////////////
-
-    var timelines_labels = null;
 
     var timelines_lines = timelines_svg.selectAll(".line")
         .data(d3.keys(sub_dataset));
+
+    function world_lines_mouseover(d) { // lines, after theme change
+        timelines_svg.selectAll(".line").classed("world_highlight " + cur_case, function (dd, i) {
+            if (dd == d) {
+                cur_world_region = d;
+                d3.select(this).raise();
+                return true;
+            }
+            return false;
+        });
+        // timelines_svg.selectAll(".text-label").style("display", function(dd) {
+        //     if (dd.label==d || country_names.includes(dd.label)) return "block";
+        //     else return "none";
+        // });
+        worldmap_svg.selectAll(".world_symbol").classed("highlight", function (dd, i) {
+            return (dd.properties.NAME == d);
+        });
+
+        var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+        update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+
+    }
 
     timelines_lines.enter()
         .append("path")
@@ -747,24 +733,7 @@ function world_ready() { // TODO: LONG function!
         //           return "#777";
         //       else
         //           return "#cdcdcd";})
-        .on("mouseover", function (d) {
-            timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, function (dd, i) {
-                if (dd == d) {
-                    cur_world_region = d;
-                    d3.select(this.parentNode).raise();
-                    return true;
-                }
-                return false;
-            });
-            // timelines_svg.selectAll(".text-label").style("display", function(dd) {
-            //     if (dd.label==d || country_names.includes(dd.label)) return "block";
-            //     else return "none";
-            // });
-            worldmap_svg.selectAll(".world_symbol").classed("highlight", function (dd, i) {
-                return (dd.properties.NAME == d);
-            });
-
-        })
+        .on("mouseover", world_lines_mouseover)
         .on("mouseout", function (d) {
             // d3.select(this).classed("world_highlight", false); 
 
@@ -779,11 +748,16 @@ function world_ready() { // TODO: LONG function!
         })
         ;
 
-    timelines_labels = timelines_lines.append("text")
+    /////////////////////////////////////////////////////////////////////////////
+    // labels
+    /////////////////////////////////////////////////////////////////////////////
+
+    var timelines_labels = null;
+
+    timelines_labels = timelines_lines.enter().append("text")
         .attr("class", "text-label")
         // .style("fill", function(d) { return line_color(d); })
         .text(function (d) {
-            // if (country_names.includes(d))
             return d;
         })
         .attr("dy", ".35em")

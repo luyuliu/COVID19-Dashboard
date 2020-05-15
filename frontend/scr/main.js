@@ -1,11 +1,19 @@
 // friendly names to display type of cases
 var case_names = {
     "confirmed": "Confirmed",
-    "deaths": "Death",
-    // "recovered": "Recovered"
+    "deaths": "Deaths",
+    "recovered": "Recovered"
+}
+
+var circle_symbol_fills = {
+    "confirmed": "#de2d26",
+    "deaths": "#1e1e1e",
+    "recovered": "#30a326"
 }
 
 var default_case_name = "confirmed";
+
+var is_scatter_plot_on = false;
 
 function get_var_bounds(mapdata) {
     mapdata.sort(d3.ascending);
@@ -28,10 +36,10 @@ function getColorx(val, bounds) {
 // date the info on the title bar
 function update_title_info(the_id, the_date, casenum1, casenum10, casenum2, casenum20, casenum3, casenum30) {
     var title_info = `${case_date_format_full(the_date)} <br/>
-        <span style="color: red">${d3.format(",")(casenum1)}</span> confirmed (+${d3.format(",")(casenum1 - casenum10)})<br/>
-        <span style="color: black">${d3.format(",")(casenum2)}</span> deaths (+${d3.format(",")(casenum2 - casenum20)})`
+        <span style="color: ${circle_symbol_fills["confirmed"]}">${d3.format(",")(casenum1)}</span> confirmed (+${d3.format(",")(casenum1 - casenum10)})<br/>
+        <span style="color: ${circle_symbol_fills["deaths"]}">${d3.format(",")(casenum2)}</span> deaths (+${d3.format(",")(casenum2 - casenum20)})`
     if (casenum3 != null)
-        title_info += `<br/><span style="color: #30a326">${d3.format(",")(casenum3)}</span> recovered (+${d3.format(",")(casenum3 - casenum30)})`
+        title_info += `<br/><span style="color: ${circle_symbol_fills["recovered"]}">${d3.format(",")(casenum3)}</span> recovered (+${d3.format(",")(casenum3 - casenum30)})`
     d3.selectAll(the_id).html(title_info)
 }
 
@@ -39,17 +47,7 @@ function update_title_info(the_id, the_date, casenum1, casenum10, casenum2, case
 function update_info_labels(labs, place, datev, datei, casename, val) {
     labs[0].text(`${case_date_format_MD(datev)}: ${place}`); //  - Day ${datei}
     labs[1].text(`${case_names[casename]}: ${d3.format(",")(val)}`).style("fill", function (e) {
-        if (casename == "confirmed") {
-            return "#de2d26"
-        }
-        else {
-            if (casename == "recovered") {
-                return "#30a326"
-            }
-            else {
-                return "#000000"
-            }
-        }
+        return circle_symbol_fills[casename];
     });
 }
 

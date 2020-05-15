@@ -2,7 +2,8 @@ var scatter_plot_grid_container_id = "#scatter_plot-grid-container";
 var scatter_plot_id = "#scatter_plot-content";
 var scatter_plot_affiliation_id = "#scatter_plot-affiliation";
 
-
+is_scatter_plot_on = true; // default: false in main.js
+ 
 var margin = { top: 10, right: 10, bottom: 20, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;
 var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom -30;
@@ -17,7 +18,6 @@ var sp_svg = d3.select(scatter_plot_id).append("svg")
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
 
 var se_ind_list = [["pct_chldn", "Children (Aged 0 - 14) (%)"], ["pct_youth", "Youth (Aged 15 - 24) (%)"],
 				["pct_ad", "Adults (Aged 25 - 64) (%)"], ["pct_sr", "Seniors (Aged above 64) (%)"],

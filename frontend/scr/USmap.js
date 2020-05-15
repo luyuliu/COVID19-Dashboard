@@ -185,7 +185,7 @@ function us_ready() {
             })
             .style("stroke", "#aaa")
             .style("stroke-width", 0.5)
-            .on("mouseover", function (d, i) {
+            .on("mouseover", function (d, i) { // choropleth
                 d3.select(this).interrupt();
                 d3.select(this)
                     // .transition(t)
@@ -346,7 +346,8 @@ function us_ready() {
         .on("mouseenter", function (d) { // d is geojson obj
             US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
                 if (dd == d.properties.postal) {
-                    d3.select(this.parentNode).raise();
+                    // alert(this)
+                    d3.select(this).raise();
                     cur_US_region = dd;
                     return true;
                 }
@@ -363,21 +364,10 @@ function us_ready() {
             d3.select(this).classed("highlight", true);
 
             var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-
-            // v1 = us_abbr_inv[cur_US_region];
-            // v2 = case_date_format(cur_date_US);
-            // v3 = `[Day ${ind}]`;
-            // v4 = case_names[US_cur_case];
-            // v5 = d3.format(",")(`${US_all_cases[cur_US_region][US_cur_case][ind]}`);
-            // update_info_labels(US_info_labels, v1, v2, v3, v3, v5);
             update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
-            // US_info_labels[0].text(`${us_abbr_inv[cur_US_region]} ${case_date_format(cur_date_US)} [Day ${ind}]`);
-            // var val = d3.format(",")(`${US_all_cases[cur_US_region][US_cur_case][ind]}`)
-            // US_info_labels[1].text(`${case_names[US_cur_case]}: ${val}`);
-
-            highlightDots(cur_US_region);
-
+            if (is_scatter_plot_on)
+                highlightDots(cur_US_region);
         })
         .on("mouseout", function (d) {
             US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
@@ -423,19 +413,8 @@ function us_ready() {
 
         d3.selectAll(".US_symbol")
             // .transition()
-            .style("fill", function (d) {
-                if (US_cur_case == "confirmed") {
-                    return "#de2d26"
-                }
-                else {
-                    if (US_cur_case == "recovered") {
-                        return "#30a326"
-                    }
-                    else {
-                        return "#000000"
-                    }
-                }
-            })
+            .style("fill", circle_symbol_fills[US_cur_case])
+
             .attr("d", US_path.pointRadius(function (d, i) {
                 if (d.properties) {
                     name = d.properties.postal;
@@ -477,7 +456,7 @@ function us_ready() {
             .domain([0, US_max]) // input 
             .range([US_timelines_height, 0]); // output 
 
-        console.log(US_max)
+        // console.log(US_max)
 
         var US_line = d3.line()
             .x(function (d) { return US_xScale(d.x); }) // set the x values for the line generator
@@ -500,27 +479,7 @@ function us_ready() {
             //           return "#777";
             //       else
             //           return "#cdcdcd";})
-            .on("mouseover", function (d) {
-                US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
-                    if (dd == d) {
-                        cur_US_region = d;
-                        d3.select(this.parentNode).raise();
-                        return true;
-                    }
-                    return false;
-                });
-                // timelines_svg.selectAll(".text-label").style("display", function(dd) {
-                //     if (dd.label==d || country_names.includes(dd.label)) return "block";
-                //     else return "none";
-                // });
-                US_svg.selectAll(".US_symbol").classed("highlight", function (dd, i) {
-                    return (dd.properties.postal == d);
-                });
-
-            });
-
-
-
+            .on("mouseover", us_lines_mouseover);
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -643,7 +602,7 @@ function us_ready() {
 
 
     /////////////////////////////////////////////////////////////////////////////
-    // labels
+    // lines
     /////////////////////////////////////////////////////////////////////////////
 
     var US_timelines_lines = US_timelines_svg.selectAll(".lines")
@@ -651,6 +610,28 @@ function us_ready() {
 
     // .attr("class", "lines")
 
+    function us_lines_mouseover(d) {
+        US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
+            if (dd == d) {
+                cur_US_region = d;
+                d3.select(this).raise();
+                return true;
+            }
+            return false;
+        });
+        // timelines_svg.selectAll(".text-label").style("display", function(dd) {
+        //     if (dd.label==d || country_names.includes(dd.label)) return "block";
+        //     else return "none";
+        // });
+        US_svg.selectAll(".US_symbol").classed("highlight", function (dd, i) {
+            return (dd.properties.postal == d);
+        });
+
+        var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
+        update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
+
+    }
+    
     US_timelines_lines.enter().append("path")
         .attr("class", "line US_line")
         .attr("d", function (d) { return US_line(US_sub_dataset[d]); })
@@ -660,25 +641,7 @@ function us_ready() {
         //           return "#777";
         //       else
         //           return "#cdcdcd";})
-        .on("mouseover", function (d) {
-            US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
-                if (dd == d) {
-                    cur_US_region = d;
-                    highlightDots(cur_US_region);
-                    return true;
-                }
-                else return false;
-            });
-            // US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-            //     if (dd.label == d || US_names.includes(dd.label)) return "block";
-            //     else return "none";
-            // });
-            US_svg.selectAll(".US_symbol").classed("highlight", function (dd, i) {
-                return (dd.properties.postal == d);
-            });
-            d3.select(this.parentNode).raise();
-
-        })
+        .on("mouseover", us_lines_mouseover)
         .on("mouseout", function (d) {
             // US_timelines_svg.selectAll(".text-label").style("display", function(d) {
             //     if (US_names.includes(d.label))
@@ -691,7 +654,11 @@ function us_ready() {
         })
         ;
 
-    US_timelines_lines.append("text")
+    /////////////////////////////////////////////////////////////////////////////
+    // labels
+    /////////////////////////////////////////////////////////////////////////////
+
+    US_timelines_lines.enter().append("text")
         .attr("class", "text-label")
         .text(function (d) {
             // if (US_names.includes(d))

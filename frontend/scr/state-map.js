@@ -7,6 +7,8 @@ var the_state = 'OH',
     state_geojson_fname = the_state + "_geog.geojson",
     state_centroids_fname = the_state + "_centroids.geojson";
 
+var theme_circle_sizes = {"confirmed": 30, "deaths": 15};
+
 var maptype = 'geojson';
 
 var state_map_width = $(state_map_container_id).width();
@@ -31,16 +33,58 @@ var cur_state_region = null; // "39049"; // TODO: get this automatically, using 
 
 // 36.854458, -119.764541    
 var state_projection_params = {
-    "AK": { "angles": [160, -60, 0], "scale": 600 },
-    "CA": { "angles": [120, -36.1, 0], "scale": 1600 },
-    "DC": { "angles": [77.03, -38.87, 0], "scale": 75000 },
-    "FL": { "angles": [83.5, -27.5, 0], "scale": 2000 },
-    "HI": { "angles": [158, -20.2, 0], "scale": 2000 },
-    "IA": { "angles": [93.5, -41.8, 0], "scale": 4000 },
-    "MD": { "angles": [77.5, -38.7, 0], "scale": 6000 },
-    "OH": { "angles": [83, -39.8, 0], "scale": 4000 },
-    "NY": { "angles": [76, -42.6, 0], "scale": 2500 },
-    "VA": { "angles": [79.5, -37.5, 0], "scale": 3000 }
+    "AK": { "name": "Alaska", "angles": [160, -60, 0], "scale": 600 },
+    "CA": { "name": "California", "angles": [120, -36.1, 0], "scale": 1600 },
+    "DC": { "name": "District of Columbia", "angles": [77.03, -38.87, 0], "scale": 75000 },
+    "FL": { "name": "Florida", "angles": [83.5, -27.5, 0], "scale": 2000 },
+    "HI": { "name": "Hawaii", "angles": [158, -20.2, 0], "scale": 2000 },
+    "IA": { "name": "Iowa", "angles": [93.5, -41.8, 0], "scale": 4000 },
+    "MD": { "name": "Maryland", "angles": [77.5, -38.7, 0], "scale": 6000 },
+    "OH": { "name": "Ohio", "angles": [83, -39.8, 0], "scale": 4000 },
+    "NY": { "name": "New York", "angles": [76, -42.6, 0], "scale": 2500 },
+    "VA": { "name": "Virginia", "angles": [79.5, -37.5, 0], "scale": 3000 },
+    
+    "AL": { "name": "Alabama", "angles": [87, -32, 0], "scale": 4000 },
+    "AZ": { "name": "Arizona", "angles": [111, -34, 0], "scale": 2500 },
+    "AR": { "name": "Arkansas", "angles": [92, -34.7, 0], "scale": 4000 },
+    "CO": { "name": "Colorado", "angles": [105.3, -39, 0], "scale": 4000 },
+    "CT": { "name": "Connecticut", "angles": [72.7, -41.6, 0], "scale": 12000 },
+    "DE": { "name": "Delaware", "angles": [75.5, -39, 0], "scale": 14000 },
+    "GA": { "name": "Georgia", "angles": [83.5, -32, 0], "scale": 4000 },
+    "ID": { "name": "Idaho", "angles": [114.5, -44.5, 0], "scale": 2000 },
+    "IL": { "name": "Illinois", "angles": [89, -39.5, 0], "scale": 3500 },
+    "IN": { "name": "Indiana", "angles": [86, -39.5, 0], "scale": 4500 },
+    "KS": { "name": "Kansas", "angles": [98, -38.5, 0], "scale": 2700 },
+    "KY": { "name": "Kentucky", "angles": [85, -37.8, 0], "scale": 3200 },
+    "LA": { "name": "Louisiana", "angles": [92, -30.4, 0], "scale": 3800 },
+    "ME": { "name": "Maine", "angles": [69, -45, 0], "scale": 4000 },
+    "MA": { "name": "Massachusetts", "angles": [72, -41.8, 0], "scale": 8000 },
+    "MI": { "name": "Michigan", "angles": [84.8, -44, 0], "scale": 2500 },
+    "MN": { "name": "Minnesota", "angles": [94.6, -46, 0], "scale": 2500 },
+    "MS": { "name": "Mississippi", "angles": [90, -32.5, 0], "scale": 3400 },
+    "MO": { "name": "Missouri", "angles": [92.6, -38.5, 0], "scale": 3500 },
+    "MT": { "name": "Montana", "angles": [109.5, -47, 0], "scale": 2000 },
+    "NE": { "name": "Nebraska", "angles": [100, -41, 0], "scale": 3200 },
+    "NV": { "name": "Nevada", "angles": [117.2, -38.5, 0], "scale": 2000 },
+    "NH": { "name": "New Hampshire", "angles": [71.5, -43.5, 0], "scale": 5500 },
+    "NJ": { "name": "New Jersey", "angles": [74.9, -39.8, 0], "scale": 6500 },
+    "NM": { "name": "New Mexico", "angles": [106, -34.3, 0], "scale": 2700 },
+    "NC": { "name": "North Carolina", "angles": [80.1, -35.1, 0], "scale": 2700 },
+    "ND": { "name": "North Dakota", "angles": [100.4, -47, 0], "scale": 3000 },
+    "OK": { "name": "Oklahoma", "angles": [99, -35.5, 0], "scale": 2600 },
+    "OR": { "name": "Oregon", "angles": [120.5, -44, 0], "scale": 2500 },
+    "PA": { "name": "Pennsylvania", "angles": [77, -41, 0], "scale": 3500 },
+    "RI": { "name": "Rhode Island", "angles": [71.5, -41.7, 0], "scale": 30000 },
+    "SC": { "name": "South Carolina", "angles": [81.2, -33.8, 0], "scale": 3500 },
+    "SD": { "name": "South Dakota", "angles": [100, -44.5, 0], "scale": 2800 },
+    "TN": { "name": "Tennessee", "angles": [86.7, -35.8, 0], "scale": 2800 },
+    "TX": { "name": "Texas", "angles": [100, -31, 0], "scale": 1500 },
+    "UT": { "name": "Utah", "angles": [112, -39.4, 0], "scale": 2600 },
+    "WA": { "name": "Washington", "angles": [120.7, -47, 0], "scale": 2700 },
+    "WI": { "name": "Wisconsin", "angles": [88.7, -43.7, 0], "scale": 4000 },
+    "WV": { "name": "West Virginia", "angles": [80.5, -38, 0], "scale": 3500 },
+    "WY": { "name": "Wyoming", "angles": [107.3, -43, 0], "scale": 2600 },
+    "VT": { "name": "Vermont", "angles": [72.7, -44, 0], "scale": 6000 }
 }
 
 var mystates = d3.keys(state_projection_params);
@@ -126,7 +170,7 @@ d3.select("#select-state")
     .append("option")
     .attr("value", function (d) { return d; })
     .property("selected", function (d) { return d == the_state; })
-    .text(function (d) { return d; })
+    .text(function (d) { return state_projection_params[d].name; })
     ;
 
 // status = 0 --- first every call
@@ -163,6 +207,9 @@ function init_state(status) {
         state_timelines_svg.selectAll(".hover-text").remove();
         state_timelines_svg.selectAll(".overlay").remove();
         state_timelines_svg.selectAll(".hover-rect").remove();
+
+        d3.selectAll(".state_line").remove(); // need this here too
+
         state_timelines_lines.remove();
         state_timelines_hoverLine.remove();
     }
@@ -172,9 +219,8 @@ function init_state(status) {
         d3.json("data/state-counties/" + state_centroids_fname),
         d3.json("data/all-cases-data-processed-counties.json")
     ];
-    console.log(state_cur_case)
+    // console.log(state_cur_case)
     Promise.all(state_promises).then(state_ready);
-
 }
 
 function state_ready(all_data) {
@@ -206,10 +252,13 @@ function state_ready(all_data) {
     })
     fips_to_name["00"] = "State Wide";
 
-
     state_radius = d3.scaleSqrt()
         .domain([0, state_max])
-        .range([0, 30]);
+        .range([0, theme_circle_sizes[state_cur_case]]);
+
+    // state_radius = d3.scaleSqrt()
+    //     .domain([0, state_max])
+    //     .range([0, 30]);
 
     /////////////////////////////////////////////////////////////////////////////
     // Necessary scales  
@@ -230,26 +279,11 @@ function state_ready(all_data) {
     // State choropleth map
     /////////////////////////////////////////////////////////////////////////
 
-
     state_all_mapping_vars = [];
     state_list_mapping_var = [];
     state_current_mapping_var = "MED_HH_INC";
     init_choropleth(state_current_mapping_var, state_geojson, state_list_mapping_var, state_all_mapping_vars);
 
-    // for (i=0; i<state_geojson.features.length; i++) {
-    //     if (i == 0) {
-    //         var properties = state_geojson.features[i]["properties"];
-    //         for (var key in properties) {
-    //             var node = properties[key];
-    //             if (!isNaN(+node) && key!='GEOID') {
-    //                 state_list_mapping_var.push(key);
-    //             }
-    //         }
-    //     }
-    // 	var val = state_geojson.features[i]["properties"][state_current_mapping_var];
-    // 	if (val != null)
-    //     	state_all_mapping_vars[i] = val;
-    // }
     state_bounds = get_var_bounds(state_all_mapping_vars);
     var state_color_scheme = d3.scaleThreshold()
         .domain(state_bounds)
@@ -310,28 +344,6 @@ function state_ready(all_data) {
 
     make_legend(statemap_legend_svg, "#state-legend", state_color_scheme, statemap_legend_width, "vertical");
 
-    // var state_legend_linear = d3.legendColor()
-    //     .labelFormat(d3.format(".2f"))
-    //     .labels(d3.legendHelpers.thresholdLabels)
-    //     // .useClass(true)
-    //     .scale(state_color_scheme)
-    //     .shapeWidth(statemap_legend_width / 4.1)
-    //     .orient('horizontal');
-    // 
-    // statemap_legend_svg.select("#state-legend")
-    //     .call(state_legend_linear);
-
-    // // Legend title 
-    // legendg.append("text")
-    //     .attr("class", "caption")
-    //     .attr("x", 0)
-    //     .attr("y", -6)
-    //     .attr("fill", "#000")
-    //     .attr("font-size", "20px")
-    //     .attr("text-anchor", "start")
-    //     .attr("font-weight", "bold")
-    //     .text(state_current_mapping_var)
-
     state_dropdown = d3.select(state_affiliation_id)
         .insert("select", "svg")
         .attr("id", "state-choreopleth-select")
@@ -358,21 +370,7 @@ function state_ready(all_data) {
     function stateDropdownChange(e) {
         state_current_mapping_var = $("#state-choreopleth-select").val();
         init_choropleth(state_current_mapping_var, state_geojson, state_list_mapping_var, state_all_mapping_vars);
-        // for (i = 0; i < state_geojson.features.length; i++) {
-        //     if (i == 0) {
-        //         var properties = state_geojson.features[i]["properties"];
-        //         for (var key in properties) {
-        //             var node = properties[key];
-        //             if (!isNaN(+node)) {
-        //                 state_list_mapping_var.push(key); // 
-        //                 alert(key)
-        //             }
-        //         }
-        //     }
-        //     var val = state_geojson.features[i]["properties"][state_current_mapping_var];
-        //     if (val != null)
-        //         state_all_mapping_vars[i] = val;
-        // }
+        
         state_bounds = get_var_bounds(state_all_mapping_vars);
 
         state_color_scheme = d3.scaleThreshold()
@@ -398,7 +396,7 @@ function state_ready(all_data) {
         // 
         // statemap_legend_svg.select("#state-legend")
         //     .call(state_legend_linear);
-    }
+    } // end stateDropdownChange -- choropleth
 
     //////////////////////////////////////////////////////////////////////////
     // centroids
@@ -417,9 +415,9 @@ function state_ready(all_data) {
         }))
         .enter().append("path")
         .attr("class", "state_symbol")
+        .style("fill", circle_symbol_fills[state_cur_case])
         // .attr("d", path)
         .attr("d", state_path.pointRadius(function (d, i) {
-            console.log(state_cur_case)
             if (d.properties) {
                 name = d.properties.GEOID; // xxxx
                 if (state_all_cases[name]) {
@@ -435,7 +433,7 @@ function state_ready(all_data) {
         .on("mouseenter", function (d) { // d is geojson obj
             state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
                 if (dd == d.properties.GEOID) {
-                    d3.select(this.parentNode).raise();
+                    d3.select(this).raise();
                     cur_state_region = dd;
                     return true;
                 }
@@ -466,141 +464,8 @@ function state_ready(all_data) {
         ;
 
 
-
-    var themeDropdown = d3.select("#state_map-content")
-        .insert("select", "svg")
-        .attr("id", "state-theme-select")
-        .attr("class", "select-css theme")
-        .style("position", "absolute")
-        .on("change", stateThemeDropdownChange);
-
-
-    themeDropdown.selectAll("option")
-        .data(state_case_names_list)
-        .enter().append("option")
-        .attr("value", function (d) { return d; })
-        .text(function (d) {
-            return d;
-        })
-        .property("selected", function (d) {
-            if (d == state_cur_case) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        })
-
-    function stateThemeDropdownChange(e) {
-        state_cur_case = $(this).val();
-
-        d3.selectAll(".state_symbol")
-            // .transition()
-            .style("fill", function (d) {
-                if (state_cur_case == "confirmed") {
-                    return "#de2d26"
-                }
-                else {
-                    if (state_cur_case == "recovered") {
-                        return "#30a326"
-                    }
-                    else {
-                        return "#000000"
-                    }
-                }
-            })
-            .attr("d", state_path.pointRadius(function (d, i) {
-                if (d.properties) {
-                    name = d.properties.GEOID;
-                    if (state_all_cases[name]) {
-                        return state_radius(state_all_cases[name][state_cur_case].slice(-1)[0]);
-                    }
-                }
-                return state_radius(0);
-            }))
-
-        // Update the labels
-        var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
-        update_info_labels(state_info_labels, cur_state_region, cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
-
-
-        // Create new data for the line chart
-        sub_dataset = {};
-        var case_maxs = [];
-
-        d3.keys(state_all_cases).forEach(function (d, i) { // go through all countries
-            var val = state_all_cases[d][state_cur_case].slice(-1)[0];
-            case_maxs[i] = val;
-        });
-
-        state_max = d3.max(case_maxs);
-
-        d3.keys(state_all_cases).forEach(function (d, i) {
-            sub_dataset[d] = d3.range(n).map(function (i) {
-                return {
-                    x: +state_toXScale(i),
-                    y: state_all_cases[d][state_cur_case][i]
-                }
-            })
-        });
-
-
-        var state_yScale = d3.scaleLinear()
-            .domain([0, state_max]) // input 
-            .range([state_timelines_height, 0]); // output 
-
-
-        state_radius = d3.scaleSqrt()
-            .domain([0, state_max])
-            .range([0, 30]);
-
-        console.log(state_max)
-
-        var state_line = d3.line()
-            .x(function (d) { return state_xScale(d.x); }) // set the x values for the line generator
-            .y(function (d) { return state_yScale(d.y); }) // set the y values for the line generator 
-            .curve(d3.curveMonotoneX) // apply smoothing to the line
-
-        d3.selectAll(".state_lines").remove();
-
-        d3.selectAll(".state_line").remove();
-        d3.select("#y_axis_state").call(d3.axisLeft(state_yScale).ticks(4, "s"))
-
-        state_timelines_svg.selectAll(".state_line")
-            .data(d3.keys(sub_dataset)).enter()
-            .append("path")
-            .attr("class", "line state_line")
-            .attr("d", function (d) { return state_line(sub_dataset[d]); })
-            // .style("stroke-width", 1)
-            // .style("stroke", function(d) { 
-            //       if (country_names.includes(d))
-            //           return "#777";
-            //       else
-            //           return "#cdcdcd";})
-            .on("mouseover", function (d) {
-                state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
-                    if (dd == d) {
-                        cur_state_region = d;
-                        d3.select(this.parentNode).raise();
-                        return true;
-                    }
-                    return false;
-                });
-                // timelines_svg.selectAll(".text-label").style("display", function(dd) {
-                //     if (dd.label==d || country_names.includes(dd.label)) return "block";
-                //     else return "none";
-                // });
-                state_svg.selectAll(".state_symbol").classed("highlight", function (dd, i) {
-                    return (dd.properties.GEOID == d);
-                });
-
-            });
-
-
-
-    }
     /////////////////////////////////////////////////////////////////////////////
-    // Multiple Line chart 
+    // Multiple Line chart: svg, etc.
     /////////////////////////////////////////////////////////////////////////////
     state_yScale = d3.scaleLinear()
         .domain([0, state_max]) // input  TODO: get max
@@ -726,12 +591,34 @@ function state_ready(all_data) {
     )
 
     /////////////////////////////////////////////////////////////////////////////
-    // labels
+    // lines
     /////////////////////////////////////////////////////////////////////////////
 
     state_timelines_lines = state_timelines_svg.selectAll(".line")
         .data(d3.keys(state_sub_dataset))
 
+    function state_lines_mouseover(d) {
+        state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
+            if (dd == d) {
+                cur_state_region = dd;
+                return true;
+            }
+            else return false;
+        });
+        // state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+        //     if (dd.label == d || state_names.includes(dd.label)) return "block";
+        //     else return "none";
+        // });
+        state_svg.selectAll(".state_symbol").classed("highlight", function (dd, i) {
+            return (dd.properties.GEOID == d);
+        });
+        d3.select(this).raise();
+        
+        var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+        update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+
+    }
+    
     state_timelines_lines.enter().append("path")
         .attr("class", "line state_line")
         .attr("d", function (d) { return state_line(state_sub_dataset[d]); })
@@ -741,23 +628,7 @@ function state_ready(all_data) {
         //           return "#777";
         //       else
         //           return "#cdcdcd";})
-        .on("mouseover", function (d) {
-            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
-                if (dd == d) {
-                    cur_state_region = dd;
-                    return true;
-                }
-                else return false;
-            });
-            // state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-            //     if (dd.label == d || state_names.includes(dd.label)) return "block";
-            //     else return "none";
-            // });
-            state_svg.selectAll(".state_symbol").classed("highlight", function (dd, i) {
-                return (dd.properties.GEOID == d);
-            });
-            d3.select(this.parentNode).raise();
-        })
+        .on("mouseover", state_lines_mouseover)
         .on("mouseout", function (d) {
             // state_timelines_svg.selectAll(".text-label").style("display", function(d) {
             //     if (state_names.includes(d.label))
@@ -771,7 +642,12 @@ function state_ready(all_data) {
         ;
 
 
-    state_timelines_lines.append("text")
+    /////////////////////////////////////////////////////////////////////////////
+    // labels
+    /////////////////////////////////////////////////////////////////////////////
+
+    // If we don't show all names, this can be just those in state_names
+    state_timelines_lines.enter().append("text")
         .attr("class", "text-label")
         .text(function (d) {
             // if (state_names.includes(d))
@@ -810,4 +686,139 @@ function state_ready(all_data) {
         .attr("y", 20);
 
 
+
+//// change theme
+
+
+    var themeDropdown = d3.select("#state_map-content")
+        .insert("select", "svg")
+        .attr("id", "state-theme-select")
+        .attr("class", "select-css theme")
+        .style("position", "absolute")
+        .on("change", stateThemeDropdownChange);
+
+
+    themeDropdown.selectAll("option")
+        .data(state_case_names_list)
+        .enter().append("option")
+        .attr("value", function (d) { return d; })
+        .text(function (d) {
+            return d;
+        })
+        .property("selected", function (d) {
+            if (d == state_cur_case) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        })
+
+    function stateThemeDropdownChange(e) {
+        state_cur_case = $(this).val();
+        
+        state_timelines_lines.remove();
+        // d3.selectAll(".state_lines").remove();
+        d3.selectAll(".state_line").remove();
+        state_timelines_svg.selectAll(".text-label").remove();
+
+        // Create new data for the line chart
+        state_sub_dataset = {};
+        var case_lasts = [];
+        d3.keys(state_all_cases).forEach(function (d, i) {
+            var val = state_all_cases[d][state_cur_case].slice(-1)[0];
+            case_lasts[i] = { "cnty": d, "val": val };
+        });
+
+        sorted_case_lasts = case_lasts.slice().sort((a, b) => d3.descending(a.val, b.val))
+        state_max = sorted_case_lasts[0].val;
+
+        cur_state_region = sorted_case_lasts[0].cnty; // get the max value and median
+        mid = parseInt(sorted_case_lasts.length / 2);
+        state_names = [cur_state_region, sorted_case_lasts[mid].cnty]; // max and middle
+        
+        // Update the labels using the largest num
+        var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+        update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+
+
+
+        state_radius = d3.scaleSqrt()
+            .domain([0, state_max])
+            .range([0, theme_circle_sizes[state_cur_case]]);
+
+        d3.keys(state_all_cases).forEach(function (d, i) {
+            state_sub_dataset[d] = d3.range(n).map(function (i) {
+                return {
+                    x: +state_toXScale(i),
+                    y: state_all_cases[d][state_cur_case][i]
+                }
+            })
+        });
+
+        var state_yScale = d3.scaleLinear()
+            .domain([0, state_max]) // input 
+            .range([state_timelines_height, 0]); // output 
+
+        var state_line = d3.line()
+            .x(function (d) { return state_xScale(d.x); }) // set the x values for the line generator
+            .y(function (d) { return state_yScale(d.y); }) // set the y values for the line generator 
+            .curve(d3.curveMonotoneX) // apply smoothing to the line
+
+            
+        d3.select("#y_axis_state").call(d3.axisLeft(state_yScale).ticks(4, "s"))
+
+        state_timelines_svg.selectAll(".state_line")
+            .data(d3.keys(state_sub_dataset)).enter()
+            .append("path")
+            .attr("class", "line state_line")
+            .attr("d", function (d) { return state_line(state_sub_dataset[d]); })
+            // .style("stroke-width", 1)
+            // .style("stroke", function(d) { 
+            //       if (country_names.includes(d))
+            //           return "#777";
+            //       else
+            //           return "#cdcdcd";})
+            .on("mouseover", state_lines_mouseover);
+        
+        state_timelines_lines.enter().append("text")
+            .attr("class", "text-label")
+            .text(function (d) {
+                // if (state_names.includes(d))
+                return fips_to_name[d];
+            })
+            .attr("dy", ".35em")
+            .datum(function (d) {
+                // alert(state_sub_dataset[d].slice(-1)[0].y);
+                return {
+                    label: d,
+                    x: state_sub_dataset[d].slice(-1)[0].x,
+                    y: state_sub_dataset[d].slice(-1)[0].y
+                };
+            })
+            .attr("x", function (d) { return state_xScale(d.x) + 3; })
+            .attr("y", function (d) { return state_yScale(d.y); })
+            .style("display", function (d) {
+                if (state_names.includes(d.label))
+                    return "block";
+                else
+                    return "none";
+            });
+
+
+        d3.selectAll(".state_symbol")
+            // .transition()
+            .style("fill", circle_symbol_fills[state_cur_case])
+            .attr("d", state_path.pointRadius(function (d, i) {
+                if (d.properties) {
+                    name = d.properties.GEOID;
+                    if (state_all_cases[name]) {
+                        return state_radius(state_all_cases[name][state_cur_case].slice(-1)[0]);
+                    }
+                }
+                return state_radius(0);
+            }))
+
+
+    } // end of theme dropdown
 }
