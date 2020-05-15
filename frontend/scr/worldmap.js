@@ -207,7 +207,7 @@ function world_ready() { // TODO: LONG function!
         "POP_CHLDN": "Children (%)",
         "POP_AD": "Aldults (%)",
         "POP_YOUTH": "Youth (%)",
-        "ECON_GNI": "GNI Per Capita"
+        "ECON_GNI": "GNI Per Capita ($)"
     }
 
     all_mapping_vars = [];
