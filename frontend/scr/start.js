@@ -22,9 +22,9 @@ class Setup {
 
         this.settingGrid = { // card congifuration, should be updated dynamically
             'upcoming': { x: 4, y: 4, width: this.squareWidth, height: this.squareHeight*3, id: "next_plot", title: "Coming soon!", type: "plot" },
-            'scatter_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "scatter_plot", title: "Scatter plot", type: "plot" },
+            'scatter_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "scatter_plot", title: '<div id="scatter-plot-title">Scatter plot</div>', type: "plot" },
             'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "world_plot", title: "World Cases by Country", type: "plot" },
-            'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_plot", title: "US Cases by State", type: "plot" },
+            'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_plot", title: "U.S. Cases by State", type: "plot" },
             'state_plot':   { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "state_plot", title: "State Cases by County", type: "plot" },
             'world_map':    { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "world_map", title: '<div id="world-info">World</div>', type: "map"},
             'US_map':       { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*4, id: "US_map", title: '<div id="us-info">United States</div>', type: "map" },
@@ -75,6 +75,34 @@ class Setup {
         $("#" + node.id + '-affiliation').append('<div class="' + node.type + '-legend-content" id="' + node.id + '-legend">');
     }
 }
+
+
+var start_date = null;
+var end_date = null;
+var cur_date_world = null;
+var cur_date_us = null;
+var cur_date_state = null;
+var sync_time_lines = true;
+var fips_to_name = null;
+var us_abbr_inv = null;
+var total_days = null;
+var state_start_date = null;
+var state_end_date = null;
+
+var case_date_parser = d3.timeParse("%m-%d-%Y");
+var case_date_parser_inv = d3.timeFormat("%m-%d-%Y");
+var case_date_format = d3.timeFormat("%m/%d");
+var case_date_format_MD = d3.timeFormat("%B %d");
+var case_date_format_full = d3.timeFormat("%B %d, %Y");
+
+var world_centroids = null;
+var all_cases = null;;
+var world0 = null;;
+
+var US_geojson = null;
+var us_centroids = null;
+var US_all_cases = null;
+var us_abbr_inv = null;
 
 var is_scatter_plot_on = false;
 

@@ -2,6 +2,7 @@ var scatter_plot_grid_container_id = "#scatter_plot-grid-container";
 var scatter_plot_id = "#scatter_plot-content";
 var scatter_plot_affiliation_id = "#scatter_plot-affiliation";
 
+is_scatter_plot_on = true;
 
 var margin = { top: 10, right: 10, bottom: 50, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;
@@ -10,6 +11,7 @@ var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bo
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 var curr_state = "OH";
+update_scatter_plot_title("#scatter-plot-title", curr_state);
 
 var se_ind_list = [["TOT_POP", "Total Population"],
     ["TOT_HH", "Total Household"],
@@ -47,7 +49,16 @@ se_ind_dropdown.selectAll("option")
 	.data(se_ind_list)
     .enter().append("option")
     .attr("value", function (d) { return d[0]; })
-    .text(function (d) { return d[1]; });
+    .text(function (d) { return d[1]; })
+    .property("selected", function (d) {
+        if (d[0] == "MED_HH_INC") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    })
+;
 
 se_ind = document.querySelector("#se_ind").value;
 var se_ind = "PCT_PUB_ADMIN";
@@ -83,7 +94,7 @@ function drawGraph(se_ind, data) {
 
 	var x = d3.scaleLinear().range([0, width]),
 	    xMap = function(d) { return x(x_value(d));},
-	    xAxis = d3.axisBottom(x);
+	    xAxis = d3.axisBottom(x).ticks(4, "s");
 
 
 	// set up y
@@ -93,7 +104,7 @@ function drawGraph(se_ind, data) {
 
 	var y = d3.scaleLinear().range([height, 0]),
 	    yMap = function(d) { return y(y_value(d));},
-	    yAxis = d3.axisLeft(y);;
+	    yAxis = d3.axisLeft(y).ticks(4, "s");
 
 	data.forEach(function(d) { 
 		d[se_ind] = +d[se_ind];
@@ -194,7 +205,8 @@ function drawGraph(se_ind, data) {
 
 function highlightDots(state) {
 	curr_state = state;
-
+    update_scatter_plot_title("#scatter-plot-title", curr_state);
+    
     d3.select("svg").selectAll(".dot")
     	.transition()
     	.duration(200)
@@ -215,7 +227,7 @@ function highlightDots(state) {
 function updateGraph() {
 	//d3.select("#graph-div").selectAll("svg").remove();
 	se_ind = document.querySelector("#se_ind").value;
-	
+
 	drawGraph(se_ind, data);
 }
 
