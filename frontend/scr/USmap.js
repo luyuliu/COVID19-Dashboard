@@ -35,6 +35,7 @@ var US_svg = d3.select(US_map_id).append("svg")
 var US_timelines_lines = null;
 var US_all_cases = null;
 var US_cur_case = "confirmed";
+var US_case_names_list = ["confirmed", "deaths"]
 
 function us_ready() {
 
@@ -320,8 +321,8 @@ function us_ready() {
         // .data(us_centroids.features)
         .data(us_centroids.features.sort(function (a, b) {
             if (a.properties && b.properties) {
-                na = a.properties.NAME;
-                nb = b.properties.NAME;
+                na = a.properties.postal;
+                nb = b.properties.postal;
                 if (US_all_cases[na] && US_all_cases[nb])
                     return d3.descending(US_all_cases[na][US_cur_case][n - 1], US_all_cases[nb][US_cur_case][n - 1]);
                 return -1;
@@ -343,7 +344,7 @@ function us_ready() {
             // if (d.id) // strange trick to make it work. Otherwise will complain d.properties.population to be on none type
         }))
         .on("mouseenter", function (d) { // d is geojson obj
-            US_timelines_svg.selectAll(".line").classed("US_highlight", function (dd, i) {
+            US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
                 if (dd == d.properties.postal) {
                     d3.select(this.parentNode).raise();
                     cur_US_region = dd;
@@ -379,7 +380,7 @@ function us_ready() {
 
         })
         .on("mouseout", function (d) {
-            US_timelines_svg.selectAll(".line").classed("US_highlight", false);
+            US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
             US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
                 if (US_names.includes(dd.label))
                     return "block";
@@ -402,7 +403,7 @@ function us_ready() {
 
 
     themeDropdown.selectAll("option")
-        .data(case_names_list)
+        .data(US_case_names_list)
         .enter().append("option")
         .attr("value", function (d) { return d; })
         .text(function (d) {
@@ -435,15 +436,16 @@ function us_ready() {
                     }
                 }
             })
-            .attr("d", path.pointRadius(function (d, i) {
+            .attr("d", US_path.pointRadius(function (d, i) {
                 if (d.properties) {
-                    name = d.properties.NAME;
+                    name = d.properties.postal;
                     if (US_all_cases[name]) {
                         return radius(US_all_cases[name][US_cur_case].slice(-1)[0]);
                     }
                 }
                 return radius(0);
             }))
+
 
         // Update the labels
         var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
@@ -499,7 +501,7 @@ function us_ready() {
             //       else
             //           return "#cdcdcd";})
             .on("mouseover", function (d) {
-                US_timelines_svg.selectAll(".line").classed("US_highlight", function (dd, i) {
+                US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
                     if (dd == d) {
                         cur_US_region = d;
                         d3.select(this.parentNode).raise();
@@ -512,7 +514,7 @@ function us_ready() {
                 //     else return "none";
                 // });
                 US_svg.selectAll(".US_symbol").classed("highlight", function (dd, i) {
-                    return (dd.properties.NAME == d);
+                    return (dd.properties.postal == d);
                 });
 
             });
@@ -606,7 +608,6 @@ function us_ready() {
                     return radius(0);
                 }));
 
-            console.log(US_all_cases, cur_US_region)
             update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
             // 
             // var s1 = US_all_cases["USA"]["confirmed"][ind]
@@ -660,7 +661,7 @@ function us_ready() {
         //       else
         //           return "#cdcdcd";})
         .on("mouseover", function (d) {
-            US_timelines_svg.selectAll(".line").classed("US_highlight", function (dd, i) {
+            US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
                 if (dd == d) {
                     cur_US_region = d;
                     highlightDots(cur_US_region);

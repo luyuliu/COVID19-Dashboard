@@ -5,7 +5,6 @@ var case_names = {
     // "recovered": "Recovered"
 }
 
-var case_names_list = ["confirmed", "deaths", "recovered"]
 var default_case_name = "confirmed";
 
 function get_var_bounds(mapdata) {
@@ -30,9 +29,9 @@ function getColorx(val, bounds) {
 function update_title_info(the_id, the_date, casenum1, casenum10, casenum2, casenum20, casenum3, casenum30) {
     var title_info = `${case_date_format_full(the_date)} <br/>
         <span style="color: red">${d3.format(",")(casenum1)}</span> confirmed (+${d3.format(",")(casenum1 - casenum10)})<br/>
-        ${d3.format(",")(casenum2)} deaths (+${d3.format(",")(casenum2 - casenum20)})`
+        <span style="color: black">${d3.format(",")(casenum2)}</span> deaths (+${d3.format(",")(casenum2 - casenum20)})`
     if (casenum3 != null)
-        title_info += `<br/>${d3.format(",")(casenum3)} recovered (+${d3.format(",")(casenum3 - casenum30)})`
+        title_info += `<br/><span style="color: #30a326">${d3.format(",")(casenum3)}</span> recovered (+${d3.format(",")(casenum3 - casenum30)})`
     d3.selectAll(the_id).html(title_info)
 }
 

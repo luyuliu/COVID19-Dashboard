@@ -57,6 +57,7 @@ var state_all_cases = null;
 var sorted_case_lasts = null;
 
 var state_cur_case = "confirmed";
+var state_case_names_list = ["confirmed", "deaths"]
 
 var state_svg = d3.select(state_map_id).append("svg")
     .attr("width", state_map_width)
@@ -407,8 +408,8 @@ function state_ready(all_data) {
         // .data(state_centroids.features)
         .data(state_centroids.features.sort(function (a, b) {
             if (a.properties && b.properties) {
-                na = a.properties.NAME;
-                nb = b.properties.NAME;
+                na = a.properties.GEOID;
+                nb = b.properties.GEOID;
                 if (state_all_cases[na] && state_all_cases[nb])
                     return d3.descending(state_all_cases[na][state_cur_case][n - 1], state_all_cases[nb][state_cur_case][n - 1]);
                 else return -1;
@@ -431,7 +432,7 @@ function state_ready(all_data) {
             // if (d.id) // strange trick to make it work. Otherwise will complain d.properties.population to be on none type
         }))
         .on("mouseenter", function (d) { // d is geojson obj
-            state_timelines_svg.selectAll(".line").classed("state_highlight", function (dd, i) {
+            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
                 if (dd == d.properties.GEOID) {
                     d3.select(this.parentNode).raise();
                     cur_state_region = dd;
@@ -451,7 +452,7 @@ function state_ready(all_data) {
             update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
         })
         .on("mouseout", function (d) {
-            state_timelines_svg.selectAll(".line").classed("state_highlight", false);
+            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
             state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
                 if (state_names.includes(dd.label))
                     return "block";
@@ -474,7 +475,7 @@ function state_ready(all_data) {
 
 
     themeDropdown.selectAll("option")
-        .data(case_names_list)
+        .data(state_case_names_list)
         .enter().append("option")
         .attr("value", function (d) { return d; })
         .text(function (d) {
@@ -507,14 +508,14 @@ function state_ready(all_data) {
                     }
                 }
             })
-            .attr("d", path.pointRadius(function (d, i) {
+            .attr("d", state_path.pointRadius(function (d, i) {
                 if (d.properties) {
-                    name = d.properties.NAME;
+                    name = d.properties.GEOID;
                     if (state_all_cases[name]) {
-                        return radius(state_all_cases[name][state_cur_case].slice(-1)[0]);
+                        return state_radius(state_all_cases[name][state_cur_case].slice(-1)[0]);
                     }
                 }
-                return radius(0);
+                return state_radius(0);
             }))
 
         // Update the labels
@@ -571,7 +572,7 @@ function state_ready(all_data) {
             //       else
             //           return "#cdcdcd";})
             .on("mouseover", function (d) {
-                state_timelines_svg.selectAll(".line").classed("state_highlight", function (dd, i) {
+                state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
                     if (dd == d) {
                         cur_state_region = d;
                         d3.select(this.parentNode).raise();
@@ -584,7 +585,7 @@ function state_ready(all_data) {
                 //     else return "none";
                 // });
                 state_svg.selectAll(".state_symbol").classed("highlight", function (dd, i) {
-                    return (dd.properties.NAME == d);
+                    return (dd.properties.GEOID == d);
                 });
 
             });
@@ -734,7 +735,7 @@ function state_ready(all_data) {
         //       else
         //           return "#cdcdcd";})
         .on("mouseover", function (d) {
-            state_timelines_svg.selectAll(".line").classed("state_highlight", function (dd, i) {
+            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
                 if (dd == d) {
                     cur_state_region = dd;
                     return true;

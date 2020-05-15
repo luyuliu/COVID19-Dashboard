@@ -90,6 +90,7 @@ worldmap_svg.call(zoom);
 
 var cur_case = "confirmed";
 var cur_world_region = "USA";
+var world_case_names_list = ["confirmed", "deaths", "recovered"]
 
 function world_ready() { // TODO: LONG function!
 
@@ -384,7 +385,7 @@ function world_ready() { // TODO: LONG function!
             // if (d.id) // strange trick to make it work. Otherwise will complain d.properties.population to be on none type
         }))
         .on("mouseenter", function (d) { // d is geojson obj
-            timelines_svg.selectAll(".line").classed("world_highlight", function (dd, i) {
+            timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, function (dd, i) {
                 if (dd == d.properties.NAME) {
                     d3.select(this.parentNode).raise();
                     cur_world_region = dd;
@@ -412,7 +413,7 @@ function world_ready() { // TODO: LONG function!
             // world_info_labels[1].text(`${case_names[cur_case]}: ${val}`);
         })
         .on("mouseout", function (d) {
-            timelines_svg.selectAll(".line").classed("world_highlight", false);
+            timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, false);
             timelines_svg.selectAll(".text-label").style("display", function (dd) {
                 if (country_names.includes(dd.label))
                     return "block";
@@ -432,7 +433,7 @@ function world_ready() { // TODO: LONG function!
 
 
     themeDropdown.selectAll("option")
-        .data(case_names_list)
+        .data(world_case_names_list)
         .enter().append("option")
         .attr("value", function (d) { return d; })
         .text(function (d) {
@@ -530,7 +531,7 @@ function world_ready() { // TODO: LONG function!
             //       else
             //           return "#cdcdcd";})
             .on("mouseover", function (d) {
-                timelines_svg.selectAll(".line").classed("world_highlight", function (dd, i) {
+                timelines_svg.selectAll(".line").classed("world_highlight " + cur_case, function (dd, i) {
                     if (dd == d) {
                         cur_world_region = d;
                         d3.select(this.parentNode).raise();
@@ -746,7 +747,7 @@ function world_ready() { // TODO: LONG function!
         //       else
         //           return "#cdcdcd";})
         .on("mouseover", function (d) {
-            timelines_svg.selectAll(".line").classed("world_highlight", function (dd, i) {
+            timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, function (dd, i) {
                 if (dd == d) {
                     cur_world_region = d;
                     d3.select(this.parentNode).raise();

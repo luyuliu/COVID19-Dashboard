@@ -216,9 +216,24 @@ html, body {
 }
 
 /* world curves highlight */
-.line.world_highlight, .US_highlight, .state_highlight {
+.world_highlight, .US_highlight, .state_highlight {
     stroke: red;
     stroke-width: 3;
+}
+
+.confirmed{
+    stroke: #de2d26;
+    stroke-width: 3;
+}
+
+.deaths{
+  stroke: #000000;
+  stroke-width: 3;
+}
+
+.recovered{
+  stroke: #30a326;
+  stroke-width: 3;
 }
 
 .overlay {
