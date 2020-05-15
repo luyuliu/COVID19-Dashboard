@@ -643,7 +643,7 @@ function world_ready() { // TODO: LONG function!
                 hover_line_symbol(state_svg, ".state_symbol", state_path, "GEOID", state_all_cases, ind, xpos, "#hover-line-state", state_radius, state_cur_case);
 
                 update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_world, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-                update_info_labels(state_info_labels, fips_to_name[cur_state_county], cur_date_world, ind, state_cur_case, state_all_cases[cur_state_county][state_cur_case][ind]);
+                update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_world, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
 
                 update_title_info("#us-info",
                     cur_date_world,

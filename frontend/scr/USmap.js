@@ -43,7 +43,7 @@ function us_ready() {
     var n = total_days;
     var cur_date_US = cur_date_world;
 
-    
+
     var US_actual_len = US_all_cases[d3.keys(US_all_cases)[0]]['confirmed'].length;
     US_cases_sum = {
         "confirmed": Array(US_actual_len).fill(0),
@@ -57,9 +57,9 @@ function us_ready() {
         var val = US_all_cases[d][US_cur_case].slice(-1)[0];
         case_maxs[i] = val;
         for (j = 0; j < US_all_cases[d]["confirmed"].length; j++) {
-            world_cases_sum["confirmed"][j] += US_all_cases[d]["confirmed"][j]
-            world_cases_sum["deaths"][j] += US_all_cases[d]["deaths"][j]
-            // world_cases_sum["recovered"][j] += US_all_cases[d]["recovered"][j]
+            US_cases_sum["confirmed"][j] += US_all_cases[d]["confirmed"][j]
+            US_cases_sum["deaths"][j] += US_all_cases[d]["deaths"][j]
+            // US_cases_sum["recovered"][j] += US_all_cases[d]["recovered"][j]
         }
     });
 
@@ -91,7 +91,7 @@ function us_ready() {
     // info on title bar
     /////////////////////////////////////////////////////////////////////////
 
-    ind = all_cases["USA"]["confirmed"].length-1;
+    ind = all_cases["USA"]["confirmed"].length - 1;
     // var s1 = US_all_cases["USA"]["confirmed"][ind]
     // var s0 = ind==0 ? 0 : US_all_cases["USA"]["confirmed"][ind-1]
     // var s2 = US_all_cases["USA"]["deaths"][ind]
@@ -104,21 +104,21 @@ function us_ready() {
     // ${d3.format(",")(s3)} recovered`
     // d3.selectAll("#us-info").html(title_info)
 
-    update_title_info("#us-info", 
-        cur_date_US, 
-        all_cases["USA"]["confirmed"][ind], 
-        ind==0 ? 0 : all_cases["USA"]["confirmed"][ind-1], 
-        all_cases["USA"]["deaths"][ind], 
-        ind==0 ? 0 : all_cases["USA"]["deaths"][ind-1], 
-        all_cases["USA"]["recovered"][ind], 
-        ind==0 ? 0 : all_cases["USA"]["recovered"][ind-1]
+    update_title_info("#us-info",
+        cur_date_US,
+        all_cases["USA"]["confirmed"][ind],
+        ind == 0 ? 0 : all_cases["USA"]["confirmed"][ind - 1],
+        all_cases["USA"]["deaths"][ind],
+        ind == 0 ? 0 : all_cases["USA"]["deaths"][ind - 1],
+        all_cases["USA"]["recovered"][ind],
+        ind == 0 ? 0 : all_cases["USA"]["recovered"][ind - 1]
     )
 
     //////////////////////////////////////////////////////////////////////////
     // US choropleth map
     /////////////////////////////////////////////////////////////////////////
 
-    var US_map_friendly_names = { 
+    var US_map_friendly_names = {
         "Tot_pop": "Total Population",
         "Tot_HH": "Total Household",
         "Children": "Children (%)",
@@ -143,7 +143,7 @@ function us_ready() {
         "pct_Others": "Job in others (%)",
         "pct_Public_administration": "Job in administration (%)"
     }
-    
+
 
     US_all_mapping_vars = [];
     US_list_mapping_var = [];
@@ -161,7 +161,7 @@ function us_ready() {
         }
         var val = US_geojson.features[i]["properties"][US_current_mapping_var];
         if (val != null)
-        US_all_mapping_vars[i] = val;
+            US_all_mapping_vars[i] = val;
     }
     US_bounds = get_var_bounds(US_all_mapping_vars);
     var US_color_scheme = d3.scaleThreshold()
@@ -258,7 +258,7 @@ function us_ready() {
         .attr("value", function (d) { return d; })
         .text(function (d) {
             // return d; // capitalize 1st letter
-            return US_map_friendly_names[d]; 
+            return US_map_friendly_names[d];
         })
         .property("selected", function (d) {
             if (d == US_current_mapping_var) {
@@ -284,7 +284,7 @@ function us_ready() {
             }
             var val = US_geojson.features[i]["properties"][US_current_mapping_var];
             if (val != null)
-            US_all_mapping_vars[i] = val;
+                US_all_mapping_vars[i] = val;
         }
         US_bounds = get_var_bounds(US_all_mapping_vars);
 
@@ -351,7 +351,7 @@ function us_ready() {
                 }
                 else return false;
             });
-            
+
             // US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
             //     if (dd.label == d.properties.postal || US_names.includes(dd.label))
             //         return "block";
@@ -370,13 +370,13 @@ function us_ready() {
             // v5 = d3.format(",")(`${US_all_cases[cur_US_region][US_cur_case][ind]}`);
             // update_info_labels(US_info_labels, v1, v2, v3, v3, v5);
             update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-            
+
             // US_info_labels[0].text(`${us_abbr_inv[cur_US_region]} ${case_date_format(cur_date_US)} [Day ${ind}]`);
             // var val = d3.format(",")(`${US_all_cases[cur_US_region][US_cur_case][ind]}`)
             // US_info_labels[1].text(`${case_names[US_cur_case]}: ${val}`);
-            
+
             highlightDots(cur_US_region);
-        
+
         })
         .on("mouseout", function (d) {
             US_timelines_svg.selectAll(".line").classed("US_highlight", false);
@@ -392,8 +392,8 @@ function us_ready() {
         ;
 
 
-    
-        var themeDropdown = d3.select("#US_map-content")
+
+    var themeDropdown = d3.select("#US_map-content")
         .insert("select", "svg")
         .attr("id", "US-theme-select")
         .attr("class", "select-css theme")
@@ -427,10 +427,10 @@ function us_ready() {
                     return "#de2d26"
                 }
                 else {
-                    if (US_cur_case == "recovered"){
+                    if (US_cur_case == "recovered") {
                         return "#30a326"
                     }
-                    else{
+                    else {
                         return "#000000"
                     }
                 }
@@ -620,14 +620,14 @@ function us_ready() {
             // ${d3.format(",")(s2)} deaths<br/>
             // ${d3.format(",")(s3)} recovered`
             // d3.selectAll("#us-info").html(title_info)
-            update_title_info("#us-info", 
-                cur_date_US, 
-                all_cases["USA"]["confirmed"][ind], 
-                ind==0 ? 0 : all_cases["USA"]["confirmed"][ind-1], 
-                all_cases["USA"]["deaths"][ind], 
-                ind==0 ? 0 : all_cases["USA"]["deaths"][ind-1], 
-                all_cases["USA"]["recovered"][ind], 
-                ind==0 ? 0 : all_cases["USA"]["recovered"][ind-1]
+            update_title_info("#us-info",
+                cur_date_US,
+                all_cases["USA"]["confirmed"][ind],
+                ind == 0 ? 0 : all_cases["USA"]["confirmed"][ind - 1],
+                all_cases["USA"]["deaths"][ind],
+                ind == 0 ? 0 : all_cases["USA"]["deaths"][ind - 1],
+                all_cases["USA"]["recovered"][ind],
+                ind == 0 ? 0 : all_cases["USA"]["recovered"][ind - 1]
             )
 
             d3.select("#hover-line-US") // select hover-line and change position
@@ -647,7 +647,7 @@ function us_ready() {
 
     var US_timelines_lines = US_timelines_svg.selectAll(".lines")
         .data(d3.keys(US_sub_dataset))
-        
+
     // .attr("class", "lines")
 
     US_timelines_lines.enter().append("path")
