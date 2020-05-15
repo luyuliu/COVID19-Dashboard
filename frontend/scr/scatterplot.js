@@ -2,44 +2,65 @@ var scatter_plot_grid_container_id = "#scatter_plot-grid-container";
 var scatter_plot_id = "#scatter_plot-content";
 var scatter_plot_affiliation_id = "#scatter_plot-affiliation";
 
-is_scatter_plot_on = true; // default: false in start.js
- 
-var margin = { top: 10, right: 10, bottom: 20, left: 50 };
+
+var margin = { top: 10, right: 10, bottom: 50, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;
-var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom -30;
+var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom - 30;
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 var curr_state = "OH";
 
-// add the graph canvas to the body of the webpage
-var sp_svg = d3.select(scatter_plot_id).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+var se_ind_list = [["TOT_POP", "Total Population"],
+    ["TOT_HH", "Total Household"],
+    ["PCT_CHLDN", "Children (%)"],
+    ["PCT_YOUTH", "Youth (%)"],
+    ["PCT_AD", "Adult (%)"],
+    ["PCT_SR", "Senior (%)"],
+    ["PCT_WHT", "White (%)"],
+    ["PCT_NWHT", "Non-white (%)"],
+    ["MED_HH_INC", "Median household income ($)"],
+    ["PCT_BLW_POV_RT", "Poverty Rate"],
+    ["PCT_AGRI", "Job in agriculture (%)"],
+    ["PCT_CONST", "Job in construction (%)"],
+    ["PCT_MFG", "Job in manufacturing (%)"],
+    ["PCT_WHLS_TRA", "Job in wholesale (%)"],
+    ["PCT_RET_TRA", "Job in retail (%)"],
+    ["PCT_TRANS", "Job in transportation (%)"],
+    ["PCT_INFO", "Job in information (%)"],
+    ["PCT_FIN", "Job in finance (%)"],
+    ["PCT_PRO", "Job in frofession (%)"],
+    ["PCT_EDU", "Job in education (%)"],
+    ["PCT_REC", "Job in recreation (%)"],
+    ["PCT_OTHERS", "Job in others (%)"],
+    ["PCT_PUB_ADMIN", "Job in administration (%)"]];
 
-var se_ind_list = [["pct_chldn", "Children (Aged 0 - 14) (%)"], ["pct_youth", "Youth (Aged 15 - 24) (%)"],
-				["pct_ad", "Adults (Aged 25 - 64) (%)"], ["pct_sr", "Seniors (Aged above 64) (%)"],
-				["pct_wht", "White Population (%)"], ["pct_nwht", "Non-White Population (%)"],
-				["med_hh_inc", "Median Household Income (U.S. Dollar)"], ["pct_blw_pov_rt", "Population Below Poverty Line (%)"]];
-
-var se_ind_dropdown = d3.select(scatter_plot_affiliation_id)
+var se_ind_dropdown = d3.select(scatter_plot_id)
     .insert("select", "svg")
     .attr("id", "se_ind")
     .attr("class", "select-css")
+    .style("top", height + margin.top + 45)
+    .style("position", "absolute")
     .on("change", updateGraph);
 
 se_ind_dropdown.selectAll("option")
 	.data(se_ind_list)
     .enter().append("option")
-    .attr("value", (d) => d[0])
-    .text((d) => d[1]);
+    .attr("value", function (d) { return d[0]; })
+    .text(function (d) { return d[1]; });
 
-var se_ind = document.querySelector('#se_ind').value;
+se_ind = document.querySelector("#se_ind").value;
+var se_ind = "PCT_PUB_ADMIN";
+
+// add the graph canvas to the body of the webpage
+var sp_svg = d3.select(scatter_plot_id).append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // load data
-d3.json("data/us-counties-attributes.json").then(function(data_ind) { 
+d3.csv("data/us-counties-attributes.csv").then(function(data_ind) { 
 	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
     	data = convert_county_data(data_ind, data_cases);
     	drawGraph(se_ind, data);
@@ -58,51 +79,7 @@ function drawGraph(se_ind, data) {
 	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
 	// set up x
-	var x_value = function(d) {
-	    if (se_ind == 'pct_chldn'){
-	        return d.PCT_CHLDN;
-	    } else if (se_ind == 'pct_youth'){
-	        return d.PCT_YOUTH;
-	    } else if (se_ind == 'pct_ad'){
-	        return d.PCT_AD;
-	    } else if (se_ind == 'pct_sr'){
-	        return d.PCT_SR;
-	    } else if (se_ind == 'pct_wht'){
-	        return d.PCT_WHT;
-	    } else if (se_ind == 'pct_nwht'){
-	        return d.PCT_NWHT;
-	    } else if (se_ind == 'med_hh_inc'){
-	        return d.MED_HH_INC;
-	    } else if (se_ind == 'pct_blw_pov_rt'){
-	        return d.PCT_BLW_POV_RT;
-	    }
-        else if (se_ind == 'TOT_POP') {
-            return d.TOT_POP;
-        }
-	};
-
-	var x_text = function(d) {
-	    if (se_ind == 'pct_chldn'){
-	        return 'Children (Aged 0 - 14) (%)';
-	    } else if (se_ind == 'pct_youth'){
-	        return 'Youth (Aged 15 - 24) (%)';
-	    } else if (se_ind == 'pct_ad'){
-	        return 'Adults (Aged 25 - 64) (%)';
-	    } else if (se_ind == 'pct_sr'){
-	        return 'Seniors (Aged above 64) (%)';
-	    } else if (se_ind == 'pct_wht'){
-	        return 'White Population (%)';
-	    } else if (se_ind == 'pct_nwht'){
-	        return 'Non-white Population (%)';
-	    } else if (se_ind == 'med_hh_inc'){
-	        return 'Median Household Income ($)';
-	    } else if (se_ind == 'pct_blw_pov_rt'){
-	        return 'Population Below Poverty Line (%)';
-	    }
-        else if (se_ind == 'TOT_POP') {
-            return 'Total population';
-        }
-	};
+	var x_value = function(d) { return d[se_ind]; };
 
 	var x = d3.scaleLinear().range([0, width]),
 	    xMap = function(d) { return x(x_value(d));},
@@ -112,35 +89,15 @@ function drawGraph(se_ind, data) {
 	// set up y
 	var y_value = function(d) {return d.CONFIRMED;};
 
-	var y_text = function(d) {return 'Confirmed cases (per 1000)';};
+	var y_text = function(d) {return "Confirmed cases (per 1,000)";};
 
 	var y = d3.scaleLinear().range([height, 0]),
 	    yMap = function(d) { return y(y_value(d));},
 	    yAxis = d3.axisLeft(y);;
 
-	data.forEach(function(d) {
-	    if (se_ind == 'pct_chldn'){
-	        d.PCT_CHLDN = +d.PCT_CHLDN;
-	    } else if (se_ind == 'pct_youth'){
-	        d.PCT_YOUTH = +d.PCT_YOUTH;
-	    } else if (se_ind == 'pct_ad'){
-	        d.PCT_AD = +d.PCT_AD;
-	    } else if (se_ind == 'pct_sr'){
-	        d.PCT_SR = +d.PCT_SR;
-	    } else if (se_ind == 'pct_wht'){
-	        d.PCT_WHT = +d.PCT_WHT;
-	    } else if (se_ind == 'pct_nwht'){
-	        d.PCT_NWHT = +d.PCT_NWHT;
-	    } else if (se_ind == 'med_hh_inc'){
-	        d.MED_HH_INC = +d.MED_HH_INC;
-	    } else if (se_ind == 'pct_blw_pov_rt'){
-	        d.PCT_BLW_POV_RT = +d.PCT_BLW_POV_RT;
-	    }
-        else if (ss_ind == 'TOT_POP') {
-            d.TOT_POP = +d.TOT_POP;
-        }
-	    
-	    d.CONFIRMED = +d.CONFIRMED;
+	data.forEach(function(d) { 
+		d[se_ind] = +d[se_ind];
+	    d["CONFIRMED"] = +d["CONFIRMED"];
     });
 
 	// set axis domains
@@ -166,8 +123,7 @@ function drawGraph(se_ind, data) {
 	// 	.attr("class", "label")
 	// 	.attr("x", width)
 	// 	.attr("y", margin.top)
-	// 	.style("text-anchor", "end")
-	// 	.text(x_text);
+	// 	.style("text-anchor", "end");
 
 	// y-axis
 	sp_svg.append("g")
@@ -258,7 +214,7 @@ function highlightDots(state) {
 
 function updateGraph() {
 	//d3.select("#graph-div").selectAll("svg").remove();
-	se_ind = document.querySelector('#se_ind').value;
+	se_ind = document.querySelector("#se_ind").value;
 	
 	drawGraph(se_ind, data);
 }
@@ -277,41 +233,71 @@ function convert_county_data(ses, cases) {
         	var item = {},
         	obj2 = obj1[key];
         	
-        	item['countyFIPS'] = key,
-        	item['CONFIRMED'] = obj2['confirmed'][obj2['confirmed'].length - 1],
-            item['DEATHS'] = obj2['deaths'][obj2['deaths'].length - 1];
+        	item["countyFIPS"] = key,
+        	item["CONFIRMED"] = obj2["confirmed"][obj2["confirmed"].length - 1],
+            item["DEATHS"] = obj2["deaths"][obj2["deaths"].length - 1];
             
-            item['state'] = null,
-        	item['stateFIPS'] = null,
-    		item['PCT_CHLDN'] = null,
-	        item['PCT_YOUTH'] = null, 
-	        item['PCT_AD'] = null, 
-	        item['PCT_SR'] = null,
-	        item['PCT_WHT'] = null,
-	        item['PCT_NWHT'] = null,
-	        item['MED_HH_INC'] = null,
-	        item['PCT_BLW_POV_RT'] = null;
-            item['TOT_POP'] = null;
+            item["state"] = null,
+        	item["stateFIPS"] = null,
+			item["TOT_POP"] = null,
+			item["TOT_HH"] = null,
+    		item["PCT_CHLDN"] = null,
+	        item["PCT_YOUTH"] = null, 
+	        item["PCT_AD"] = null, 
+	        item["PCT_SR"] = null,
+	        item["PCT_WHT"] = null,
+	        item["PCT_NWHT"] = null,
+	        item["MED_HH_INC"] = null,
+	        item["PCT_BLW_POV_RT"] = null,
+			item["PCT_AGRI"] = null,
+			item["PCT_CONST"] = null,
+			item["PCT_CONST"] = null,
+			item["PCT_MFG"] = null,
+			item["PCT_WHLS_TRA"] = null,
+			item["PCT_RET_TRA"] = null,
+			item["PCT_TRANS"] = null,
+			item["PCT_INFO"] = null,
+			item["PCT_FIN"] = null,
+			item["PCT_PRO"] = null,
+			item["PCT_EDU"] = null,
+			item["PCT_PRO"] = null,
+			item["PCT_REC"] = null,
+			item["PCT_OTHERS"] = null,
+			item["PCT_PUB_ADMIN"] = null;
 	        
 	        t = 0;
-            keys3 = Object.keys(ses);
-	        keys3.forEach(function(key) {
-	        	obj3 = ses[key];
-	        	
-		        if (key == item['countyFIPS']) {
+	        ses.forEach(function(obj3) {	        	
+		        if (obj3["countyFIPS"] == item["countyFIPS"]) {
 		        	t = 1;
-		        	item['state'] = obj3['state'],
-			        item['stateFIPS'] = obj3['stateFIPS'],
-			        item['PCT_CHLDN'] = obj3['PCT_CHLDN'],
-			        item['PCT_YOUTH'] = obj3['PCT_YOUTH'], 
-			        item['PCT_AD'] = obj3['PCT_AD'], 
-			        item['PCT_SR'] = obj3['PCT_SR'],
-			        item['PCT_WHT'] = obj3['PCT_WHT'],
-			        item['PCT_NWHT'] = obj3['PCT_NWHT'],
-			        item['MED_HH_INC'] = obj3['MED_HH_INC'],
-					item['PCT_BLW_POV_RT'] = obj3['PCT_BLW_POV_RT']; 
-                    item['TOT_POP'] = obj3['TOT_POP'];
-                    item['CONFIRMED'] = 1000*item['CONFIRMED']/obj3['TOT_POP'];
+		        	item["state"] = obj3["state"],
+		        	item["stateFIPS"] = obj3["stateFIPS"],
+		        	item["TOT_POP"] = parseFloat(obj3["TOT_POP"]),
+			        item["TOT_HH"] = parseFloat(obj3["TOT_POP"]),
+			        item["PCT_CHLDN"] = parseFloat(obj3["PCT_CHLDN"]),
+			        item["PCT_YOUTH"] = parseFloat(obj3["PCT_YOUTH"]),
+			        item["PCT_AD"] = parseFloat(obj3["PCT_AD"]),
+			        item["PCT_SR"] = parseFloat(obj3["PCT_SR"]),
+			        item["PCT_WHT"] = parseFloat(obj3["PCT_WHT"]),
+			        item["PCT_NWHT"] = parseFloat(obj3["PCT_NWHT"]),
+			        item["MED_HH_INC"] = parseFloat(obj3["MED_HH_INC"]),
+					item["PCT_BLW_POV_RT"] = parseFloat(obj3["PCT_BLW_POV_RT"]),
+					item["PCT_AGRI"] = parseFloat(obj3["PCT_AGRI"]),
+					item["PCT_CONST"] = parseFloat(obj3["PCT_CONST"]),
+					item["PCT_CONST"] = parseFloat(obj3["PCT_CONST"]),
+					item["PCT_MFG"] = parseFloat(obj3["PCT_MFG"]),
+					item["PCT_WHLS_TRA"] = parseFloat(obj3["PCT_WHLS_TRA"]),
+					item["PCT_RET_TRA"] = parseFloat(obj3["PCT_RET_TRA"]),
+					item["PCT_TRANS"] = parseFloat(obj3["PCT_TRANS"]),
+					item["PCT_INFO"] = parseFloat(obj3["PCT_INFO"]),
+					item["PCT_FIN"] = parseFloat(obj3["PCT_FIN"]),
+					item["PCT_PRO"] = parseFloat(obj3["PCT_PRO"]),
+					item["PCT_EDU"] = parseFloat(obj3["PCT_EDU"]),
+					item["PCT_PRO"] = parseFloat(obj3["PCT_PRO"]),
+					item["PCT_REC"] = parseFloat(obj3["PCT_REC"]),
+					item["PCT_OTHERS"] = parseFloat(obj3["PCT_OTHERS"]),
+					item["PCT_PUB_ADMIN"] = parseFloat(obj3["PCT_PUB_ADMIN"]),
+					
+                    item["CONFIRMED"] = 1000 * item["CONFIRMED"] / obj3["TOT_POP"];
                 }
 	        });
 	        if (t == 1){
