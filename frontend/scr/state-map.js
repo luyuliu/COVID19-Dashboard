@@ -152,7 +152,7 @@ function init_choropleth(the_var, geojson_data, var_list, all_var) {
         }
         var val = geojson_data.features[i]["properties"][the_var];
         if (val != null)
-            all_var[i] = val;
+            all_var[i] = +val;
     }
 
 }

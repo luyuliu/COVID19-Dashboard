@@ -226,7 +226,7 @@ function world_ready() { // TODO: LONG function!
         }
         var val = world_regions.features[i]["properties"][current_mapping_var];
         if (val != null)
-            all_mapping_vars[i] = val;
+            all_mapping_vars[i] = +val;
     }
     bounds = get_var_bounds(all_mapping_vars);
 

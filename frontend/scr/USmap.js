@@ -287,7 +287,7 @@ function us_ready() {
             }
             var val = US_geojson.features[i]["properties"][US_current_mapping_var];
             if (val != null)
-                US_all_mapping_vars[i] = val;
+                US_all_mapping_vars[i] = +val;
         }
         US_bounds = get_var_bounds(US_all_mapping_vars);
 
