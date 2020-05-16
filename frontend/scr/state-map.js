@@ -781,7 +781,7 @@ function state_ready(all_data) {
             //           return "#cdcdcd";})
             .on("mouseover", state_lines_mouseover);
         
-        state_timelines_lines.enter().append("text")
+        state_timelines_lines.enter().append("text") // same code, need a func
             .attr("class", "text-label")
             .text(function (d) {
                 // if (state_names.includes(d))

@@ -5,6 +5,7 @@ var US_affiliation_id = "#US_map-affiliation";
 
 var maptype = 'geojson';
 var US_offset = 0
+var US_names = ["NY", "OH"]; // some highlight USs? [ "NY", "OH"];
 
 var US_map_width = $(US_grid_container_id).width() - US_offset;
 var US_map_height = ($(US_grid_container_id).height() - US_offset) - 135;
@@ -18,6 +19,7 @@ var US_info_labels = null;
 var cur_US_region = "NY";
 
 var US_bounds = null;
+var US_timelines_svg = null;
 
 var US_projection = d3.geoAlbersUsa()
     .scale(US_map_width * 5 / 4)
@@ -371,13 +373,13 @@ function us_ready() {
         })
         .on("mouseout", function (d) {
             US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
-            US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-                if (US_names.includes(dd.label))
-                    return "block";
-                else
-                    return "none";
-
-            });
+            // US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+            //     if (US_names.includes(dd.label))
+            //         return "block";
+            //     else
+            //         return "none";
+            // 
+            // });
             d3.select(this).classed("highlight", false);
         })
         ;
@@ -411,6 +413,10 @@ function us_ready() {
     function USThemeDropdownChange(e) {
         US_cur_case = $(this).val();
 
+        // d3.selectAll(".US_lines").remove();
+        d3.selectAll(".US_line").remove();
+        US_timelines_svg.selectAll(".text-label").remove();
+
         d3.selectAll(".US_symbol")
             // .transition()
             .style("fill", circle_symbol_fills[US_cur_case])
@@ -425,14 +431,12 @@ function us_ready() {
                 return radius(0);
             }))
 
-
         // Update the labels
         var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
         update_info_labels(US_info_labels, cur_US_region, cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
-
         // Create new data for the line chart
-        sub_dataset = {};
+        US_sub_dataset = {};
         var case_maxs = [];
 
         d3.keys(US_all_cases).forEach(function (d, i) { // go through all countries
@@ -443,7 +447,7 @@ function us_ready() {
         US_max = d3.max(case_maxs);
 
         d3.keys(US_all_cases).forEach(function (d, i) {
-            sub_dataset[d] = d3.range(n).map(function (i) {
+            US_sub_dataset[d] = d3.range(n).map(function (i) {
                 return {
                     x: +US_toXScale(i),
                     y: US_all_cases[d][US_cur_case][i]
@@ -451,8 +455,7 @@ function us_ready() {
             })
         });
 
-
-        var US_yScale = d3.scaleLinear()
+        US_yScale = d3.scaleLinear()
             .domain([0, US_max]) // input 
             .range([US_timelines_height, 0]); // output 
 
@@ -463,16 +466,13 @@ function us_ready() {
             .y(function (d) { return US_yScale(d.y); }) // set the y values for the line generator 
             .curve(d3.curveMonotoneX) // apply smoothing to the line
 
-        d3.selectAll(".US_lines").remove();
-
-        d3.selectAll(".US_line").remove();
         d3.select("#y_axis_US").call(d3.axisLeft(US_yScale).ticks(4, "s"))
 
         US_timelines_svg.selectAll(".US_line")
-            .data(d3.keys(sub_dataset)).enter()
+            .data(d3.keys(US_sub_dataset)).enter()
             .append("path")
             .attr("class", "line US_line")
-            .attr("d", function (d) { return US_line(sub_dataset[d]); })
+            .attr("d", function (d) { return US_line(US_sub_dataset[d]); })
             // .style("stroke-width", 1)
             // .style("stroke", function(d) { 
             //       if (country_names.includes(d))
@@ -480,13 +480,36 @@ function us_ready() {
             //       else
             //           return "#cdcdcd";})
             .on("mouseover", us_lines_mouseover);
-    }
+        
+        US_timelines_lines.enter().append("text") // same code, need a func
+            .attr("class", "text-label")
+            .text(function (d) {
+                // if (US_names.includes(d))
+                return us_abbr_inv[d];
+            })
+            .attr("dy", ".35em")
+            .datum(function (d) {
+                // alert(US_sub_dataset[d].slice(-1)[0].y);
+                return {
+                    label: d,
+                    x: US_sub_dataset[d].slice(-1)[0].x,
+                    y: US_sub_dataset[d].slice(-1)[0].y
+                };
+            })
+            .attr("x", function (d) { return US_xScale(d.x) + 3; })
+            .attr("y", function (d) { return US_yScale(d.y); })
+            .style("display", function (d) {
+                if (US_names.includes(d.label)) return "block";
+                else return "none";
+            })
+            ;
+
+    } // USThemeDropdownChange
 
     /////////////////////////////////////////////////////////////////////////////
     // Multiple Line chart 
     /////////////////////////////////////////////////////////////////////////////
 
-    var US_names = ["NY", "OH"]; // some highlight USs? [ "NY", "OH"];
 
     var US_sub_dataset = {};
     d3.keys(US_all_cases).forEach(function (d, i) {
@@ -686,6 +709,7 @@ function us_ready() {
                 return "none";
         })
         ;
+        
     US_info_labels = []
     US_info_labels[0] = US_timelines_svg
         .append('text')

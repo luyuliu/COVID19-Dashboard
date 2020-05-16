@@ -21,8 +21,9 @@ class Setup {
         this.grid = GridStack.init(this.options)
 
         this.settingGrid = { // card congifuration, should be updated dynamically
+            // 'parcoords': {x: 0, y: 4, width: this.squareWidth*3, height: this.squareHeight&3, id: "par_coords", title: "Parallel coordinates", type: "plot"},
             'upcoming': { x: 4, y: 4, width: this.squareWidth, height: this.squareHeight*3, id: "next_plot", title: "Coming soon!", type: "plot" },
-            'scatter_plot': { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "scatter_plot", title: '<div id="scatter-plot-title">Scatter plot</div>', type: "plot" },
+            'scatter_plot': { x: 0, y: 4, width: this.squareWidth, height: this.squareHeight*3, id: "scatter_plot", title: '<div id="scatter-plot-title">Scatter plot</div>', type: "plot" },
             'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "world_plot", title: "World Cases by Country", type: "plot" },
             'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_plot", title: "U.S. Cases by State", type: "plot" },
             'state_plot':   { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "state_plot", title: "State Cases by County", type: "plot" },
@@ -105,5 +106,7 @@ var US_all_cases = null;
 var us_abbr_inv = null;
 
 var is_scatter_plot_on = false;
+
+var default_case_name = "confirmed";
 
 new Setup();

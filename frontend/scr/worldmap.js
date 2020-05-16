@@ -5,7 +5,8 @@ var world_affiliation_id = "#world_map-affiliation" // TODO: program this, and o
 
 var all_mapping_vars = [];
 
-var bounds; // bounds for choropleth map classes
+var bounds = null; // bounds for choropleth map classes
+var timelines_lines = null;
 
 var worldmap_width = $(world_grid_container_id).width(),
     worldmap_height = $(world_grid_container_id).height() - 135; // need 135 for both dropdown and legend
@@ -147,22 +148,22 @@ function world_ready() { // TODO: LONG function!
     // TODO: get dates from file -- DONE
     // var start_date = "01-22-2020";
     // var end_date = "04-12-2020";
-
-    var n = total_days;
-
-    // date -> x-coordinate
-    var xScale = d3.scaleTime()
-        .domain([case_date_parser(start_date), case_date_parser(end_date)])
-        .range([0, timelines_width]); // output
-
-    // index -> date
-    var toXScale = d3.scaleLinear()
-        .domain([0, n - 1])
-        .range([case_date_parser(start_date), case_date_parser(end_date)]);
-
-    var yScale = d3.scaleLinear()
-        .domain([0, world_max]) // input 
-        .range([timelines_height, 0]); // output 
+    // 
+    // var n = total_days;
+    // 
+    // // date -> x-coordinate
+    // var xScale = d3.scaleTime()
+    //     .domain([case_date_parser(start_date), case_date_parser(end_date)])
+    //     .range([0, timelines_width]); // output
+    // 
+    // // index -> date
+    // var toXScale = d3.scaleLinear()
+    //     .domain([0, n - 1])
+    //     .range([case_date_parser(start_date), case_date_parser(end_date)]);
+    // 
+    // var yScale = d3.scaleLinear()
+    //     .domain([0, world_max]) // input 
+    //     .range([timelines_height, 0]); // output 
 
     var radius = d3.scaleSqrt()
         .domain([0, world_max])
@@ -447,7 +448,12 @@ function world_ready() { // TODO: LONG function!
     function worldThemeDropdownChange(e) { // TODO: a lot here are identical to before
 
         cur_case = $(this).val();
-
+        
+        timelines_lines.remove();
+        // d3.selectAll(".world_lines").remove();
+        d3.selectAll(".world_line").remove();
+        timelines_svg.selectAll(".text-label").remove();
+        
         d3.selectAll(".world_symbol")
             // .transition()
             .style("fill", circle_symbol_fills[cur_case])
@@ -487,8 +493,7 @@ function world_ready() { // TODO: LONG function!
             })
         });
 
-
-        var yScale = d3.scaleLinear()
+        yScale = d3.scaleLinear()
             .domain([0, world_max]) // input 
             .range([timelines_height, 0]); // output 
 
@@ -498,9 +503,6 @@ function world_ready() { // TODO: LONG function!
             .x(function (d) { return xScale(d.x); }) // set the x values for the line generator
             .y(function (d) { return yScale(d.y); }) // set the y values for the line generator 
             .curve(d3.curveMonotoneX) // apply smoothing to the line
-
-        d3.selectAll(".world_lines").remove();
-        d3.selectAll(".world_line").remove();
 
         d3.select("#y_axis_world").call(d3.axisLeft(yScale).ticks(4, "s"))
 
@@ -517,6 +519,28 @@ function world_ready() { // TODO: LONG function!
             //           return "#cdcdcd";})
             .on("mouseover", world_lines_mouseover);
 
+        timelines_lines.enter().append("text") // same code, need a func
+            .attr("class", "text-label")
+            // .style("fill", function(d) { return line_color(d); })
+            .text(function (d) {
+                return d;
+            })
+            .attr("dy", ".35em")
+            .datum(function (d) {
+                // alert(sub_dataset[d].slice(-1)[0].y);
+                return {
+                    label: d,
+                    x: sub_dataset[d].slice(-1)[0].x,
+                    y: sub_dataset[d].slice(-1)[0].y
+                };
+            })
+            .attr("x", function (d) { return xScale(d.x) + 4; })
+            .attr("y", function (d) { return yScale(d.y); })
+            .style("display", function (d) {
+                if (country_names.includes(d.label)) return "block";
+                else return "none";
+            })
+            ;
 
 
     }
@@ -698,7 +722,7 @@ function world_ready() { // TODO: LONG function!
     // lines
     /////////////////////////////////////////////////////////////////////////////
 
-    var timelines_lines = timelines_svg.selectAll(".line")
+    timelines_lines = timelines_svg.selectAll(".line")
         .data(d3.keys(sub_dataset));
 
     function world_lines_mouseover(d) { // lines, after theme change
@@ -752,9 +776,7 @@ function world_ready() { // TODO: LONG function!
     // labels
     /////////////////////////////////////////////////////////////////////////////
 
-    var timelines_labels = null;
-
-    timelines_labels = timelines_lines.enter().append("text")
+    timelines_lines.enter().append("text")
         .attr("class", "text-label")
         // .style("fill", function(d) { return line_color(d); })
         .text(function (d) {

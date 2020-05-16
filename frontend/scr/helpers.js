@@ -11,8 +11,6 @@ var circle_symbol_fills = {
     "recovered": "#30a326"
 }
 
-var default_case_name = "confirmed";
-
 function get_var_bounds(mapdata) {
     mapdata.sort(d3.ascending);
     minx = +mapdata[0];
