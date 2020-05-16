@@ -10,9 +10,17 @@
   <meta property="og:description" content="Information about COVID-19 and everything you should know about it." />
   <meta property="og:image" content="" />
   <title>COVID-19 Dashboard </title>
+  
   <script src="js/jquery.min.js"></script>
   <script src="js/jquery-ui.js"></script>
   <script src="js/jquery.ui.touch-punch.min.js"></script>
+  
+  <script src="js/gridstack.all.js"></script>
+  <!-- https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist -->
+  <script src="js/d3.v5.min.js"></script> 
+
+  <!-- <script src="js/d3.parcoords.js"></script> -->
+
   <!-- <script src="js/bootstrap.min.js"></script> -->
   <!-- <script src="js/lodash.min.js"></script> -->
   <!-- <script src="js/cookie.js"></script> -->
@@ -20,27 +28,22 @@
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.0.4/simplebar.min.js"></script> -->
   <!-- <link rel="stylesheet" href="css/simplebar.css" /> -->
   
-  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
-  <script src="js/colorbrewer.min.x.js"></script>
-	<script src="scr/mathfunctions.js"></script>
+  <!-- <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script> -->
+  <!-- <script src="js/colorbrewer.min.x.js"></script> -->
+  <script src="scr/mathfunctions.js"></script>
 
-
-
-  <script src="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.all.js"></script>
-  <script src="https://d3js.org/d3.v5.min.js"></script> 
   <!-- <script src="js/d3-interpolate-path.js"></script> -->
   <!-- <script src="js/d3-line-chunked.js"></script> -->
-  <script src="js/colorbrewer.min.x.js"></script>
-  <script src="js/geojson.min.js"></script>
-  <script src="js/intro.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+  <!-- <script src="js/geojson.min.js"></script> -->
+  <!-- <script src="js/intro.min.js"></script> -->
+  <script src="js/d3-legend.min.js"></script>
   
   <!-- <script src="js/d3-legend.min.js"></script> -->
   <!-- <script src="js/leaflet.js"></script> -->
   <!-- <script src="js/esri-leaflet.js"></script> -->
   <!-- <script src="js/heatmap.min.js"></script> -->
   <!-- <script src="js/leaflet-heatmap.js"></script> -->
-  <script src="https://d3js.org/topojson.v3.min.js"></script>
+  <script src="js/topojson.v3.min.js"></script>
 
   <!-- <script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script> -->
   <!-- <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script> -->
@@ -50,7 +53,9 @@
 
   <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.css" /> -->
   <!-- <link href="css/leaflet.css" rel="stylesheet" /> -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.min.css" />
+  <link rel="stylesheet" href="css/gridstack.min.css" />
+  <!-- <link rel="stylesheet" href="css/d3.parcoords.css" /> -->
+  
   <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" -->
     <!-- integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous"> -->
   <link rel="stylesheet" href="scr/main.css">
@@ -157,6 +162,7 @@
   <script src="scr/USmap.js"></script>
   <script src="scr/state-map.js"></script>
   <script src="scr/scatterplot.js"></script>
+  <!-- <script src="scr/parcoords.js"></script> -->
   <script src="scr/main.js"></script>
 </body>
 
