@@ -229,13 +229,10 @@ function highlightDots(state) {
 	curr_state = state;
     update_scatter_plot_title("#scatter-plot-title", curr_state);
     
-    sp_dots
-    	.transition()
-    	.duration(200)
-    	.each(function(d) {
+    sp_dots.each(function(d) {
                 this_dot = d3.select(this);
                 if (d.state == curr_state) {
-                    this_dot.style("opacity", 0.8).style("fill", "red").attr("r", 2).raise(); 
+                    this_dot.style("opacity", 0.8).style("fill", "#ff3a3a").attr("r", 2).raise(); 
                 }
                 else {
                     this_dot.style("opacity", 0.5).style("fill", "lightgrey").attr("r", 2);
