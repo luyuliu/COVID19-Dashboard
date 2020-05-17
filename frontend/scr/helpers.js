@@ -42,6 +42,9 @@ function update_title_info(the_id, the_date, casenum1, casenum10, casenum2, case
 function update_scatter_plot_title(the_id, newtitle) {
     d3.selectAll(the_id).html(`Scatter plot: ${newtitle}`);
 }
+function update_pc_plot_title(the_id, newtitle) {
+    d3.selectAll(the_id).html(`Parallel coordinates: ${newtitle}`);
+}
 
 // update the labels on the plot 
 function update_info_labels(labs, place, datev, datei, casename, val) {

@@ -15,7 +15,8 @@ var sp_dots = null;
 var curr_state = "OH";
 update_scatter_plot_title("#scatter-plot-title", curr_state);
 
-var se_ind_list = [["TOT_POP", "Total Population"],
+var se_ind_list = [
+    ["TOT_POP", "Total Population"],
     ["TOT_HH", "Total Household"],
     ["PCT_CHLDN", "Children (%)"],
     ["PCT_YOUTH", "Youth (%)"],
@@ -64,6 +65,7 @@ se_ind_dropdown.selectAll("option")
 
 se_ind = document.querySelector("#se_ind").value;
 var se_ind = "PCT_PUB_ADMIN";
+var data_se_cases;
 
 // add the graph canvas to the body of the webpage
 // var sp_svg = d3.select(scatter_plot_id).append("svg")
@@ -75,8 +77,9 @@ var se_ind = "PCT_PUB_ADMIN";
 // load data
 d3.csv("data/us-counties-attributes.csv").then(function(data_ind) { 
 	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
-    	data = convert_county_data(data_ind, data_cases);
-    	drawGraph(se_ind, data);
+    	data_se_cases = convert_county_data(data_ind, data_cases);
+    	drawGraph(se_ind, data_se_cases);
+        handle_par_data(data_se_cases)
 	});
 });
 
@@ -186,7 +189,6 @@ function drawGraph(se_ind, data) {
 	  .enter().append("g")
 	  .attr("class", "legend")
 	  .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
 
 	// draw legend colored rectangle
 	legend.append("rect")
