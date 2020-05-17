@@ -51,7 +51,7 @@ update_pc_plot_title("#pc-plot-title", pc_cur_state);
 
 function handle_par_data(data) {
 
-    dimensions = d3.keys(data[0]).filter(function(d) { return d != "countyFIPS" && d != "county" && d != "stateFIPS" && d != "state"})
+    dimensions = d3.keys(data[0]).filter(function(d) { return d != "countyFIPS" && d != "county" && d != "stateFIPS" && d != "state" && d != "county"})
 
     // use a linear scale. then store all in a y object
     var y = {}
@@ -90,6 +90,15 @@ function handle_par_data(data) {
             return "grey"
         })
         .style("opacity", 0.5)
+        .on("mouseover", function(d) {
+            update_pc_plot_title("#pc-plot-title", d.county + ", " + pc_cur_state);
+            // d3.select(this).style("stroke", "yellow");
+        })
+        // .on("mouseout", function(d) {
+        //     c = "grey"
+        //     if (d.state == pc_cur_state) c = "#ff3a3a";
+        //     d3.select(this).style("stroke", c);
+        // })
 
     // Draw the axis:
     parcoords_svg.selectAll("myAxis")
