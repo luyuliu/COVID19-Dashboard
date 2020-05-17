@@ -310,12 +310,32 @@ function state_ready(all_data) {
             .style("stroke", "#aaa")
             .style("stroke-width", 0.5)
             .on("mouseover", function (d, i) {
+	            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
+	                if (dd == d.properties.GEOID) {
+	                    d3.select(this).raise();
+	                    cur_state_region = dd;
+	                    return true;
+	                }
+	                else return false;
+	            });
+	            
                 d3.select(this).interrupt();
                 d3.select(this)
                     // .transition(t)
                     .style("fill", "#efef65");
-            })
+            	
+	            var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+	            update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+	            })
             .on("mouseout", function (d, i) {
+	            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
+	            state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+	                if (state_names.includes(dd.label))
+	                    return "block";
+	                else
+	                    return "none";
+
+	            });
                 d3.select(this).interrupt();
                 d3.select(this)
                     // .transition(t)
@@ -614,6 +634,13 @@ function state_ready(all_data) {
         //     if (dd.label == d || state_names.includes(dd.label)) return "block";
         //     else return "none";
         // });
+//		state_svg.selectAll(".states").each(function(dd) { 
+//			this_poly = d3.select(this);
+//			console.log(dd);
+//			if (dd.properties.GEOID == d) {
+		//	this_poly.style("fill", "#efef65"); }
+//	        })
+                    
         state_svg.selectAll(".state_symbol").classed("highlight", function (dd, i) {
             return (dd.properties.GEOID == d);
         });

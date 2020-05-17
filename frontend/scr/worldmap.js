@@ -265,17 +265,28 @@ function world_ready() { // TODO: LONG function!
         })
         // .style("stroke", "#999")
         .on("mouseover", function (d, i) { // choropleth map
+            timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, function (dd, i) {
+                if (dd == d.properties.Country_Region) {
+                    d3.select(this).raise();
+                    cur_world_region = dd;
+                    return true;
+                }
+                else return false;
+            });
             d3.select(this).interrupt();
             d3.select(this)
                 // .transition(t)
                 .style("fill", "#efef65");
+            var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+
+            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
         })
         .on("mouseout", function (d, i) {
             d3.select(this).interrupt();
             d3.select(this)
                 // .transition(t)
                 .style("fill", world_color_scheme(d["properties"][current_mapping_var]));
-        });;
+        });
 
     // alert(all_cases["Mainland China"]["confirmed"]);
 
@@ -421,8 +432,7 @@ function world_ready() { // TODO: LONG function!
                     return "none";
             });
             d3.select(this).classed("highlight", false);
-        })
-        ;
+        });
 
     var themeDropdown = d3.select("#world_map-content")
         .insert("select", "svg")
