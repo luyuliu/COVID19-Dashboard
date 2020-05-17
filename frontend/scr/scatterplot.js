@@ -10,6 +10,8 @@ var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bo
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
+var sp_dots = null;
+
 var curr_state = "OH";
 update_scatter_plot_title("#scatter-plot-title", curr_state);
 
@@ -64,12 +66,12 @@ se_ind = document.querySelector("#se_ind").value;
 var se_ind = "PCT_PUB_ADMIN";
 
 // add the graph canvas to the body of the webpage
-var sp_svg = d3.select(scatter_plot_id).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+// var sp_svg = d3.select(scatter_plot_id).append("svg")
+//     .attr("width", width + margin.left + margin.right)
+//     .attr("height", height)
+//     .append("g")
+//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+// 
 // load data
 d3.csv("data/us-counties-attributes.csv").then(function(data_ind) { 
 	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
@@ -150,7 +152,7 @@ function drawGraph(se_ind, data) {
 
 	// draw dots
 	// console.log(curr_state);
-	sp_svg.selectAll(".dot")
+	sp_dots = sp_svg.selectAll(".dot")
 	  .data(data)
 	  .enter().append("circle")
 	  .attr("class", function (d) { return "dot " + d.state} )
@@ -193,7 +195,6 @@ function drawGraph(se_ind, data) {
 	  .attr("height", 18)
 	  .style("fill", color);
 
-
 	// draw legend text
 	legend.append("text")
 	  .attr("x", width - 24)
@@ -207,21 +208,18 @@ function highlightDots(state) {
 	curr_state = state;
     update_scatter_plot_title("#scatter-plot-title", curr_state);
     
-    d3.select("svg").selectAll(".dot")
+    sp_dots
     	.transition()
     	.duration(200)
-    	.attr("r", 2)
-    	.style("opacity", 0.5)
-    	.style("fill", "lightgrey")
-    
-    d3.select("svg").selectAll("." + curr_state)
-    	.transition()
-    	.duration(200)
-    	.attr("r", 3)
-    	.style("opacity", 1)
-    	.style("fill", function() {
-            d3.select(this).raise();
-            return "red";})
+    	.each(function(d) {
+                this_dot = d3.select(this);
+                if (d.state == curr_state) {
+                    this_dot.style("opacity", 0.8).style("fill", "red").attr("r", 2).raise(); 
+                }
+                else {
+                    this_dot.style("opacity", 0.5).style("fill", "lightgrey").attr("r", 2);
+                }
+        })
 }
 
 function updateGraph() {

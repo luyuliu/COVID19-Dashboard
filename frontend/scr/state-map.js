@@ -44,20 +44,20 @@ var state_projection_params = {
     "NY": { "name": "New York", "angles": [76, -42.6, 0], "scale": 2500 },
     "VA": { "name": "Virginia", "angles": [79.5, -37.5, 0], "scale": 3000 },
     
-    "AL": { "name": "Alabama", "angles": [87, -32, 0], "scale": 4000 },
+    "AL": { "name": "Alabama", "angles": [87, -32, 0], "scale": 3000 },
     "AZ": { "name": "Arizona", "angles": [111, -34, 0], "scale": 2500 },
     "AR": { "name": "Arkansas", "angles": [92, -34.7, 0], "scale": 4000 },
-    "CO": { "name": "Colorado", "angles": [105.3, -39, 0], "scale": 4000 },
-    "CT": { "name": "Connecticut", "angles": [72.7, -41.6, 0], "scale": 12000 },
-    "DE": { "name": "Delaware", "angles": [75.5, -39, 0], "scale": 14000 },
-    "GA": { "name": "Georgia", "angles": [83.5, -32, 0], "scale": 4000 },
+    "CO": { "name": "Colorado", "angles": [105.7, -38.9, 0], "scale": 3500 },
+    "CT": { "name": "Connecticut", "angles": [72.7, -41.4, 0], "scale": 12000 },
+    "DE": { "name": "Delaware", "angles": [75.5, -39, 0], "scale": 11000 },
+    "GA": { "name": "Georgia", "angles": [83.5, -32.5, 0], "scale": 3000 },
     "ID": { "name": "Idaho", "angles": [114.5, -44.5, 0], "scale": 2000 },
-    "IL": { "name": "Illinois", "angles": [89, -39.5, 0], "scale": 3500 },
-    "IN": { "name": "Indiana", "angles": [86, -39.5, 0], "scale": 4500 },
-    "KS": { "name": "Kansas", "angles": [98, -38.5, 0], "scale": 2700 },
-    "KY": { "name": "Kentucky", "angles": [85, -37.8, 0], "scale": 3200 },
-    "LA": { "name": "Louisiana", "angles": [92, -30.4, 0], "scale": 3800 },
-    "ME": { "name": "Maine", "angles": [69, -45, 0], "scale": 4000 },
+    "IL": { "name": "Illinois", "angles": [89, -39.5, 0], "scale": 2500 },
+    "IN": { "name": "Indiana", "angles": [86, -39.5, 0], "scale": 4000 },
+    "KS": { "name": "Kansas", "angles": [98.4, -38.5, 0], "scale": 2700 },
+    "KY": { "name": "Kentucky", "angles": [85.9, -37.6, 0], "scale": 3200 },
+    "LA": { "name": "Louisiana", "angles": [91.8, -30.8, 0], "scale": 3500 },
+    "ME": { "name": "Maine", "angles": [69, -45, 0], "scale": 3600 },
     "MA": { "name": "Massachusetts", "angles": [72, -41.8, 0], "scale": 8000 },
     "MI": { "name": "Michigan", "angles": [84.8, -44, 0], "scale": 2500 },
     "MN": { "name": "Minnesota", "angles": [94.6, -46, 0], "scale": 2500 },
@@ -84,7 +84,7 @@ var state_projection_params = {
     "WI": { "name": "Wisconsin", "angles": [88.7, -43.7, 0], "scale": 4000 },
     "WV": { "name": "West Virginia", "angles": [80.5, -38, 0], "scale": 3500 },
     "WY": { "name": "Wyoming", "angles": [107.3, -43, 0], "scale": 2600 },
-    "VT": { "name": "Vermont", "angles": [72.7, -44, 0], "scale": 6000 }
+    "VT": { "name": "Vermont", "angles": [72.7, -43.7, 0], "scale": 6000 }
 }
 
 var mystates = d3.keys(state_projection_params);
