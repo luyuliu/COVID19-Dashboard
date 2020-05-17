@@ -51,7 +51,7 @@ update_pc_plot_title("#pc-plot-title", pc_cur_state);
 
 function handle_par_data(data) {
 
-    dimensions = d3.keys(data[0]).filter(function(d) { return d != "countyFIPS" && d != "county" && d != "stateFIPS" && d != "state" && d != "TOT_HH" && d != "Species"})
+    dimensions = d3.keys(data[0]).filter(function(d) { return d != "countyFIPS" && d != "county" && d != "stateFIPS" && d != "state"})
 
     // use a linear scale. then store all in a y object
     var y = {}

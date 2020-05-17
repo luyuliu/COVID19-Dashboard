@@ -228,7 +228,7 @@ function updateGraph() {
 	//d3.select("#graph-div").selectAll("svg").remove();
 	se_ind = document.querySelector("#se_ind").value;
 
-	drawGraph(se_ind, data);
+	drawGraph(se_ind, data_se_cases);
 }
 
 
