@@ -73,6 +73,9 @@ function handle_par_data(data) {
         return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
 
+// sort_var = dimensions[0];
+// alert(y[sort_var]) ;
+
     // Draw the lines
     pc_all_paths = parcoords_svg
         .selectAll("parcoords_paths")
