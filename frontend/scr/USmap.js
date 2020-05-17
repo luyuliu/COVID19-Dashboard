@@ -370,10 +370,8 @@ function us_ready() {
             var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
             update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
-            if (is_scatter_plot_on) {
-                highlightDots(cur_US_region);
-                highlight_paths(cur_US_region);
-            }
+            if (is_scatter_plot_on) highlightDots(cur_US_region);
+            if (is_pc_plot_on) highlight_paths(cur_US_region);
         })
         .on("mouseout", function (d) {
             US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
@@ -655,10 +653,8 @@ function us_ready() {
         var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
         update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
-        if (is_scatter_plot_on) {
-            highlightDots(cur_US_region);
-            highlight_paths(cur_US_region);
-        }
+        if (is_scatter_plot_on) highlightDots(cur_US_region);
+        if (is_pc_plot_on) highlight_paths(cur_US_region);
 
     }
     
