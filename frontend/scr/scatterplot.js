@@ -160,7 +160,7 @@ function drawGraph(se_ind, data) {
 	  .attr("cy", yMap)
 	  .attr("r", function(d) { 
           if (d.state == curr_state) {
-              return 3;
+              return 2;
           } else {
               return 2;}
            })
