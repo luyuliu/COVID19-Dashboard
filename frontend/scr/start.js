@@ -21,7 +21,7 @@ class Setup {
         this.grid = GridStack.init(this.options)
 
         this.settingGrid = { // card congifuration, should be updated dynamically
-            'parcoords': {x: 0, y: 4, width: this.squareWidth*2, height: this.squareHeight*3, id: "parcoords_plot", title: "Parallel coordinates", type: "plot"},
+            'parcoords': {x: 0, y: 4, width: this.squareWidth*2, height: this.squareHeight*3, id: "parcoords_plot", title: "Coming soon! Parallel coordinates", type: "plot"},
             'scatter_plot': { x: 8, y: 4, width: this.squareWidth, height: this.squareHeight*3, id: "scatter_plot", title: '<div id="scatter-plot-title">Scatter plot</div>', type: "plot" },
             'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "world_plot", title: "World Cases by Country", type: "plot" },
             'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, id: "US_plot", title: "U.S. Cases by State", type: "plot" },
