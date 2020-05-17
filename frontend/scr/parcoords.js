@@ -91,14 +91,15 @@ function handle_par_data(data) {
         })
         .style("opacity", 0.5)
         .on("mouseover", function(d) {
-            update_pc_plot_title("#pc-plot-title", d.county + ", " + pc_cur_state);
+            update_pc_plot_title("#pc-plot-title", d.county + ", " + d.state);
             // d3.select(this).style("stroke", "yellow");
         })
-        // .on("mouseout", function(d) {
+        .on("mouseout", function(d) {
+            update_pc_plot_title("#pc-plot-title", pc_cur_state);
         //     c = "grey"
         //     if (d.state == pc_cur_state) c = "#ff3a3a";
         //     d3.select(this).style("stroke", c);
-        // })
+        })
 
     // Draw the axis:
     parcoords_svg.selectAll("myAxis")
