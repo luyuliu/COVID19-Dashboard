@@ -14,53 +14,14 @@
   <script src="js/jquery.min.js"></script>
   <script src="js/jquery-ui.js"></script>
   <script src="js/jquery.ui.touch-punch.min.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.all.js"></script>
-  <!-- https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist -->
   <script src="js/d3.v5.min.js"></script> 
-
-  <!-- <script src="js/d3.parcoords.js"></script> -->
-
-  <!-- <script src="js/bootstrap.min.js"></script> -->
-  <!-- <script src="js/lodash.min.js"></script> -->
-  <!-- <script src="js/cookie.js"></script> -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.0.4/simplebar.min.js"></script> -->
-  <!-- <link rel="stylesheet" href="css/simplebar.css" /> -->
-  
-  <!-- <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script> -->
-  <!-- <script src="js/colorbrewer.min.x.js"></script> -->
+  <script src="js/d3-legend.min.js"></script>
+  <script src="js/topojson.v3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.all.js"></script>
   <script src="scr/mathfunctions.js"></script>
 
-  <!-- <script src="js/d3-interpolate-path.js"></script> -->
-  <!-- <script src="js/d3-line-chunked.js"></script> -->
-  <!-- <script src="js/geojson.min.js"></script> -->
-  <!-- <script src="js/intro.min.js"></script> -->
-  <script src="js/d3-legend.min.js"></script>
-  
-  <!-- <script src="js/d3-legend.min.js"></script> -->
-  <!-- <script src="js/leaflet.js"></script> -->
-  <!-- <script src="js/esri-leaflet.js"></script> -->
-  <!-- <script src="js/heatmap.min.js"></script> -->
-  <!-- <script src="js/leaflet-heatmap.js"></script> -->
-  <script src="js/topojson.v3.min.js"></script>
-
-  <!-- <script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script> -->
-  <!-- <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script> -->
-  <!-- <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.js"></script> -->
-  <!-- <script src="https://kit.fontawesome.com/88fc83302a.js"></script> -->
-
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/8.5.1/nouislider.min.css" /> -->
-  <!-- <link href="css/leaflet.css" rel="stylesheet" /> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.min.css" />
-  <!-- <link rel="stylesheet" href="css/d3.parcoords.css" /> -->
-  
-  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" -->
-    <!-- integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous"> -->
   <link rel="stylesheet" href="scr/main.css">
-  <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
-  <!-- <link rel="stylesheet" href="css/introjs.min.css"> -->
 </head>
 
 <body>
@@ -97,10 +58,10 @@
         <!-- Modal content -->
         <div class="modal-content">
           <span class="close">&times;</span>
-              <h2>Welcome to the COVID-19 Dashboard!</h2>
+              <h2>Welcome to the <span style="color: red">COVID-19</span> Dashboard!</h2>
               <p>
 
-    This dashboard visualizes the spatio-temporal pattern of COVID-19 pandemic evolution for each day. The confirmed COVID-19 case statistics are shown as red proportional symbols in three scales: each country in the world (left), each state in the United States (middle), and each county in a selected state (right). Each map also has a choropleth color basemap that shows a selected relevant social-economic indicator. The line chart beneath each map demonstrates the temporal change of the confirmed case with interactivity with the proportional symbols. The scatter plot on the bottom-left corner represents county-level interrelationship between total confirmed cases and a selected socio-economic variable.
+    This dashboard visualizes the spatio-temporal pattern of COVID-19 pandemic evolution for each day. The confirmed COVID-19 case statistics are shown as red proportional symbols in three scales: each country in the world (left), each state in the United States (middle), and each county in a selected state (right). Each map also has a <a href="https://en.wikipedia.org/wiki/Choropleth_map">choropleth map</a> as the base map that shows a selected relevant social-economic indicator. Three classes are used for the choropleth map and approximately 1/3 of the regions on each map are grouped into one of the three bins. The line chart beneath each map demonstrates the temporal change of the confirmed case with interactivity with the proportional symbols. The scatter plot on the bottom-left corner represents county-level interrelationship between total confirmed cases and a selected socio-economic variable.
 
 </p>
 
@@ -162,7 +123,7 @@
   <script src="scr/USmap.js"></script>
   <script src="scr/state-map.js"></script>
   <script src="scr/scatterplot.js"></script>
-  <!-- <script src="scr/parcoords.js"></script> -->
+  <script src="scr/parcoords.js"></script>
   <script src="scr/main.js"></script>
 </body>
 
