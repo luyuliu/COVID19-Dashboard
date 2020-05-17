@@ -250,6 +250,7 @@ function convert_county_data(ses, cases) {
             item["DEATHS"] = obj2["deaths"][obj2["deaths"].length - 1];
             
             item["state"] = null,
+            item["county"] = null,
         	item["stateFIPS"] = null,
 			item["TOT_POP"] = null,
 			item["TOT_HH"] = null,
@@ -282,6 +283,7 @@ function convert_county_data(ses, cases) {
 		        if (obj3["countyFIPS"] == item["countyFIPS"]) {
 		        	t = 1;
 		        	item["state"] = obj3["state"],
+                    item["county"] = obj3["county"]
 		        	item["stateFIPS"] = obj3["stateFIPS"],
 		        	item["TOT_POP"] = parseFloat(obj3["TOT_POP"]),
 			        item["TOT_HH"] = parseFloat(obj3["TOT_POP"]),
