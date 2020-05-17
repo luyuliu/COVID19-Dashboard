@@ -87,7 +87,10 @@ worldmap_svg.call(zoom);
 
 var cur_case = "confirmed";
 var cur_world_region = "USA";
-var world_case_names_list = ["confirmed", "deaths", "recovered"]
+var world_case_names_list = [
+	["confirmed", "Confirmed"],
+	["deaths", "Deaths"],
+	["recovered", "Recovered"]];
 
 function world_ready() { // TODO: LONG function!
 
@@ -432,10 +435,8 @@ function world_ready() { // TODO: LONG function!
     themeDropdown.selectAll("option")
         .data(world_case_names_list)
         .enter().append("option")
-        .attr("value", function (d) { return d; })
-        .text(function (d) {
-            return d;
-        })
+        .attr("value", function (d) { return d[0]; })
+        .text(function (d) { return d[1]; })
         .property("selected", function (d) {
             if (d == cur_case) {
                 return true;

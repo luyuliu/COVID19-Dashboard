@@ -37,7 +37,9 @@ var US_svg = d3.select(US_map_id).append("svg")
 var US_timelines_lines = null;
 var US_all_cases = null;
 var US_cur_case = "confirmed";
-var US_case_names_list = ["confirmed", "deaths"]
+var US_case_names_list = [
+	["confirmed", "Confirmed"],
+	["deaths", "Deaths"]];
 
 function us_ready() {
 
@@ -399,10 +401,8 @@ function us_ready() {
     themeDropdown.selectAll("option")
         .data(US_case_names_list)
         .enter().append("option")
-        .attr("value", function (d) { return d; })
-        .text(function (d) {
-            return d;
-        })
+        .attr("value", function (d) { return d[0]; })
+        .text(function (d) { return d[1]; })
         .property("selected", function (d) {
             if (d == US_cur_case) {
                 return true;

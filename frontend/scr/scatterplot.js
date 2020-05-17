@@ -4,7 +4,7 @@ var scatter_plot_affiliation_id = "#scatter_plot-affiliation";
 
 is_scatter_plot_on = true;
 
-var margin = { top: 10, right: 10, bottom: 50, left: 50 };
+var margin = { top: 40, right: 10, bottom: 50, left: 50 };
 var width = $(scatter_plot_grid_container_id).width() - margin.left - margin.right;
 var height = $(scatter_plot_grid_container_id).height() - margin.top - margin.bottom - 30;
 
@@ -60,31 +60,48 @@ se_ind_dropdown.selectAll("option")
         else {
             return false;
         }
-    })
-;
+    });
 
-se_ind = document.querySelector("#se_ind").value;
-var se_ind = "PCT_PUB_ADMIN";
+var case_names_list = [
+	["CONFIRMED", "Confirmed (Per 1K People)"],
+	["DEATHS", "Deaths (Per 1K People)"]];
+
+var case_dropdown = d3.select(scatter_plot_id)
+    .insert("select", "svg")
+    .attr("id", "case_ind")
+    .attr("class", "select-css theme")
+    .style("position", "absolute")
+    .on("change", updateGraph);
+
+case_dropdown.selectAll("option")
+    .data(case_names_list)
+    .enter().append("option")
+    .attr("value", function (d) { return d[0]; })
+    .text(function (d) { return d[1]; })
+    .property("selected", function (d) {
+        if (d == "CONFIRMED") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    });
+
+var se_ind = document.querySelector("#se_ind").value;
+var case_ind = document.querySelector("#case_ind").value;
 var data_se_cases;
 
-// add the graph canvas to the body of the webpage
-// var sp_svg = d3.select(scatter_plot_id).append("svg")
-//     .attr("width", width + margin.left + margin.right)
-//     .attr("height", height)
-//     .append("g")
-//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-// 
 // load data
 d3.csv("data/us-counties-attributes.csv").then(function(data_ind) { 
 	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
     	data_se_cases = convert_county_data(data_ind, data_cases);
-    	drawGraph(se_ind, data_se_cases);
+    	drawGraph(se_ind, case_ind, data_se_cases);
         handle_par_data(data_se_cases)
 	});
 });
 
 
-function drawGraph(se_ind, data) {		
+function drawGraph(se_ind, case_ind, data) {		
 	d3.select(scatter_plot_id).selectAll("svg").remove();
 
 	// add the graph canvas to the body of the webpage
@@ -101,11 +118,10 @@ function drawGraph(se_ind, data) {
 	    xMap = function(d) { return x(x_value(d));},
 	    xAxis = d3.axisBottom(x).ticks(4, "s");
 
-
 	// set up y
-	var y_value = function(d) {return d.CONFIRMED;};
+	var y_value = function(d) {return d[case_ind];};
 
-	var y_text = function(d) {return "Confirmed cases (per 1,000)";};
+	//var y_text = function(d) {return "Confirmed cases (per 1,000)";};
 
 	var y = d3.scaleLinear().range([height, 0]),
 	    yMap = function(d) { return y(y_value(d));},
@@ -113,7 +129,7 @@ function drawGraph(se_ind, data) {
 
 	data.forEach(function(d) { 
 		d[se_ind] = +d[se_ind];
-	    d["CONFIRMED"] = +d["CONFIRMED"];
+	    d[case_ind] = +d[case_ind];
     });
 
 	// set axis domains
@@ -145,16 +161,15 @@ function drawGraph(se_ind, data) {
 	sp_svg.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
-	sp_svg.append("text")
-		.attr("class", "text-label")
-		.attr("transform", "rotate(-90)")
-		.attr("x", -height/2)
-		.attr("y", -margin.left + 15)
-		.style("text-anchor", "middle")
-		.text(y_text)
+//	sp_svg.append("text")
+//		.attr("class", "text-label")
+//		.attr("transform", "rotate(-90)")
+//		.attr("x", -height/2)
+//		.attr("y", -margin.left + 15)
+//		.style("text-anchor", "middle")
+//		.text(y_text)
 
 	// draw dots
-	// console.log(curr_state);
 	sp_dots = sp_svg.selectAll(".dot")
 	  .data(data)
 	  .enter().append("circle")
@@ -162,26 +177,30 @@ function drawGraph(se_ind, data) {
 	  .attr("cx", xMap)
 	  .attr("cy", yMap)
 	  .attr("r", function(d) { 
-          if (d.state == curr_state) {
-              return 2;
-          } else {
-              return 2;}
-           })
+			if (d.state == curr_state) {
+				return 2;
+			} else {
+				return 2;}
+			})
 	  .style("opacity", function(d) { 
-	              if (d.state == curr_state) {
-	                  return 1.0;
-	              } else {
-	                  return 0.5;}
-	               })
+	  		if (d.state == curr_state) {
+				return 1.0;
+			} else {
+				return 0.5;}
+			})
 	  .style("fill", function(d) { 
-	              if (d.state == curr_state) {
-                      d3.select(this).raise();
-	                  return "red";
-	              } else {
-	                  return "lightgrey";}
-	               })
-        .style("stroke-width", 0);
-
+			if (d.state == curr_state) {
+				d3.select(this).raise();
+				return "#ff3a3a";
+			} else {
+				return "lightgrey";}
+			})
+	  .style("stroke-width", 0)
+	  .on("mouseover", function(d) {
+            update_scatter_plot_title("#scatter-plot-title", d.county + ", " + d.state);
+        })
+      .on("mouseout", function(d) {
+      		update_scatter_plot_title("#scatter-plot-title", curr_state)});
 
 	// draw legend
 	var legend = sp_svg.selectAll(".legend")
@@ -227,8 +246,9 @@ function highlightDots(state) {
 function updateGraph() {
 	//d3.select("#graph-div").selectAll("svg").remove();
 	se_ind = document.querySelector("#se_ind").value;
+	case_ind = document.querySelector("#case_ind").value;
 
-	drawGraph(se_ind, data_se_cases);
+	drawGraph(se_ind, case_ind, data_se_cases);
 }
 
 
@@ -312,6 +332,7 @@ function convert_county_data(ses, cases) {
 					item["PCT_PUB_ADMIN"] = parseFloat(obj3["PCT_PUB_ADMIN"]),
 					
                     item["CONFIRMED"] = 1000 * item["CONFIRMED"] / obj3["TOT_POP"];
+                    item["DEATHS"] = 1000 * item["DEATHS"] / obj3["TOT_POP"];
                 }
 	        });
 	        if (t == 1){
