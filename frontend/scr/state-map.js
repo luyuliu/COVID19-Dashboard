@@ -101,7 +101,9 @@ var state_all_cases = null;
 var sorted_case_lasts = null;
 
 var state_cur_case = "confirmed";
-var state_case_names_list = ["confirmed", "deaths"]
+var state_case_names_list = [
+	["confirmed", "Confirmed"],
+	["deaths", "Deaths"]];
 
 var state_svg = d3.select(state_map_id).append("svg")
     .attr("width", state_map_width)
@@ -162,6 +164,9 @@ d3.select("#select-state")
         the_state = $("#select-state").val();
         state_geojson_fname = the_state + "_geog.geojson",
             state_centroids_fname = the_state + "_centroids.geojson";
+        if (is_scatter_plot_on) { 
+        	highlightDots(the_state);
+        	highlight_paths(the_state); }
         init_state(1);
     })
     .selectAll("option")
@@ -701,10 +706,8 @@ function state_ready(all_data) {
     themeDropdown.selectAll("option")
         .data(state_case_names_list)
         .enter().append("option")
-        .attr("value", function (d) { return d; })
-        .text(function (d) {
-            return d;
-        })
+        .attr("value", function (d) { return d[0]; })
+        .text(function (d) { return d[1]; })
         .property("selected", function (d) {
             if (d == state_cur_case) {
                 return true;
