@@ -45,7 +45,11 @@ var parcoords_svg = d3.select(parcoords_id)
 
 var pc_all_paths = null;
 var pc_cur_state = "OH";
-update_pc_plot_title("#pc-plot-title", pc_cur_state);
+// update_pc_plot_title("#pc-plot-title", pc_cur_state);
+update_plot_title("#pc-plot-title", "Scatter plot", pc_cur_state);
+
+var sort_var = null;
+var grey_color_scale = null;
 
 function handle_par_data(data) {
 
@@ -72,10 +76,11 @@ function handle_par_data(data) {
     }
 
 
-    // set the scale for paths
-// sort_var = dimensions[0];
-// alert(y[sort_var]) ;
-// d3.extent(data, function(d) { return +d[name]; })
+    // a scale to convert values to grey scale
+    sort_var = dimensions[0];
+    grey_color_scale = d3.scaleSymlog()
+        .domain(y[sort_var].domain())
+        .range([0.2, 0.9])
 
     // Draw the lines
     pc_all_paths = parcoords_svg
@@ -91,22 +96,27 @@ function handle_par_data(data) {
                 d3.select(this).raise();
                 return "#ff3a3a";
             }
-            return "grey"
+            else return d3.interpolateGreys(grey_color_scale(d[sort_var]));
+            // return "grey"
         })
         .style("opacity", 0.5)
         .on("mouseover", function(d) {
-            update_pc_plot_title("#pc-plot-title", d.county + ", " + d.state);
+            // update_pc_plot_title("#pc-plot-title", d.county + ", " + d.state);
+            update_plot_title("#pc-plot-title", "Parallel coordinates", d.county + ", " + d.state);
+
             // d3.select(this).style("stroke", "yellow");
         })
         .on("mouseout", function(d) {
-            update_pc_plot_title("#pc-plot-title", pc_cur_state);
+            // update_pc_plot_title("#pc-plot-title", pc_cur_state);
+            update_plot_title("#pc-plot-title", "Parallel coordinates", pc_cur_state);
+
         //     c = "grey"
         //     if (d.state == pc_cur_state) c = "#ff3a3a";
         //     d3.select(this).style("stroke", c);
         })
 
     // Draw the axis:
-    parcoords_svg.selectAll("myAxis")
+    var pc_axis = parcoords_svg.selectAll("myAxis")
         // For each dimension of the dataset I add a 'g' element:
         .data(dimensions).enter()
         .append("g")
@@ -119,18 +129,44 @@ function handle_par_data(data) {
                     .ticks(2, "s")
                     .scale(y[d])); 
             })
-        // Add axis title
-        .append("text")
+    // Add axis title
+    var pc_titles = pc_axis.append("text")
         .style("text-anchor", "middle")
         .attr("y", function(d, i) {
             if (i%2) return -15;
             return -5;
         })
         .text(function(d) { return se_var_friendly[d]; })
-        .style("fill", "lightgrey")
-
+        .style("fill", function(d) {
+            if (d==sort_var) return "lightgrey";
+            return "#ababab";
+        })
+        .style("cursor", "pointer")
+        .on("click", function(d) {
+            sort_var = d;
+            grey_color_scale.domain(y[sort_var].domain())
+            pc_all_paths
+                .transition()
+                .duration(200)
+                .each(function(d) {
+                    this_path = d3.select(this);
+                    if (d.state == curr_state) {
+                        this_path.style("opacity", 0.8).style("stroke", "#ff3a3a").attr("r", 2).raise(); 
+                    }
+                    else {
+                        this_path.style("opacity", 0.5).style("stroke", function(d) {
+                            return d3.interpolateGreys(grey_color_scale(d[sort_var]));
+                        })
+                    }
+                })
+            pc_titles.each(function(d, i) {
+                this_title = d3.select(this);
+                if (d == sort_var) this_title.style("fill", "lightgrey")
+                else this_title.style("fill", "#ababab");
+                    
+            } )
+        })
 }
-
 
 function highlight_paths(state) {
 	pc_cur_state = state;
@@ -140,12 +176,14 @@ function highlight_paths(state) {
     	.transition()
     	.duration(200)
     	.each(function(d) {
-                this_dot = d3.select(this);
+                this_path = d3.select(this);
                 if (d.state == curr_state) {
-                    this_dot.style("opacity", 0.8).style("stroke", "#ff3a3a").attr("r", 2).raise(); 
+                    this_path.style("opacity", 0.8).style("stroke", "#ff3a3a").raise(); 
                 }
                 else {
-                    this_dot.style("opacity", 0.5).style("stroke", "grey").attr("r", 2);
+                    this_path.style("opacity", 0.5).style("stroke", function(d) {
+                        return d3.interpolateGreys(grey_color_scale(d[sort_var]));
+                    });
                 }
         })
 }

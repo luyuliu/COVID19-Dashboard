@@ -39,6 +39,11 @@ function update_title_info(the_id, the_date, casenum1, casenum10, casenum2, case
     d3.selectAll(the_id).html(title_info)
 }
 
+function update_plot_title(the_id, heading1, heading2) {
+    d3.selectAll(the_id).html(`${heading1}: ${heading2}`);
+}
+
+
 function update_scatter_plot_title(the_id, newtitle) {
     d3.selectAll(the_id).html(`Scatter plot: ${newtitle}`);
 }

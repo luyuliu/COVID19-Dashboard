@@ -13,7 +13,8 @@ var color = d3.scaleOrdinal(d3.schemeCategory10);
 var sp_dots = null;
 
 var curr_state = "OH";
-update_scatter_plot_title("#scatter-plot-title", curr_state);
+// update_scatter_plot_title("#scatter-plot-title", curr_state);
+update_plot_title("#scatter-plot-title", "Scatter plot", curr_state);
 
 var se_ind_list = [
     ["TOT_POP", "Total Population"],
@@ -197,10 +198,14 @@ function drawGraph(se_ind, case_ind, data) {
 			})
 	  .style("stroke-width", 0)
 	  .on("mouseover", function(d) {
-            update_scatter_plot_title("#scatter-plot-title", d.county + ", " + d.state);
+			update_plot_title("#scatter-plot-title", "Scatter plot", d.county + ", " + d.state);
+			// update_scatter_plot_title("#scatter-plot-title", d.county + ", " + d.state);
         })
       .on("mouseout", function(d) {
-      		update_scatter_plot_title("#scatter-plot-title", curr_state)});
+			update_plot_title("#scatter-plot-title", "Scatter plot", curr_state);
+
+			//   update_scatter_plot_title("#scatter-plot-title", curr_state)
+		});
 
 	// draw legend
 	var legend = sp_svg.selectAll(".legend")
@@ -227,7 +232,8 @@ function drawGraph(se_ind, case_ind, data) {
 
 function highlightDots(state) {
 	curr_state = state;
-    update_scatter_plot_title("#scatter-plot-title", curr_state);
+	update_plot_title("#scatter-plot-title", "Scatter plot", curr_state);
+    // update_scatter_plot_title("#scatter-plot-title", curr_state);
     
     sp_dots.each(function(d) {
                 this_dot = d3.select(this);
