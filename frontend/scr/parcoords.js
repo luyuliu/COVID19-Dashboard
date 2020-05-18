@@ -1,6 +1,8 @@
 // set the dimensions and margins of the graph
 var parcoords_id = "#parcoords_plot-content";
 
+is_pc_plot_on = true;
+
 var se_var_friendly = {
     "TOT_POP": "Population",
     "TOT_HH": "Household",
@@ -41,10 +43,6 @@ var parcoords_svg = d3.select(parcoords_id)
     .append("g")
     .attr("transform", "translate(" + parcoords_margin.left + "," + parcoords_margin.top + ")");
 
-// Parse the Data
-// d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv").then(handle_par_data);
-// d3.csv("data/us-counties-attributes.csv").then(handle_par_data);
-
 var pc_all_paths = null;
 var pc_cur_state = "OH";
 update_pc_plot_title("#pc-plot-title", pc_cur_state);
@@ -73,8 +71,11 @@ function handle_par_data(data) {
         return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
 
+
+    // set the scale for paths
 // sort_var = dimensions[0];
 // alert(y[sort_var]) ;
+// d3.extent(data, function(d) { return +d[name]; })
 
     // Draw the lines
     pc_all_paths = parcoords_svg

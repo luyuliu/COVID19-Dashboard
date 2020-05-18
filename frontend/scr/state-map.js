@@ -772,7 +772,6 @@ function state_ready(all_data) {
         update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
 
 
-
         state_radius = d3.scaleSqrt()
             .domain([0, state_max])
             .range([0, theme_circle_sizes[state_cur_case]]);
@@ -843,7 +842,7 @@ function state_ready(all_data) {
                 if (d.properties) {
                     name = d.properties.GEOID;
                     if (state_all_cases[name]) {
-                        return state_radius(state_all_cases[name][state_cur_case].slice(-1)[0]);
+                        return state_radius(state_all_cases[name][state_cur_case][ind]);
                     }
                 }
                 return state_radius(0);

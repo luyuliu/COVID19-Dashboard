@@ -98,6 +98,7 @@ var US_all_cases = null;
 var us_abbr_inv = null;
 
 var is_scatter_plot_on = false;
+var is_pc_plot_on = false;
 
 var default_case_name = "confirmed";
 

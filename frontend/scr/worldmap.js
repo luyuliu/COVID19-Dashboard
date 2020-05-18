@@ -170,7 +170,7 @@ function world_ready() { // TODO: LONG function!
 
     var radius = d3.scaleSqrt()
         .domain([0, world_max])
-        .range([0, 90]);
+        .range([0, 70]);
 
     //////////////////////////////////////////////////////////////////////////
     // info on title bar
@@ -465,6 +465,9 @@ function world_ready() { // TODO: LONG function!
         d3.selectAll(".world_line").remove();
         timelines_svg.selectAll(".text-label").remove();
         
+        var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+
+        // update the circles
         d3.selectAll(".world_symbol")
             // .transition()
             .style("fill", circle_symbol_fills[cur_case])
@@ -472,14 +475,13 @@ function world_ready() { // TODO: LONG function!
                 if (d.properties) {
                     name = d.properties.NAME;
                     if (all_cases[name]) {
-                        return radius(all_cases[name][cur_case].slice(-1)[0]);
+                        return radius(all_cases[name][cur_case][ind]);
                     }
                 }
                 return radius(0);
             }))
 
         // Update the labels
-        var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
         // console.log(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind])
         update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
 

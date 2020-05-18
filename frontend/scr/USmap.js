@@ -97,18 +97,6 @@ function us_ready() {
     /////////////////////////////////////////////////////////////////////////
 
     ind = all_cases["USA"]["confirmed"].length - 1;
-    // var s1 = US_all_cases["USA"]["confirmed"][ind]
-    // var s0 = ind==0 ? 0 : US_all_cases["USA"]["confirmed"][ind-1]
-    // var s2 = US_all_cases["USA"]["deaths"][ind]
-    // var s3 = US_all_cases["USA"]["recovered"][ind]
-    // 
-    // var title_info = `
-    // ${case_date_format_full(cur_date_US)} <br/>
-    // <span style="color: red">${d3.format(",")(s1)}</span> confirmed (+${s1-s0})<br/> 
-    // ${d3.format(",")(s2)} deaths<br/>
-    // ${d3.format(",")(s3)} recovered`
-    // d3.selectAll("#us-info").html(title_info)
-
     update_title_info("#us-info",
         cur_date_US,
         all_cases["USA"]["confirmed"][ind],
@@ -146,9 +134,8 @@ function us_ready() {
         "pct_Educational": "Job in Education (%)",
         "pct_recreational": "Job in Recreation (%)",
         "pct_Others": "Job in Others (%)",
-        "pct_Public_administration": "Job in Publilc Administration (%)"
+        "pct_Public_administration": "Job in Public Administration (%)"
     }
-
 
     US_all_mapping_vars = [];
     US_list_mapping_var = [];
@@ -168,6 +155,7 @@ function us_ready() {
         if (val != null)
             US_all_mapping_vars[i] = val;
     }
+    
     US_bounds = get_var_bounds(US_all_mapping_vars);
     var US_color_scheme = d3.scaleThreshold()
         .domain(US_bounds)
@@ -191,27 +179,25 @@ function us_ready() {
             .style("stroke-width", 0.5)
             .on("mouseover", function (d, i) { // choropleth
             	US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, function (dd, i) {
-                if (dd == d.properties.postal) {
-                    // alert(this)
-                    d3.select(this).raise();
-                    cur_US_region = dd;
-                    return true;
-                }
-                else return false;
-            });
-            
+                    if (dd == d.properties.postal) {
+                        // alert(this)
+                        d3.select(this).raise();
+                        cur_US_region = dd;
+                        return true;
+                    }
+                    else return false;
+                });
+                
                 d3.select(this).interrupt();
                 d3.select(this)
                     // .transition(t)
                     .style("fill", "#efef65");
-            
-            var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-            update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
+                
+                var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
+                update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
-            if (is_scatter_plot_on) {
-                highlightDots(cur_US_region);
-                highlight_paths(cur_US_region); }
-            
+                if (is_scatter_plot_on) highlightDots(cur_US_region);
+                if (is_pc_plot_on) highlight_paths(cur_US_region);
             })
             .on("mouseout", function (d, i) {
             	US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
@@ -245,30 +231,7 @@ function us_ready() {
     /////////////////////////////////////////////////////////////////////////
     const USmap_legend_svg = make_legend_svg(US_affiliation_id, US_map_legend_width, US_map_legend_height, "US-legend");
 
-    // var US_legend_linear = d3.legendColor()
-    //     .labelFormat(d3.format(".2f"))
-    //     .labels(d3.legendHelpers.thresholdLabels)
-    //     // .useClass(true)
-    //     .scale(US_color_scheme)
-    //     .shapeWidth(US_map_legend_width / 4.1)
-    //     .orient('horizontal');
-    // 
-    // USmap_legend_svg.select("#US-legend")
-    //     .call(US_legend_linear);
-
     make_legend(USmap_legend_svg, "#US-legend", US_color_scheme, US_map_legend_width, "vertical");
-
-
-    // // Legend title 
-    // legendg.append("text")
-    //     .attr("class", "caption")
-    //     .attr("x", 0)
-    //     .attr("y", -6)
-    //     .attr("fill", "#000")
-    //     .attr("font-size", "20px")
-    //     .attr("text-anchor", "start")
-    //     .attr("font-weight", "bold")
-    //     .text(US_current_mapping_var)
 
     var US_dropdown = d3.select(US_affiliation_id)
         .insert("select", "svg")
@@ -435,6 +398,7 @@ function us_ready() {
         // d3.selectAll(".US_lines").remove();
         d3.selectAll(".US_line").remove();
         US_timelines_svg.selectAll(".text-label").remove();
+        var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
 
         d3.selectAll(".US_symbol")
             // .transition()
@@ -444,14 +408,13 @@ function us_ready() {
                 if (d.properties) {
                     name = d.properties.postal;
                     if (US_all_cases[name]) {
-                        return radius(US_all_cases[name][US_cur_case].slice(-1)[0]);
+                        return radius(US_all_cases[name][US_cur_case][ind]);
                     }
                 }
                 return radius(0);
             }))
 
         // Update the labels
-        var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
         update_info_labels(US_info_labels, cur_US_region, cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
         // Create new data for the line chart
