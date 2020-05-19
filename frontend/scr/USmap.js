@@ -573,18 +573,7 @@ function us_ready() {
                 }));
 
             update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-            // 
-            // var s1 = US_all_cases["USA"]["confirmed"][ind]
-            // var s0 = ind==0 ? 0 : US_all_cases["USA"]["confirmed"][ind-1]
-            // var s2 = US_all_cases["USA"]["deaths"][ind]
-            // var s3 = US_all_cases["USA"]["recovered"][ind]
-            // 
-            // var title_info = `
-            // ${case_date_format_full(cur_date_US)} <br/>
-            // <span style="color: red">${d3.format(",")(s1)}</span> confirmed (+${s1-s0})<br/> 
-            // ${d3.format(",")(s2)} deaths<br/>
-            // ${d3.format(",")(s3)} recovered`
-            // d3.selectAll("#us-info").html(title_info)
+
             update_title_info("#us-info",
                 cur_date_US,
                 all_cases["USA"]["confirmed"][ind],

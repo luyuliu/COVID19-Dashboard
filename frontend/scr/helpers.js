@@ -11,6 +11,34 @@ var circle_symbol_fills = {
     "recovered": "#30a326"
 }
 
+// structures used in the title of PC and SP
+var link_status = {
+    0: {"text": "[&#9740; Unlinked]", "class": "text-button-down"},  // &#9740; &#9783; &#9867;
+    1: {"text": "[&#9741; Linked]", "class": "text-button"}          // &#9741; &#9776; &#9866;
+}
+
+var title_text = {
+    "par_coords_btn": "Parallel coordinates",
+    "scatter_plot_btn": "Scatter plot"
+}
+
+function link_clicked(x) {
+    id = x.id;
+    if (id == "par_coords_btn") {
+        link_pc_paths = !link_pc_paths;
+        pc_title_str = `<span id="par_coords_btn" class="${link_status[+link_pc_paths].class}" onclick="link_clicked(this)">${link_status[+link_pc_paths].text}</span> ${title_text[id]}`;
+        update_plot_title("#pc-plot-title", pc_title_str, pc_cur_state);
+        update_paths();
+    }
+    else if (id == "scatter_plot_btn") {
+        link_sp_dots = !link_sp_dots;
+        sp_title_str = `<span id="scatter_plot_btn" class="${link_status[+link_sp_dots].class}" onclick="link_clicked(this)">${link_status[+link_sp_dots].text}</span> Scatter plot`; 
+        update_plot_title("#scatter-plot-title", sp_title_str, sp_curr_state);
+        update_dots();
+    }
+}
+
+
 function get_var_bounds(mapdata) {
     mapdata.sort(d3.ascending);
     minx = +mapdata[0];
@@ -44,12 +72,12 @@ function update_plot_title(the_id, heading1, heading2) {
 }
 
 
-function update_scatter_plot_title(the_id, newtitle) {
-    d3.selectAll(the_id).html(`Scatter plot: ${newtitle}`);
-}
-function update_pc_plot_title(the_id, newtitle) {
-    d3.selectAll(the_id).html(`Parallel coordinates: ${newtitle}`);
-}
+// function update_scatter_plot_title(the_id, newtitle) {
+//     d3.selectAll(the_id).html(`Scatter plot: ${newtitle}`);
+// }
+// function update_pc_plot_title(the_id, newtitle) {
+//     d3.selectAll(the_id).html(`Parallel coordinates: ${newtitle}`);
+// }
 
 // update the labels on the plot 
 function update_info_labels(labs, place, datev, datei, casename, val) {

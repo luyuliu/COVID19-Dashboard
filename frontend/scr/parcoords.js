@@ -45,15 +45,20 @@ var parcoords_svg = d3.select(parcoords_id)
 
 var pc_all_paths = null;
 var pc_cur_state = "OH";
-// update_pc_plot_title("#pc-plot-title", pc_cur_state);
-update_plot_title("#pc-plot-title", "Scatter plot", pc_cur_state);
+
+
+var pc_title_str = `<span id="par_coords_btn" class="${link_status[+link_pc_paths].class}" onclick="link_clicked(this)">${link_status[+link_pc_paths].text}</span> Parallel coordinates`; // id: use par_coords_btn (helpers.js)
+
+update_plot_title("#pc-plot-title", pc_title_str, pc_cur_state);
 
 var sort_var = null;
 var grey_color_scale = null;
 
 function handle_par_data(data) {
 
-    dimensions = d3.keys(data[0]).filter(function(d) { return d != "countyFIPS" && d != "county" && d != "stateFIPS" && d != "state" && d != "county"})
+    dimensions = d3.keys(data[0]).filter(function(d) { 
+        return d != "countyFIPS" && d != "county" && d != "stateFIPS" && d != "state" && d != "county";
+    })
 
     // use a linear scale. then store all in a y object
     var y = {}
@@ -75,9 +80,8 @@ function handle_par_data(data) {
         return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
     }
 
-
     // a scale to convert values to grey scale
-    sort_var = dimensions[0];
+    sort_var = "PCT_NWHT";
     grey_color_scale = d3.scaleSymlog()
         .domain(y[sort_var].domain())
         .range([0.2, 0.9])
@@ -92,7 +96,7 @@ function handle_par_data(data) {
         .style("fill", "none")
         // .style("stroke", "#69b3a2")
         .style("stroke", function(d, i) {
-            if (d.state == pc_cur_state) {
+            if (link_pc_paths && d.state == pc_cur_state) {
                 d3.select(this).raise();
                 return "#ff3a3a";
             }
@@ -102,13 +106,13 @@ function handle_par_data(data) {
         .style("opacity", 0.5)
         .on("mouseover", function(d) {
             // update_pc_plot_title("#pc-plot-title", d.county + ", " + d.state);
-            update_plot_title("#pc-plot-title", "Parallel coordinates", d.county + ", " + d.state);
+            update_plot_title("#pc-plot-title", pc_title_str, d.county + ", " + d.state);
 
             // d3.select(this).style("stroke", "yellow");
         })
         .on("mouseout", function(d) {
             // update_pc_plot_title("#pc-plot-title", pc_cur_state);
-            update_plot_title("#pc-plot-title", "Parallel coordinates", pc_cur_state);
+            update_plot_title("#pc-plot-title", pc_title_str, pc_cur_state);
 
         //     c = "grey"
         //     if (d.state == pc_cur_state) c = "#ff3a3a";
@@ -150,7 +154,7 @@ function handle_par_data(data) {
                 .duration(200)
                 .each(function(d) {
                     this_path = d3.select(this);
-                    if (d.state == curr_state) {
+                    if (link_pc_paths && d.state == pc_cur_state) {
                         this_path.style("opacity", 0.8).style("stroke", "#ff3a3a").attr("r", 2).raise(); 
                     }
                     else {
@@ -170,14 +174,21 @@ function handle_par_data(data) {
 
 function highlight_paths(state) {
 	pc_cur_state = state;
-    update_pc_plot_title("#pc-plot-title", pc_cur_state);
+    update_plot_title("#pc-plot-title", pc_title_str, pc_cur_state);
+ 
+    if (!link_pc_paths)
+        return;
 
+    update_paths();
+}
+
+function update_paths() {
     pc_all_paths
-    	.transition()
-    	.duration(200)
-    	.each(function(d) {
+        .transition()
+        .duration(200)
+        .each(function(d) {
                 this_path = d3.select(this);
-                if (d.state == curr_state) {
+                if (link_pc_paths && d.state == pc_cur_state) {
                     this_path.style("opacity", 0.8).style("stroke", "#ff3a3a").raise(); 
                 }
                 else {

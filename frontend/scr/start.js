@@ -26,7 +26,7 @@ class Setup {
             'scatter_plot': { x: 8, y: 4, width: this.squareWidth, height: this.squareHeight*3, 
                 id: "scatter_plot", title: '<div id="scatter-plot-title">Scatter plot</div>', type: "plot" },
             'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
-                id: "world_plot", title: "World cases by country", type: "plot" },
+                id: "world_plot", title: "World cases by region", type: "plot" },
             'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
                 id: "US_plot", title: "U.S. cases by state", type: "plot" },
             'state_plot':   { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
@@ -99,6 +99,8 @@ var us_abbr_inv = null;
 
 var is_scatter_plot_on = false;
 var is_pc_plot_on = false;
+var link_pc_paths = false;
+var link_sp_dots = false;
 
 var default_case_name = "confirmed";
 

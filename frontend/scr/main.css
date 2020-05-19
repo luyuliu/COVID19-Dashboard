@@ -269,6 +269,17 @@ html, body {
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+/* clickable text for parallel coords and scatter plot */
+.text-button {
+  cursor:pointer;
+  color: #ffffff;
+}
+
+.text-button-down{
+  cursor:pointer;
+  color: #ababab;
+}
+
 /* Modal Content */
 .modal-content {
   background-color: #fafafa;

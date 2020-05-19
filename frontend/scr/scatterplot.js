@@ -12,9 +12,13 @@ var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 var sp_dots = null;
 
-var curr_state = "OH";
-// update_scatter_plot_title("#scatter-plot-title", curr_state);
-update_plot_title("#scatter-plot-title", "Scatter plot", curr_state);
+var sp_curr_state = "OH";
+
+var sp_title_str = `<span class="${link_status[+link_sp_dots].class}" onclick="link_clicked(this)">${link_status[+link_sp_dots].text}</span> Scatter plot`;
+
+var sp_title_str = `<span id="scatter_plot_btn" class="${link_status[+link_pc_paths].class}" onclick="link_clicked(this)">${link_status[+link_pc_paths].text}</span> Scatter plot`; // id: use scatter_plot_btn (helpers.js)
+
+update_plot_title("#scatter-plot-title", sp_title_str, sp_curr_state);
 
 var se_ind_list = [
     ["TOT_POP", "Total Population"],
@@ -178,19 +182,19 @@ function drawGraph(se_ind, case_ind, data) {
 	  .attr("cx", xMap)
 	  .attr("cy", yMap)
 	  .attr("r", function(d) { 
-			if (d.state == curr_state) {
+			if (d.state == sp_curr_state) {
 				return 2;
 			} else {
 				return 2;}
 			})
 	  .style("opacity", function(d) { 
-	  		if (d.state == curr_state) {
+	  		if (d.state == sp_curr_state) {
 				return 0.9;
 			} else {
 				return 0.5;}
 			})
 	  .style("fill", function(d) { 
-			if (d.state == curr_state) {
+			if (link_sp_dots && d.state == sp_curr_state) {
 				d3.select(this).raise();
 				return "#ff3a3a";
 			} else {
@@ -198,13 +202,13 @@ function drawGraph(se_ind, case_ind, data) {
 			})
 	  .style("stroke-width", 0)
 	  .on("mouseover", function(d) {
-			update_plot_title("#scatter-plot-title", "Scatter plot", d.county + ", " + d.state);
+			update_plot_title("#scatter-plot-title", sp_title_str, d.county + ", " + d.state);
+			// update_plot_title("#scatter-plot-title", "Scatter plot", d.county + ", " + d.state);
 			// update_scatter_plot_title("#scatter-plot-title", d.county + ", " + d.state);
         })
       .on("mouseout", function(d) {
-			update_plot_title("#scatter-plot-title", "Scatter plot", curr_state);
-
-			//   update_scatter_plot_title("#scatter-plot-title", curr_state)
+			update_plot_title("#scatter-plot-title", sp_title_str, sp_curr_state);
+			// update_scatter_plot_title("#scatter-plot-title", sp_curr_state)
 		});
 
 	// draw legend
@@ -231,19 +235,28 @@ function drawGraph(se_ind, case_ind, data) {
 }
 
 function highlightDots(state) {
-	curr_state = state;
-	update_plot_title("#scatter-plot-title", "Scatter plot", curr_state);
-    // update_scatter_plot_title("#scatter-plot-title", curr_state);
-    
-    sp_dots.each(function(d) {
-                this_dot = d3.select(this);
-                if (d.state == curr_state) {
-                    this_dot.style("opacity", 0.9).style("fill", "#ff3a3a").attr("r", 2).raise(); 
-                }
-                else {
-                    this_dot.style("opacity", 0.5).style("fill", "lightgrey").attr("r", 2);
-                }
-        })
+	sp_curr_state = state;
+		
+	update_plot_title("#scatter-plot-title", sp_title_str, sp_curr_state);
+
+	if (!link_sp_dots)
+		return;
+
+	update_dots();
+}
+
+
+function update_dots() {
+	sp_dots.each(function(d) {
+		this_dot = d3.select(this);
+		if (link_sp_dots && d.state == sp_curr_state) {
+			this_dot.style("opacity", 0.9).style("fill", "#ff3a3a").attr("r", 2).raise(); 
+		}
+		else {
+			this_dot.style("opacity", 0.5).style("fill", "lightgrey").attr("r", 2);
+		}
+})
+
 }
 
 function updateGraph() {
