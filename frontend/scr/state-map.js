@@ -220,22 +220,33 @@ function init_state(status) {
 
         state_timelines_lines.remove();
         state_timelines_hoverLine.remove();
+        var state_promises = [
+            d3.json("data/state-counties/" + state_geojson_fname),
+            d3.json("data/state-counties/" + state_centroids_fname),
+            d3.json("data/all-cases-data-processed-counties.json")
+        ];
+        // console.log(state_cur_case)
+        Promise.all(state_promises).then(state_ready2);
+
     }
 
-    var state_promises = [
-        d3.json("data/state-counties/" + state_geojson_fname),
-        d3.json("data/state-counties/" + state_centroids_fname),
-        d3.json("data/all-cases-data-processed-counties.json")
-    ];
-    // console.log(state_cur_case)
-    Promise.all(state_promises).then(state_ready);
 }
 
-function state_ready(all_data) {
+// load data when changing states
+function state_ready2(all_data) {
 
     state_geojson = all_data[0]
     state_centroids = all_data[1];
     state_all_cases = all_data[2][the_state];
+
+    state_ready();
+}
+
+function state_ready() {
+
+    // state_geojson = all_data[0]
+    // state_centroids = all_data[1];
+    // state_all_cases = all_data[2][the_state];
 
     /// GET MAX of cases, and geog
     /// accurately, use the last value of each county, so may not necessarily be the max

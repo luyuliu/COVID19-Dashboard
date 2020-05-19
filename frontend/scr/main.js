@@ -14,9 +14,9 @@ var all_promises = [
     d3.json("data/all-cases-data-processed-states.json"),
     d3.json("data/state_abbr_inv.json"),
 
-    // d3.json("data/state-counties/" + state_geojson_fname),
-    // d3.json("data/state-counties/" + state_centroids_fname),
-    // d3.json("data/all-cases-data-processed-counties.json")
+    d3.json("data/state-counties/" + state_geojson_fname),
+    d3.json("data/state-counties/" + state_centroids_fname),
+    d3.json("data/all-cases-data-processed-counties.json")
 ];
 
 Promise.all(all_promises).then(all_ready);
@@ -43,10 +43,16 @@ function all_ready(all_data) {
     US_all_cases = all_data[6];
     us_abbr_inv = all_data[7];
 
+    state_geojson = all_data[8]
+    state_centroids = all_data[9];
+    state_all_cases = all_data[10][the_state];
+
+
     // state stuff will be loaded by calling init_state(0)
 
     world_ready();
     us_ready();
 
     init_state(0);
+    state_ready();
 }
