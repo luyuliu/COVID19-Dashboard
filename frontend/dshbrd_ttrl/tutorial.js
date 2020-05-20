@@ -16,33 +16,33 @@ intro.setOptions({
         },
         {
             element: '#world_map', //id of the item you want to zoom in
-            intro: 'This map shows the cases of the world regions. You can <b>rotate</b> and <b>zoom</b> this map. Click on the dropdown box that initially listed as "Confirmed" to choose to show the confirmed cases, deaths, and recovered. The base map shows some social-economic information about the regions and you can click on the dropdown list underneath the map to choose different variables to show.',
+            intro: 'This map shows the cases of the world regions. You can <b>rotate</b> and <b>zoom</b> this map. Click on the dropdown box that initially listed as "Confirmed" to choose to show the confirmed cases, deaths, and recovered. Clicking on a circle will <b>lock</b> the region. Click again to unlock it. The base map shows some social-economic information about the regions and you can click on the dropdown list underneath the map to choose different variables to show.',
             position: 'bottom'
         },
         {
             element: '#world_plot', //id of the item you want to zoom in
-            intro: 'This plot shows the cases for world regions through time. When hovering the mouse over the lines, the corresponding region will be highlighted in the above map. Move the mouse left and right will also dynamically change the size of the circles in the map to show the trend.',
+            intro: 'This plot shows the cases for world regions through time. You can <b>hover</b> the mouse over the lines to highlight the corresponding region in the above map. <b>Clicking</b> on the curve will lock the region so that the numbers of this region will always show. Click again to unlock. Move the mouse left and right will also dynamically change the size of the circles in the map to show the trend.',
             position: 'bottom'
         },
         {
             element: '#US_map', //id of the item you want to zoom in
-            intro: 'This map shows the cases in the United States at the state level. Click on the dropdown box that initially listed as "Confirmed" to choose to show the confirmed cases and deaths. We currently do not have data for the recovered cases. The base map can be used to show different social-economic information and you can click on the dropdown list underneath the map to choose different variables to show.',
+            intro: 'This map shows the cases in the United States at the state level. Click on the dropdown box that initially listed as "Confirmed" to choose to show the confirmed cases and deaths. Clicking on a circle will <b>lock</b> the region. Click again to unlock it. We currently do not have data for the recovered cases. The base map can be used to show different social-economic information and you can click on the dropdown list underneath the map to choose different variables to show.',
             position: 'bottom'
         },
         {
             element: '#US_plot', //id of the item you want to zoom in
-            intro: 'This plot shows the cases for the states through time. When hovering the mouse over the lines, the corresponding region will be highlighted in the above map. Move the mouse left and right will also dynamically change the size of the circles in the map to show the trend.',
+            intro: 'This plot shows the cases for the states through time. When hovering the mouse over the lines, the corresponding region will be highlighted in the above map. <b>Clicking</b> on the curve will lock the region so that the numbers of this region will always show. Click again to unlock. Move the mouse left and right will also dynamically change the size of the circles in the map to show the trend.',
             position: 'bottom'
         },
         {
             element: '#state_map', //id of the item you want to zoom in
-            intro: 'This map shows the cases of the counties in a state. You can click on the dropdown box at the top to choose different states. You can also change the data to show cases of either confirmed or deaths. We currently do not have data for the recovered cases. The base map can be used to show different social-economic information and you can click on the dropdown list underneath the map to choose different variables to show.',
+            intro: 'This map shows the cases of the counties in a state. You can click on the dropdown box at the top to choose different states. You can also change the data to show cases of either confirmed or deaths. Clicking on a circle will <b>lock</b> the region. Click again to unlock it. We currently do not have data for the recovered cases. The base map can be used to show different social-economic information and you can click on the dropdown list underneath the map to choose different variables to show.',
             position: 'bottom'
         },
 
         {
             element: '#state_plot', //id of the item you want to zoom in
-            intro: 'This plot shows the cases for the counties through time. When hovering the mouse over the lines, the corresponding region will be highlighted in the above map. Move the mouse left and right will also dynamically change the size of the circles in the map to show the trend.',
+            intro: 'This plot shows the cases for the counties through time. When hovering the mouse over the lines, the corresponding region will be highlighted in the above map. <b>Clicking</b> on the curve will lock the region so that the numbers of this region will always show. Click again to unlock. Move the mouse left and right will also dynamically change the size of the circles in the map to show the trend.',
             position: 'bottom'
         },
 
