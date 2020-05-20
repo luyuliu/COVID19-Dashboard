@@ -22,6 +22,7 @@ var state_bounds = null;
 var state_dropdown = null;
 var state_timelines_hoverLine = null;
 var state_timelines_lines = null;
+var state_names = null;
 
 var statemap_legend_width = $(state_affiliation_id).width(),
     statemap_legend_height = $(state_affiliation_id).height();
@@ -29,13 +30,13 @@ var statemap_legend_width = $(state_affiliation_id).width(),
 var state_map_margin = { top: 10, right: 10, bottom: 10, left: 10 };
 
 var state_info_labels = null;
-var cur_state_region = null; // "39049"; // TODO: get this automatically, using the max value and median
+var cur_state_region = null; // get this automatically, using the max value and median
+var locked_county = null;    // allows a county to be locked -- mouseout will come back to this county to highlight
 
-// 36.854458, -119.764541    
 var state_projection_params = {
     "AK": { "name": "Alaska", "angles": [160, -60, 0], "scale": 600 },
     "AL": { "name": "Alabama", "angles": [87, -32, 0], "scale": 3000 },
-    "AZ": { "name": "Arizona", "angles": [111, -34, 0], "scale": 2500 },
+    "AZ": { "name": "Arizona", "angles": [111, -34, 0], "scale": 2000 },
     "AR": { "name": "Arkansas", "angles": [92, -34.7, 0], "scale": 4000 },
     "CA": { "name": "California", "angles": [120, -36.1, 0], "scale": 1600 },
     "CO": { "name": "Colorado", "angles": [105.7, -38.9, 0], "scale": 3500 },
@@ -220,14 +221,16 @@ function init_state(status) {
 
         state_timelines_lines.remove();
         state_timelines_hoverLine.remove();
+
+        locked_county = null;
+
+        // now reload the data
         var state_promises = [
             d3.json("data/state-counties/" + state_geojson_fname),
             d3.json("data/state-counties/" + state_centroids_fname),
             d3.json("data/all-cases-data-processed-counties.json")
         ];
-        // console.log(state_cur_case)
         Promise.all(state_promises).then(state_ready2);
-
     }
 
 }
@@ -242,11 +245,8 @@ function state_ready2(all_data) {
     state_ready();
 }
 
+// everything, without data loading
 function state_ready() {
-
-    // state_geojson = all_data[0]
-    // state_centroids = all_data[1];
-    // state_all_cases = all_data[2][the_state];
 
     /// GET MAX of cases, and geog
     /// accurately, use the last value of each county, so may not necessarily be the max
@@ -259,12 +259,11 @@ function state_ready() {
     sorted_case_lasts = case_lasts.slice().sort((a, b) => d3.descending(a.val, b.val))
     state_max = sorted_case_lasts[0].val;
 
-    cur_state_region = sorted_case_lasts[0].cnty; // "39049"; // TODO: get this automatically, using the max value and median
-    mid = parseInt(sorted_case_lasts.length / 2);
+    cur_state_region = sorted_case_lasts[0].cnty; // get max
+    // mid = parseInt(sorted_case_lasts.length / 2);
+    state_names = [cur_state_region]; // just the max, sorted_case_lasts[mid].cnty]; // max and middle
 
-    var state_names = [cur_state_region, sorted_case_lasts[mid].cnty]; // max and middle
-
-    /// GET a dictionary FIPS -> NAME
+    /// Build a dictionary: FIPS -> NAME
     fips_to_name = {}
     state_geojson.features.forEach(function (d) {
         fips_to_name[d.properties.GEOID] = d.properties.NAME;
@@ -274,10 +273,6 @@ function state_ready() {
     state_radius = d3.scaleSqrt()
         .domain([0, state_max])
         .range([0, theme_circle_sizes[state_cur_case]]);
-
-    // state_radius = d3.scaleSqrt()
-    //     .domain([0, state_max])
-    //     .range([0, 30]);
 
     /////////////////////////////////////////////////////////////////////////////
     // Necessary scales  
@@ -332,19 +327,28 @@ function state_ready() {
 	                }
 	                else return false;
 	            });
-	            
+                state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+                    if (dd.label == d.properties.GEOID || state_names.includes(dd.label) || dd.label==locked_county)
+                        return "block";
+                    else
+                        return "none";
+                });
+    
                 d3.select(this).interrupt();
                 d3.select(this)
                     // .transition(t)
                     .style("fill", "#efef65");
             	
 	            var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
-	            update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+                if (locked_county) 
+                    update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+                else
+                    update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
 	            })
             .on("mouseout", function (d, i) {
 	            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
 	            state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-	                if (state_names.includes(dd.label))
+	                if (state_names.includes(dd.label) || dd.label==locked_county)
 	                    return "block";
 	                else
 	                    return "none";
@@ -457,7 +461,7 @@ function state_ready() {
         .style("fill", circle_symbol_fills[state_cur_case])
         // .attr("d", path)
         .attr("d", state_path.pointRadius(function (d, i) {
-            if (d.properties) {
+            if (d.properties) { // strange trick to make it work. Otherwise will complain d.properties.population to be on none type
                 name = d.properties.GEOID; // xxxx
                 if (state_all_cases[name]) {
                     // console.log(d, i, state_all_cases[state_abbr[name]])
@@ -466,39 +470,72 @@ function state_ready() {
                 }
             }
             return state_radius(0);
-
-            // if (d.id) // strange trick to make it work. Otherwise will complain d.properties.population to be on none type
         }))
         .on("mouseenter", function (d) { // d is geojson obj
-            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
-                if (dd == d.properties.GEOID) {
-                    d3.select(this).raise();
-                    cur_state_region = dd;
-                    return true;
-                }
-                else return false;
+            state_timelines_svg.selectAll(".line")
+                .classed("state_highlight " + state_cur_case, function (dd) {
+                    if (dd == d.properties.GEOID) {
+                        d3.select(this).raise();
+                        cur_state_region = dd;
+                        return true;
+                    }
+                    else return false;
+                });
+            state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+                if (dd.label == d.properties.GEOID || state_names.includes(dd.label) || dd.label==locked_county)
+                    return "block";
+                else
+                    return "none";
             });
-            // state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-            //     if (dd.label == d.properties.GEOID || state_names.includes(dd.label))
-            //         return "block";
-            //     else
-            //         return "none";
-            // });
             state_svg.selectAll(".state_symbol").classed("highlight", false); // clear 
             d3.select(this).classed("highlight", true);
             var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
-            update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+            if (locked_county) 
+                update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+            else
+                update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+
+        })
+        .on("click", function(d) { // d is geojson obj
+            if (d.properties.GEOID != locked_county) { // lock this one
+                locked_county = d.properties.GEOID;
+
+                state_svg.selectAll(".state_symbol").classed("locked", false); // clear 
+                d3.select(this).classed("locked", true);
+                state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
+                state_timelines_svg.selectAll(".line")
+                .classed("state_highlight_locked", function (dd) {
+                    if (dd == locked_county) {
+                        d3.select(this).raise();
+                        return true;
+                    }
+                    else return false;
+                });
+            }
+            else { // unlock
+                d3.select(this).classed("locked", false);
+                state_timelines_svg.selectAll(".line").classed("state_highlight_locked " + state_cur_case, false);
+                locked_county = null;
+            }
+
+            var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+            if (locked_county) 
+                update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+            else
+                update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+        
         })
         .on("mouseout", function (d) {
             state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
             state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-                if (state_names.includes(dd.label))
+                if (state_names.includes(dd.label) || dd.label==locked_county)
                     return "block";
                 else
                     return "none";
 
             });
-            d3.select(this).classed("highlight", false);
+            if (d.properties.GEOID != locked_county)
+                d3.select(this).classed("highlight", false);
         })
         ;
 
@@ -589,10 +626,13 @@ function state_ready() {
                     return state_radius(0);
                 }));
 
-
             // cur_state_region must be set correctly
 
-            update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+            if (locked_county)
+                update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+            else
+                update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+
 
             update_title_info("#state-info",
                 cur_date_state,
@@ -644,16 +684,12 @@ function state_ready() {
             }
             else return false;
         });
-        // state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-        //     if (dd.label == d || state_names.includes(dd.label)) return "block";
-        //     else return "none";
-        // });
-//		state_svg.selectAll(".states").each(function(dd) { 
-//			this_poly = d3.select(this);
-//			console.log(dd);
-//			if (dd.properties.GEOID == d) {
-		//	this_poly.style("fill", "#efef65"); }
-//	        })
+
+        // show labels on the right
+        state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+            if (dd.label == d || dd.label == locked_county || state_names.includes(dd.label)) return "block";
+            else return "none";
+        });
                     
         state_svg.selectAll(".state_symbol").classed("highlight", function (dd, i) {
             return (dd.properties.GEOID == d);
@@ -661,10 +697,38 @@ function state_ready() {
         d3.select(this).raise();
         
         var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
-        update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
-
+        if (locked_county) 
+            update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+        else
+            update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
     }
     
+    function state_lines_click(d) { // d is GEOID
+        if (locked_county == d) { // unlock
+            locked_county = null;
+            state_svg.selectAll(".state_symbol").classed("locked", false); // clear 
+            d3.select(this).classed("state_highlight_locked", false);
+        }
+        else { // if (!locked_county) { // lock this one
+            locked_county = d;
+            state_svg.selectAll(".state_symbol").classed("locked", function(dd) {
+                if (dd.properties.GEOID == d) return true;
+                return false;
+            }); // clear 
+            state_timelines_svg.selectAll(".line")
+                .classed("state_highlight_locked " + state_cur_case, false);
+            d3.select(this).classed("state_highlight_locked", true);
+
+        }
+
+        var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+        if (locked_county) 
+            update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+        else
+            update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+    }
+
+
     state_timelines_lines.enter().append("path")
         .attr("class", "line state_line")
         .attr("d", function (d) { return state_line(state_sub_dataset[d]); })
@@ -675,6 +739,7 @@ function state_ready() {
         //       else
         //           return "#cdcdcd";})
         .on("mouseover", state_lines_mouseover)
+        .on("click", state_lines_click)
         .on("mouseout", function (d) {
             // state_timelines_svg.selectAll(".text-label").style("display", function(d) {
             //     if (state_names.includes(d.label))
@@ -711,7 +776,7 @@ function state_ready() {
         .attr("x", function (d) { return state_xScale(d.x) + 3; })
         .attr("y", function (d) { return state_yScale(d.y); })
         .style("display", function (d) {
-            if (state_names.includes(d.label))
+            if (state_names.includes(d.label) || d==locked_county)
                 return "block";
             else
                 return "none";
@@ -750,7 +815,8 @@ function state_ready() {
         .attr("value", function (d) { return d[0]; })
         .text(function (d) { return d[1]; })
         .property("selected", function (d) {
-            if (d == state_cur_case) {
+            // alert(d + " " + state_cur_case)
+            if (d[0] == state_cur_case) {
                 return true;
             }
             else {
@@ -777,14 +843,17 @@ function state_ready() {
         sorted_case_lasts = case_lasts.slice().sort((a, b) => d3.descending(a.val, b.val))
         state_max = sorted_case_lasts[0].val;
 
-        cur_state_region = sorted_case_lasts[0].cnty; // get the max value and median
-        mid = parseInt(sorted_case_lasts.length / 2);
-        state_names = [cur_state_region, sorted_case_lasts[mid].cnty]; // max and middle
+        cur_state_region = sorted_case_lasts[0].cnty; // get max 
+        // mid = parseInt(sorted_case_lasts.length / 2);
+        state_names = [cur_state_region]; // just max, sorted_case_lasts[mid].cnty]; // max and middle
         
         // Update the labels using the largest num
         var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
-        update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
 
+        if (locked_county)
+            update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+        else
+            update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
 
         state_radius = d3.scaleSqrt()
             .domain([0, state_max])
@@ -815,6 +884,14 @@ function state_ready() {
             .data(d3.keys(state_sub_dataset)).enter()
             .append("path")
             .attr("class", "line state_line")
+            .classed("state_highlight_locked " + state_cur_case, function (dd) {
+                if (dd == locked_county) {
+                    d3.select(this).raise();
+                    cur_state_region = dd; //???
+                    return true;
+                }
+                else return false;
+            })
             .attr("d", function (d) { return state_line(state_sub_dataset[d]); })
             // .style("stroke-width", 1)
             // .style("stroke", function(d) { 
@@ -822,8 +899,9 @@ function state_ready() {
             //           return "#777";
             //       else
             //           return "#cdcdcd";})
-            .on("mouseover", state_lines_mouseover);
-        
+            .on("mouseover", state_lines_mouseover)
+            .on("click", state_lines_click)
+
         state_timelines_lines.enter().append("text") // same code, need a func
             .attr("class", "text-label")
             .text(function (d) {
@@ -841,13 +919,12 @@ function state_ready() {
             })
             .attr("x", function (d) { return state_xScale(d.x) + 3; })
             .attr("y", function (d) { return state_yScale(d.y); })
-            .style("display", function (d) {
-                if (state_names.includes(d.label))
+            .style("display", function (d, i) {
+                if (state_names.includes(d.label) || d.label==locked_county)
                     return "block";
                 else
                     return "none";
             });
-
 
         d3.selectAll(".state_symbol")
             // .transition()

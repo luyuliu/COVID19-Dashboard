@@ -4,9 +4,11 @@ var world_plot_id = "#world_plot-content";
 var world_affiliation_id = "#world_map-affiliation" // TODO: program this, and other id's?
 
 var all_mapping_vars = [];
+var country_names = ["USA"]; // ["Mainland China", "USA", "Italy", "Japan"];
 
 var bounds = null; // bounds for choropleth map classes
 var timelines_lines = null;
+var locked_region = null;
 
 var worldmap_width = $(world_grid_container_id).width(),
     worldmap_height = $(world_grid_container_id).height() - 135; // need 135 for both dropdown and legend
@@ -122,10 +124,6 @@ function world_ready() { // TODO: LONG function!
     var timelines_width = $(world_plot_id).width() - timelines_margin.left - timelines_margin.right,
         timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom;
 
-    // TODO: get dates from file -- DONE
-    // var start_date = "01-22-2020";
-    // var end_date = "04-12-2020";
-
     var n = total_days;
 
     // date -> x-coordinate
@@ -144,30 +142,6 @@ function world_ready() { // TODO: LONG function!
 
     ///////////////////////////
 
-    // var timelines_margin = { top: 50, right: 60, bottom: 30, left: 40 };
-    // var timelines_width = $(world_plot_id).width() - timelines_margin.left - timelines_margin.right,
-    //     timelines_height = $(world_plot_id).height() - timelines_margin.top - timelines_margin.bottom - 50;
-
-    // TODO: get dates from file -- DONE
-    // var start_date = "01-22-2020";
-    // var end_date = "04-12-2020";
-    // 
-    // var n = total_days;
-    // 
-    // // date -> x-coordinate
-    // var xScale = d3.scaleTime()
-    //     .domain([case_date_parser(start_date), case_date_parser(end_date)])
-    //     .range([0, timelines_width]); // output
-    // 
-    // // index -> date
-    // var toXScale = d3.scaleLinear()
-    //     .domain([0, n - 1])
-    //     .range([case_date_parser(start_date), case_date_parser(end_date)]);
-    // 
-    // var yScale = d3.scaleLinear()
-    //     .domain([0, world_max]) // input 
-    //     .range([timelines_height, 0]); // output 
-
     var radius = d3.scaleSqrt()
         .domain([0, world_max])
         .range([0, 70]);
@@ -177,17 +151,7 @@ function world_ready() { // TODO: LONG function!
     /////////////////////////////////////////////////////////////////////////
 
     ind = world_cases_sum["confirmed"].length - 1;
-    // var s1 = world_cases_sum["confirmed"][ind]
-    // var s0 = ind==0 ? 0 : world_cases_sum["confirmed"][ind-1]
-    // var s2 = world_cases_sum["deaths"][ind]
-    // var s3 = world_cases_sum["recovered"][ind]
-    // 
-    // var title_info = `
-    // ${case_date_format_full(cur_date_world)} <br/>
-    // <span style="color: red">${d3.format(",")(s1)}</span> confirmed (+${s1-s0})<br/> 
-    // ${d3.format(",")(s2)} deaths<br/>
-    // ${d3.format(",")(s3)} recovered`
-    // d3.selectAll("#world-info").html(title_info)
+
     update_title_info("#world-info",
         cur_date_world,
         world_cases_sum["confirmed"][ind],
@@ -197,8 +161,6 @@ function world_ready() { // TODO: LONG function!
         world_cases_sum["recovered"][ind],
         ind == 0 ? 0 : world_cases_sum["recovered"][ind - 1]
     )
-
-
 
     /////////////////////////////////////////////////////////////////////////////
     // World choropleth map
@@ -264,7 +226,7 @@ function world_ready() { // TODO: LONG function!
             return world_color_scheme(d["properties"][current_mapping_var]);
         })
         // .style("stroke", "#999")
-        .on("mouseover", function (d, i) { // choropleth map
+        .on("mouseover", function (d) { // choropleth map - d is a geojson obj
             timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, function (dd, i) {
                 if (dd == d.properties.Country_Region) {
                     d3.select(this).raise();
@@ -277,18 +239,36 @@ function world_ready() { // TODO: LONG function!
             d3.select(this)
                 // .transition(t)
                 .style("fill", "#efef65");
+
+            timelines_svg.selectAll(".text-label").style("display", function(dd) {
+                if (dd.label == d.properties.Country_Region || country_names.includes(dd.label) || dd.label==locked_region) 
+                    return "block";
+                else
+                    return "none";
+            }); 
+
             var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
 
-            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+            if (locked_region)
+                update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+            else 
+                update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+
         })
-        .on("mouseout", function (d, i) {
+        .on("mouseout", function (d) {
             d3.select(this).interrupt();
             d3.select(this)
                 // .transition(t)
                 .style("fill", world_color_scheme(d["properties"][current_mapping_var]));
+            timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, false);
+            timelines_svg.selectAll(".text-label").style("display", function(dd) {
+                if (country_names.includes(dd.label) || dd.label==locked_region) 
+                    return "block";
+                else
+                    return "none";
+            }); 
+    
         });
-
-    // alert(all_cases["Mainland China"]["confirmed"]);
 
     //////////////////////////////////////////////////////////////////////////
     // legend
@@ -404,29 +384,56 @@ function world_ready() { // TODO: LONG function!
                 }
                 else return false;
             });
-            // no need to label curves since we have other labels in the plot
-            // timelines_svg.selectAll(".text-label").style("display", function(dd) {
-            //     if (dd.label == d.properties.NAME || country_names.includes(dd.label)) 
-            //         return "block";
-            //     else
-            //         return "none";
-            // }); 
+
+            timelines_svg.selectAll(".text-label").style("display", function(dd) {
+                if (dd.label == d.properties.NAME || country_names.includes(dd.label) || dd.label==locked_region) 
+                    return "block";
+                else
+                    return "none";
+            }); 
             worldmap_svg.selectAll(".world_symbol").classed("highlight", false); // clear 
             d3.select(this).classed("highlight", true);
-            // d3.select(this).raise(); // don't move to front, unless we want to put back
+
             var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
 
-            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+            if (locked_region)
+                update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+            else 
+                update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+        })
+        .on("click", function(d) {
+            if (d.properties.NAME != locked_region) { // lock this one
+                locked_region = d.properties.NAME;
 
+                worldmap_svg.selectAll(".world_symbol").classed("locked", false); // clear 
+                d3.select(this).classed("locked", true);
 
-            // world_info_labels[0].text(`${cur_world_region} ${case_date_format(cur_date_world)} [Day ${ind}]`);
-            // var val = d3.format(",")(`${all_cases[cur_world_region][cur_case][ind]}`)
-            // world_info_labels[1].text(`${case_names[cur_case]}: ${val}`);
+                timelines_svg.selectAll(".line").classed("world_highlight " + cur_case, false);
+                timelines_svg.selectAll(".line").classed("world_highlight_locked", function (dd) {
+                    if (dd == locked_region) {
+                        d3.select(this).raise();
+                        return true;
+                    }
+                    else return false;
+                });
+            }
+            else { // unlock
+                d3.select(this).classed("locked", false);
+                timelines_svg.selectAll(".line").classed("world_highlight_locked " + cur_case, false);
+                locked_region = null;
+            }
+
+            var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+
+            if (locked_region)
+                update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+            else 
+                update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
         })
         .on("mouseout", function (d) {
             timelines_svg.selectAll(".line").classed("world_highlight "+ cur_case, false);
             timelines_svg.selectAll(".text-label").style("display", function (dd) {
-                if (country_names.includes(dd.label))
+                if (country_names.includes(dd.label) || dd.label==locked_region)
                     return "block";
                 else
                     return "none";
@@ -482,9 +489,12 @@ function world_ready() { // TODO: LONG function!
             }))
 
         // Update the labels
-        // console.log(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind])
-        update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+        var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
 
+        if (locked_region)
+            update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+        else 
+            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
 
         // Create new data for the line chart
         sub_dataset = {};
@@ -523,24 +533,26 @@ function world_ready() { // TODO: LONG function!
             .data(d3.keys(sub_dataset)).enter()
             .append("path")
             .attr("class", "line world_line")
+            .classed("world_highlight_locked " + cur_case, function (dd) {
+                if (dd == locked_region) {
+                    d3.select(this).raise();
+                    cur_world_region = dd; //???
+                    return true;
+                }
+                else return false;
+            })
+
             .attr("d", function (d) { return line_generator(sub_dataset[d]); })
-            // .style("stroke-width", 1)
-            // .style("stroke", function(d) { 
-            //       if (country_names.includes(d))
-            //           return "#777";
-            //       else
-            //           return "#cdcdcd";})
-            .on("mouseover", world_lines_mouseover);
+            .on("mouseover", world_lines_mouseover)
+            .on("click", world_lines_click);
 
         timelines_lines.enter().append("text") // same code, need a func
             .attr("class", "text-label")
-            // .style("fill", function(d) { return line_color(d); })
             .text(function (d) {
                 return d;
             })
             .attr("dy", ".35em")
             .datum(function (d) {
-                // alert(sub_dataset[d].slice(-1)[0].y);
                 return {
                     label: d,
                     x: sub_dataset[d].slice(-1)[0].x,
@@ -550,24 +562,21 @@ function world_ready() { // TODO: LONG function!
             .attr("x", function (d) { return xScale(d.x) + 4; })
             .attr("y", function (d) { return yScale(d.y); })
             .style("display", function (d) {
-                if (country_names.includes(d.label)) return "block";
+                if (country_names.includes(d.label) || d.label==locked_region) return "block";
                 else return "none";
             })
             ;
 
 
-    }
+    } // end of worldThemeDropdownChange
 
     /////////////////////////////////////////////////////////////////////////////
-    // Line chart 1. SVG etc.
+    // Multiple Line chart 1. SVG etc.
     /////////////////////////////////////////////////////////////////////////////
-
-    var country_names = ["Mainland China", "USA", "Italy", "Japan"];
 
     // just get those for the cur_case
     var sub_dataset = {};
     d3.keys(all_cases).forEach(function (d, i) {
-        // if (country_names.includes(d))
         sub_dataset[d] = d3.range(n).map(function (i) {
             return {
                 x: +toXScale(i),
@@ -575,8 +584,6 @@ function world_ready() { // TODO: LONG function!
             }
         })
     });
-
-    // alert(sub_dataset['USA'].length)
 
     var line_generator = d3.line()
         .x(function (d) { return xScale(d.x); }) // set the x values for the line generator
@@ -643,13 +650,21 @@ function world_ready() { // TODO: LONG function!
             cur_date_us = cur_date_world;
             var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
             hover_line_symbol(worldmap_svg, ".world_symbol", path, "NAME", all_cases, ind, xpos, "#hover-line-world", radius, cur_case);
+
             if (sync_time_lines) {
                 hover_line_symbol(US_svg, ".US_symbol", US_path, "postal", US_all_cases, ind, xpos, "#hover-line-US", radius, US_cur_case);
                 hover_line_symbol(state_svg, ".state_symbol", state_path, "GEOID", state_all_cases, ind, xpos, "#hover-line-state", state_radius, state_cur_case);
 
-                update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_world, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-                update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_world, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+                if (locked_state)
+                    update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_world, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
+                else 
+                    update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_world, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
 
+                if (locked_county) 
+                    update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_world, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+                else
+                    update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_world, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
+            
                 update_title_info("#us-info",
                     cur_date_world,
                     all_cases["USA"]["confirmed"][ind],
@@ -670,25 +685,11 @@ function world_ready() { // TODO: LONG function!
                 )
 
             }
-            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
 
-            // world_summary_labels[0].ele2.text(case_date_format_full(cur_date_world))
-            // world_summary_labels[1].ele1.text(d3.format(",")(world_cases_sum["confirmed"][ind]))
-            // world_summary_labels[1].ele2.text(" confirmed")
-            // world_summary_labels[2].ele1.text(d3.format(",")(world_cases_sum["deaths"][ind]))
-            // world_summary_labels[2].ele2.text("deaths")
-            // world_summary_labels[3].ele1.text(d3.format(",")(world_cases_sum["recovered"][ind]))
-            // world_summary_labels[3].ele2.text("recovered")
-
-            // var s1 = world_cases_sum["confirmed"][ind]
-            // var s0 = ind==0 ? 0 : world_cases_sum["confirmed"][ind-1]
-            // 
-            // var title_info = `
-            // ${case_date_format_full(cur_date_world)} <br/>
-            // <span style="color: red">${d3.format(",")(world_cases_sum["confirmed"][ind])}</span> confirmed (+${s1-s0})<br/> ${d3.format(",")(world_cases_sum["deaths"][ind])} deaths<br/>
-            // ${d3.format(",")(world_cases_sum["recovered"][ind])} recovered`
-            // 
-            // d3.selectAll("#world-info").html(title_info)
+            if (locked_region)
+                update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+            else 
+                update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);    
 
             update_title_info("#world-info",
                 cur_date_world,
@@ -747,17 +748,46 @@ function world_ready() { // TODO: LONG function!
             }
             return false;
         });
-        // timelines_svg.selectAll(".text-label").style("display", function(dd) {
-        //     if (dd.label==d || country_names.includes(dd.label)) return "block";
-        //     else return "none";
-        // });
+        timelines_svg.selectAll(".text-label").style("display", function(dd) {
+            if (dd.label==d || country_names.includes(dd.label) || dd.label==locked_region) return "block";
+            else return "none";
+        });
+
         worldmap_svg.selectAll(".world_symbol").classed("highlight", function (dd, i) {
             return (dd.properties.NAME == d);
         });
 
         var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
-        update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
+        if (locked_region)
+            update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+        else 
+            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);    
 
+    }
+
+    function world_lines_click(d) { // d is NAME
+        if (locked_region == d) { // unlock
+            locked_region = null;
+            worldmap_svg.selectAll(".world_symbol").classed("locked", false); // clear 
+            d3.select(this).classed("world_highlight_locked", false);
+        }
+        else { // lock this one
+            locked_region = d;
+            worldmap_svg.selectAll(".world_symbol").classed("locked", function(dd) {
+                if (dd.properties.NAME == d) return true;
+                return false;
+            }); // clear 
+            timelines_svg.selectAll(".line")
+                .classed("world_highlight_locked " + cur_case, false);
+            d3.select(this).classed("world_highlight_locked", true);
+
+        }
+
+        var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+        if (locked_region)
+            update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+        else 
+            update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);    
     }
 
     timelines_lines.enter()
@@ -771,6 +801,7 @@ function world_ready() { // TODO: LONG function!
         //       else
         //           return "#cdcdcd";})
         .on("mouseover", world_lines_mouseover)
+        .on("click", world_lines_click)
         .on("mouseout", function (d) {
             // d3.select(this).classed("world_highlight", false); 
 
@@ -807,7 +838,7 @@ function world_ready() { // TODO: LONG function!
         .attr("x", function (d) { return xScale(d.x) + 4; })
         .attr("y", function (d) { return yScale(d.y); })
         .style("display", function (d) {
-            if (country_names.includes(d.label)) return "block";
+            if (country_names.includes(d.label) || d.label==locked_region) return "block";
             else return "none";
         })
         ;
