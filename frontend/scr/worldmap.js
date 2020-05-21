@@ -173,7 +173,7 @@ function world_ready() { // TODO: LONG function!
     var world_map_friendly_names = {
         "POP_SR": "Senior (%)",
         "POP_CHLDN": "Children (%)",
-        "POP_AD": "Aldults (%)",
+        "POP_AD": "Adults (%)",
         "POP_YOUTH": "Youth (%)",
         "ECON_GNI": "GNI Per Capita ($)"
     }
