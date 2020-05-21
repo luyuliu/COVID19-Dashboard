@@ -104,4 +104,17 @@ var link_sp_dots = false;
 
 var default_case_name = "confirmed";
 
+var the_state = null;
+var url_str = window.location.search;
+var url_len = url_str.length;
+
+var search_keys = ['?state=', '?STATE=', '?State=']
+// check if the last of url is like this: ?state=OH
+// this is to make sure it is a search using ?state=, instead of just using the last two chars
+// the get the last two chars
+// the last two chars can be any chars, state-map.js will set default to OH 
+if (search_keys.includes(url_str.substring(url_len-10, url_len-2))) { 
+    the_state = url_str.substring(url_len-2)
+}
+
 new Setup();

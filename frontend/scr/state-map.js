@@ -3,36 +3,6 @@ var state_map_id = "#state_map-content";
 var state_plot_id = "#state_plot-content";
 var state_affiliation_id = "#state_map-affiliation";
 
-var the_state = 'OH',
-    state_geojson_fname = the_state + "_geog.geojson",
-    state_centroids_fname = the_state + "_centroids.geojson";
-
-var theme_circle_sizes = {"confirmed": 30, "deaths": 15};
-
-var maptype = 'geojson';
-
-var state_map_width = $(state_map_container_id).width();
-var state_map_height = $(state_map_container_id).height() - 135;
-
-var state_timelines_margin = { top: 50, right: 60, bottom: 60, left: 40 };
-var state_timelines_width = $(state_plot_id).width() - state_timelines_margin.left - state_timelines_margin.right,
-    state_timelines_height = $(state_plot_id).height() - state_timelines_margin.top - state_timelines_margin.bottom;
-
-var state_bounds = null;
-var state_dropdown = null;
-var state_timelines_hoverLine = null;
-var state_timelines_lines = null;
-var state_names = null;
-
-var statemap_legend_width = $(state_affiliation_id).width(),
-    statemap_legend_height = $(state_affiliation_id).height();
-
-var state_map_margin = { top: 10, right: 10, bottom: 10, left: 10 };
-
-var state_info_labels = null;
-var cur_state_region = null; // get this automatically, using the max value and median
-var locked_county = null;    // allows a county to be locked -- mouseout will come back to this county to highlight
-
 var state_projection_params = {
     "AK": { "name": "Alaska", "angles": [160, -60, 0], "scale": 600 },
     "AL": { "name": "Alabama", "angles": [87, -32, 0], "scale": 3000 },
@@ -86,6 +56,40 @@ var state_projection_params = {
     "VA": { "name": "Virginia", "angles": [79.5, -37.5, 0], "scale": 3000 },
     "VT": { "name": "Vermont", "angles": [72.7, -43.7, 0], "scale": 6000 }
 }
+
+// the_state is set in start.js
+// if the_state is not in the keys, use OH for default
+if (!d3.keys(state_projection_params).includes(the_state))
+    the_state = "OH";
+
+var state_geojson_fname = the_state + "_geog.geojson";
+var state_centroids_fname = the_state + "_centroids.geojson";
+
+var theme_circle_sizes = {"confirmed": 30, "deaths": 15};
+
+var maptype = 'geojson';
+
+var state_map_width = $(state_map_container_id).width();
+var state_map_height = $(state_map_container_id).height() - 135;
+
+var state_timelines_margin = { top: 50, right: 60, bottom: 60, left: 40 };
+var state_timelines_width = $(state_plot_id).width() - state_timelines_margin.left - state_timelines_margin.right,
+    state_timelines_height = $(state_plot_id).height() - state_timelines_margin.top - state_timelines_margin.bottom;
+
+var state_bounds = null;
+var state_dropdown = null;
+var state_timelines_hoverLine = null;
+var state_timelines_lines = null;
+var state_names = null;
+
+var statemap_legend_width = $(state_affiliation_id).width(),
+    statemap_legend_height = $(state_affiliation_id).height();
+
+var state_map_margin = { top: 10, right: 10, bottom: 10, left: 10 };
+
+var state_info_labels = null;
+var cur_state_region = null; // get this automatically, using the max value and median
+var locked_county = null;    // allows a county to be locked -- mouseout will come back to this county to highlight
 
 update_plot_title("#state-plot-title", state_projection_params[the_state].name, "Cases by county");
 

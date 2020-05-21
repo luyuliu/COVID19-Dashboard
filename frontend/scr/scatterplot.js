@@ -68,8 +68,8 @@ se_ind_dropdown.selectAll("option")
     });
 
 var case_names_list = [
-	["CONFIRMED", "Confirmed (Per 1K People)"],
-	["DEATHS", "Deaths (Per 1K People)"]];
+	["CONFIRMED", "Confirmed (per 1K people)"],
+	["DEATHS", "Deaths (per 1K people)"]];
 
 var case_dropdown = d3.select(scatter_plot_id)
     .insert("select", "svg")

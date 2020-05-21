@@ -1,5 +1,3 @@
-
-
 // ---------------- data loading etc. ---------------- //
 
 var all_promises = [

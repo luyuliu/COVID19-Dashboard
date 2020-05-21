@@ -60,9 +60,11 @@ function dragged() {
     gpos1 = projection.invert(d3.mouse(this));
     o0 = projection.rotate();
     o1 = eulerAngles(gpos0, gpos1, o0);
-    o1[1] = -35;
-    o1[2] = 0;
-    projection.rotate(o1);
+    if (o1) { // sometimes o1 is null, and this will help
+        // o1[1] = -35;
+        o1[2] = 0;
+        projection.rotate(o1);
+    }
     worldmap_svg.selectAll("path").attr("d", path);
 }
 
@@ -280,7 +282,7 @@ function world_ready() { // TODO: LONG function!
 
     var dropdown = d3.select(world_affiliation_id)
         .insert("select", "svg")
-        .attr("id", "world-choreopleth-select")
+        .attr("id", "world-choropleth-select")
         .attr("class", "select-css")
         .on("change", worldDropdownChange);
 
@@ -300,9 +302,9 @@ function world_ready() { // TODO: LONG function!
             }
         })
 
-    // Update choreopleth map
+    // Update choropleth map
     function worldDropdownChange(e) {
-        current_mapping_var = $("#world-choreopleth-select").val();
+        current_mapping_var = $("#world-choropleth-select").val();
         for (i = 0; i < world_regions.features.length; i++) {
             if (i == 0) {
                 var properties = world_regions.features[i]["properties"];
