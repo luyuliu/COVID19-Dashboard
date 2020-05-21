@@ -303,12 +303,12 @@ html, body {
 /* clickable text for parallel coords and scatter plot */
 .text-button {
   cursor:pointer;
-  color: #ffffff;
+  color: #ababab;
 }
 
 .text-button-down{
   cursor:pointer;
-  color: #ababab;
+  color: #888;
 }
 
 /* Modal Content */
