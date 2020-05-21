@@ -800,9 +800,13 @@ function state_ready() {
         .attr("x", 20)
         .attr("y", 20);
 
+    var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
+    if (locked_county) 
+        update_info_labels(state_info_labels, fips_to_name[locked_county], cur_date_state, ind, state_cur_case, state_all_cases[locked_county][state_cur_case][ind]);
+    else
+        update_info_labels(state_info_labels, fips_to_name[cur_state_region], cur_date_state, ind, state_cur_case, state_all_cases[cur_state_region][state_cur_case][ind]);
 
-
-//// change theme
+    //// change theme
 
 
     var themeDropdown = d3.select("#state_map-content")

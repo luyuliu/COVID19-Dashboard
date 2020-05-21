@@ -870,6 +870,11 @@ function world_ready() { // TODO: LONG function!
         .attr("y", 20);
 
 
+    var ind = parseInt(toXScale.invert(cur_date_world)) + 1;
+    if (locked_region)
+        update_info_labels(world_info_labels, locked_region, cur_date_world, ind, cur_case, all_cases[locked_region][cur_case][ind]);
+    else 
+        update_info_labels(world_info_labels, cur_world_region, cur_date_world, ind, cur_case, all_cases[cur_world_region][cur_case][ind]);
 
 
 }

@@ -765,4 +765,11 @@ function us_ready() {
         .attr("style", "font-size: 22px")
         .attr("x", 20)
         .attr("y", 20);
+
+    var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
+    if (locked_state)
+        update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
+    else 
+        update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
+
 }
