@@ -29,17 +29,23 @@
 <body>
     
     <div class="mynav" id="mynav">
-        <div class="containerdd" onclick="hamburger(this)">
+        <div class="containerdd">
+             <!-- onclick="hamburger(this)"> -->
             <div class="bar1"></div>
             <div class="bar2"></div>
             <div class="bar3"></div>
-            <div id="myDropdown" class="dropdown-content">
+            <!-- <div id="myDropdown" class="dropdown-content"> -->
                 <!-- <a onclick="settings.style.display = 'block';">Settings</a> -->
-                <a id="aaaaa">Tutorial</a>
-                <a onclick="about.style.display = 'block';">About</a>
-            </div>
+                <!-- <a id="aaaaa">Tutorial</a> -->
+                <!-- <a onclick="about.style.display = 'block';">About</a> -->
+            <!-- </div> -->
         </div>
-        <a>COVID-19 Dashboard</a>
+        COVID-19 Dashboard
+        <span style="float: right; margin-right: 10px; font-size: 14px; color: #6a6a6a; ">
+            <a id="tutorial-click">Tutorial</a> 
+            &nbsp;&middot;&nbsp;
+            <a onclick="about.style.display = 'block';">About</a>
+        </span>
     </div>
 
     <!-- Settings -->
@@ -61,26 +67,26 @@
         <div class="modal-content">
           <span class="close">&times;</span>
               <h2>Welcome to the <span style="color: red">COVID-19</span> Dashboard!</h2>
-              <p>
 
-    This dashboard visualizes the spatio-temporal pattern of COVID-19 pandemic evolution for each day. The confirmed COVID-19 case statistics are shown as red proportional symbols in three scales: each country in the world (left), each state in the United States (middle), and each county in a selected state (right). Each map also has a <a href="https://en.wikipedia.org/wiki/Choropleth_map">choropleth map</a> as the base map that shows a selected relevant social-economic indicator. Three classes are used for the choropleth map and approximately 1/3 of the regions on each map are grouped into one of the three bins. The line chart beneath each map demonstrates the temporal change of the confirmed case with interactivity with the proportional symbols. The scatter plot on the bottom-left corner represents county-level interrelationship between total confirmed cases and a selected socio-economic variable.
-
+<p>
+    This dashboard aims to provide a comprehensive perspective of the pandemic by highlighting the spatial and temporal dimensions of the outbreak in its social and economic contexts. We use cutting-edge visualization and data science technology to make a highly interactive web-based platform. Please use our <a id="tutorial-click2">Tutorial</a> to take a tour!
+</p>
+<p>
+    The statistics of COVID-19 (confirmed, deaths, and recovered if available) are shown as red proportional symbols at three scales for world regions (left), states of the United States (middle), and counties of a selected state (right). We use Ohio as the default state to show, but one can change the default state by adding something like <a>?state=NY</a> to the end of the URL in the browser's address bar. At each scale, underneath the red circles are is a <a href="https://en.wikipedia.org/wiki/Choropleth_map">choropleth map</a> that displays the data from relevant social-economic indicators. Three classes are used for the choropleth map and each class includes approximately 1/3 of the regions on each map. The line charts beneath the maps demonstrate the temporal change of the disease data, where each line corresponds to a circle in the map. The parallel coordinates plot and scatter plot in the third row can be used to explore the relationships between the disease and its social-economic contexts. 
 </p>
 
 <p>
-    Data source: The world map is based on the 1:110M administrative data from the <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/">Natural Earth</a>. Maps for the United States are based on the Census Bureau's 2018 <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html">Cartographic Boundary Files Shapefile</a> at 1:20M scale.
-    The country-level and US state-level COVID-19 confirmed case data come from the <a href="https://nssac.bii.virginia.edu/covid-19/dashboard/">UVA COVID-19 dashboard</a> and the <a href="https://github.com/CSSEGISandData/COVID-19">JHU COVID-19 dashboard GitHub</a>.  The county-level COVID-19 data comes from the <a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/"> USAFacts COVID-19 map</a>. The COVID-19 datasets updated daily. State and county social-economic indicators are collected from American Community Survey 5-year data (2014 -2018). Household income, poverty rate, and all jobs data for Rio Arriba, NM are missing in the ACS dataset and are replaced using the state-wide averages.
+    This dashboard will not be possible without the many data sources, and we are grateful to those who work on and provide these data sets! The country-level and US state-level COVID-19 data are from <a href="https://nssac.bii.virginia.edu/covid-19/dashboard">nssac.bii.virginia.edu/covid-19/dashboard</a> and the <a href="https://github.com/CSSEGISandData/COVID-19">github.com/CSSEGISandData/COVID-19</a>. County-level COVID-19 data are from the <a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/">usafacts.org</a>. The COVID-19 data sets are updated daily.  The world map is based on the 1:110M administrative data from the <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/">Natural Earth</a>. Maps for the United States are based on the 2018 Census Bureau <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html">1:20M Cartographic Boundary Files Shapefile</a>. State and county social-economic indicators are collected from American Community Survey 5-year data (2014 -2018). Household income, poverty rate, and all jobs data for Rio Arriba, NM are missing in the ACS dataset and are replaced using the county level averages of the state.
 </p>
 
 <p>
-    Development Team: Luyu Liu, Yue Lin, Armita Kar, and Ningchuan Xiao.
+    Development Team:<a href="https://github.com/luyuliu">Luyu Liu</a>, <a href="https://github.com/linyuehzzz">Yue Lin</a>, <a href="https://github.com/armitakar">Armita Kar</a>, and <a href="https://github.com/ncxiao">Ningchuan Xiao</a>.
 </p>
 
 <p>
+    Source code and license: <a href="https://github.com/luyuliu/COVID19-Dashboard">github.com/luyuliu/COVID19-Dashboard</a> under the MIT License.
+</p>
 
-    Open-source code access and license: https://github.com/luyuliu/COVID19-Dashboard under the MIT license.
-          
-          </p>
         </div>
     </div>
     
