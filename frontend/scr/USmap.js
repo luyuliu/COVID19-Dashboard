@@ -8,7 +8,7 @@ var US_offset = 0
 var US_names = ["NY"]; // some highlight USs? [ "NY", "OH"];
 
 var US_map_width = $(US_grid_container_id).width() - US_offset;
-var US_map_height = ($(US_grid_container_id).height() - US_offset) - 135;
+var US_map_height = ($(US_grid_container_id).height() - US_offset) - 145;
 
 var US_map_legend_width = $(US_affiliation_id).width(),
     US_map_legend_height = $(US_affiliation_id).height();

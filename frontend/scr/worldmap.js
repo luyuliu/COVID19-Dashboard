@@ -11,7 +11,7 @@ var timelines_lines = null;
 var locked_region = null;
 
 var worldmap_width = $(world_grid_container_id).width(),
-    worldmap_height = $(world_grid_container_id).height() - 135; // need 135 for both dropdown and legend
+    worldmap_height = $(world_grid_container_id).height() - 145; // need 135 for both dropdown and legend
 
 var worldmap_legend_width = $(world_affiliation_id).width(),
     worldmap_legend_height = $(world_affiliation_id).height();

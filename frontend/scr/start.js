@@ -20,23 +20,23 @@ class Setup {
         // $('.grid-stack').gridstack(this.options);
         this.grid = GridStack.init(this.options)
 
-        this.settingGrid = { // card congifuration, should be updated dynamically
-            'parcoords': {x: 0, y: 4, width: this.squareWidth*2, height: this.squareHeight*3, 
+        this.settingGrid = { // when in one column, this is the reversed order
+            'parcoords':    {x: 0, y: 4, width: this.squareWidth*2, height: this.squareHeight*3, 
                 id: "parcoords_plot", title: '<div id="pc-plot-title">Parallel coordinates</div>', type: "plot"},
             'scatter_plot': { x: 8, y: 4, width: this.squareWidth, height: this.squareHeight*3, 
                 id: "scatter_plot", title: '<div id="scatter-plot-title">Scatter plot</div>', type: "plot" },
-            'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
-                id: "world_plot", title: "World cases by region", type: "plot" },
-            'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
-                id: "US_plot", title: "U.S. cases by state", type: "plot" },
             'state_plot':   { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
                 id: "state_plot", title: '<div id="state-plot-title">State cases by county</div>', type: "plot" },
-            'world_map':    { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, 
-                id: "world_map", title: '<div id="world-info">World</div>', type: "map"},
-            'US_map':       { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*4, 
-                id: "US_map", title: '<div id="us-info">United States</div>', type: "map" },
             'state_map':    { x: 8, y: 0, width: this.squareWidth, height: this.squareHeight*4, 
                 id: "state_map", title: '<select id="select-state"></select><div id="state-info"></div>', type: "map" },
+            'US_plot':      { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
+                id: "US_plot", title: "U.S. cases by state", type: "plot" },
+            'US_map':       { x: 4, y: 0, width: this.squareWidth, height: this.squareHeight*4, 
+                id: "US_map", title: '<div id="us-info">United States</div>', type: "map" },
+            'world_plot':   { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*3, 
+                id: "world_plot", title: "World cases by region", type: "plot" },
+            'world_map':    { x: 0, y: 0, width: this.squareWidth, height: this.squareHeight*4, 
+                id: "world_map", title: '<div id="world-info">World</div>', type: "map"}
         };
 
         // ---------------- Setup functions ---------------- //

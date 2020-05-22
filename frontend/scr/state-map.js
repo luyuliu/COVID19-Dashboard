@@ -70,7 +70,7 @@ var theme_circle_sizes = {"confirmed": 30, "deaths": 15};
 var maptype = 'geojson';
 
 var state_map_width = $(state_map_container_id).width();
-var state_map_height = $(state_map_container_id).height() - 135;
+var state_map_height = $(state_map_container_id).height() - 145;
 
 var state_timelines_margin = { top: 50, right: 60, bottom: 60, left: 40 };
 var state_timelines_width = $(state_plot_id).width() - state_timelines_margin.left - state_timelines_margin.right,
