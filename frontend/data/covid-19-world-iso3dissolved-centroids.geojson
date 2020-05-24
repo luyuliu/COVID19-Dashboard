@@ -197,7 +197,7 @@
 { "type": "Feature", "properties": { "NAME": "Sierra Leone", "ISO_3": "SLE" }, "geometry": { "type": "Point", "coordinates": [ -11.7945606, 8.5577221 ] } },
 { "type": "Feature", "properties": { "NAME": "El Salvador", "ISO_3": "SLV" }, "geometry": { "type": "Point", "coordinates": [ -88.8610738, 13.7347783 ] } },
 { "type": "Feature", "properties": { "NAME": "San Marino", "ISO_3": "SMR" }, "geometry": { "type": "Point", "coordinates": [ 12.4628816, 43.938371 ] } },
-{ "type": "Feature", "properties": { "NAME": "Somalia", "ISO_3": "SOM" }, "geometry": { "type": "Point", "coordinates": [ 45.8605746, 6.0598811 ] } },
+{ "type": "Feature", "properties": { "NAME": "Somalia", "ISO_3": "SOM" }, "geometry": { "type": "Point", "coordinates": [ 47, 5 ] } },
 { "type": "Feature", "properties": { "NAME": "Saint Pierre and Miquelon", "ISO_3": "SPM" }, "geometry": { "type": "Point", "coordinates": [ -56.3118576, 46.881796 ] } },
 { "type": "Feature", "properties": { "NAME": "Serbia", "ISO_3": "SRB" }, "geometry": { "type": "Point", "coordinates": [ 20.8011871, 44.0364112 ] } },
 { "type": "Feature", "properties": { "NAME": "South Sudan", "ISO_3": "SSD" }, "geometry": { "type": "Point", "coordinates": [ 30.3214849, 7.2772622 ] } },
