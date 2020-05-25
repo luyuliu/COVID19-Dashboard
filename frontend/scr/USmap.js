@@ -201,20 +201,17 @@ function us_ready() {
                 });
         
                 var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-                if (locked_state)
-                    update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-                else 
-                    update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
+                var region = locked_state?locked_state:cur_US_region;
+                update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
         
                 if (is_scatter_plot_on) highlightDots(cur_US_region);
                 if (is_pc_plot_on) highlight_paths(cur_US_region);
             })
+            .on("click", us_handle_click)
             .on("mouseout", function (d, i) {
             	US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
-                d3.select(this).interrupt();
-                d3.select(this)
-                    // .transition(t)
-                    // .style("fill", "white");
+                d3.select(this).interrupt()
+                    // .transition(10)
                     .style("fill", US_color_scheme(d["properties"][US_current_mapping_var]));
 
                 US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
@@ -356,44 +353,13 @@ function us_ready() {
             d3.select(this).classed("highlight", true);
 
             var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-            if (locked_state)
-                update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-            else 
-                update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
+            var region = locked_state?locked_state:cur_US_region;
+            update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
 
             if (is_scatter_plot_on) highlightDots(cur_US_region);
             if (is_pc_plot_on) highlight_paths(cur_US_region);
         })
-        .on("click", function(d) { // d is geojson obj
-            if (d.properties.postal != locked_state) { // lock this one
-                locked_state = d.properties.postal;
-
-                US_svg.selectAll(".US_symbol").classed("locked", false); // clear 
-                d3.select(this).classed("locked", true);
-
-                US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
-                US_timelines_svg.selectAll(".line").classed("US_highlight_locked", function (dd) {
-                    if (dd == locked_state) {
-                        d3.select(this).raise();
-                        return true;
-                    }
-                    else return false;
-                });
-            }
-            else { // unlock
-                d3.select(this).classed("locked", false);
-                US_timelines_svg.selectAll(".line").classed("US_highlight_locked " + US_cur_case, false);
-                locked_state = null;
-            }
-
-            var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-            if (locked_state)
-                update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-            else 
-                update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-        
-        })
-
+        .on("click", us_handle_click)
         .on("mouseout", function (d) {
             US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
             US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
@@ -403,8 +369,65 @@ function us_ready() {
                     return "none";
             });
             d3.select(this).classed("highlight", false);
-        })
-        ;
+        });
+
+    function us_handle_click(d) { // d is geojson obj
+        obj = d3.select(this);
+        if (obj.classed("US_symbol") && d.properties.postal)
+            clicked_name = d.properties.postal;
+        else if (obj.classed("US-land") && d.properties.postal)
+            clicked_name = d.properties.postal
+        else if (obj.classed("US_line"))
+            clicked_name = d;
+        else
+            return
+    
+        if (clicked_name != locked_state) { // lock this one
+            locked_state = clicked_name;
+
+            US_svg.selectAll(".US_symbol")
+                .classed("locked", false) // clear 
+                .classed("locked", function(dd) {
+                    if (dd.properties.postal == clicked_name) return true;
+                    return false;
+                }); 
+
+            US_timelines_svg.selectAll(".line")
+                .classed("US_highlight " + US_cur_case, false)
+                .classed("US_highlight_locked", function (dd) {
+                    if (dd == locked_state) {
+                        d3.select(this).raise();
+                        return true;
+                    }
+                    else return false;
+                });
+        }
+        else { // unlock
+            US_svg.selectAll(".US_symbol").classed("locked", false); // clear 
+            US_timelines_svg.selectAll(".line")
+                .classed("US_highlight_locked " + US_cur_case, false)
+                .classed("US_highlight " + US_cur_case, function (dd) {
+                    if (dd == locked_state) {
+                        d3.select(this).raise();
+                        return true;
+                    }
+                    else return false;
+                });
+            locked_state = null;
+        }
+
+        var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
+        var region = locked_state?locked_state:cur_US_region;
+        update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
+
+        // reset line labels
+        US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+            if (US_names.includes(dd.label) || dd.label==clicked_name)
+                return "block";
+            else
+                return "none";
+        });
+    }
 
     var themeDropdown = d3.select("#US_map-content")
         .insert("select", "svg")
@@ -412,7 +435,6 @@ function us_ready() {
         .attr("class", "select-css theme")
         .style("position", "absolute")
         .on("change", USThemeDropdownChange);
-
 
     themeDropdown.selectAll("option")
         .data(US_case_names_list)
@@ -452,11 +474,8 @@ function us_ready() {
 
         // Update the labels
         var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-        if (locked_state)
-            update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-        else 
-            update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-    
+        var region = locked_state?locked_state:cur_US_region;
+        update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
 
         // Create new data for the line chart
         US_sub_dataset = {};
@@ -503,7 +522,7 @@ function us_ready() {
             })
             .attr("d", function (d) { return US_line(US_sub_dataset[d]); })
             .on("mouseover", us_lines_mouseover)
-            .on("click", us_lines_click);
+            .on("click", us_handle_click); // us_lines_click);
         
         US_timelines_lines.enter().append("text") // same code, need a func
             .attr("class", "text-label")
@@ -610,11 +629,8 @@ function us_ready() {
                     return radius(0);
                 }));
 
-            if (locked_state)
-                update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-            else 
-                update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-    
+            var region = locked_state?locked_state:cur_US_region;
+            update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
         
             update_title_info("#us-info",
                 cur_date_US,
@@ -665,40 +681,36 @@ function us_ready() {
         });
 
         var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-        if (locked_state)
-            update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-        else 
-            update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
+        var region = locked_state?locked_state:cur_US_region;
+        update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
 
         if (is_scatter_plot_on) highlightDots(cur_US_region);
         if (is_pc_plot_on) highlight_paths(cur_US_region);
 
     }
     
-    function us_lines_click(d) { // d is NY, etc.
-        if (locked_state == d) { // unlock
-            locked_state = null;
-            US_svg.selectAll(".US_symbol").classed("locked", false); // clear 
-            d3.select(this).classed("US_highlight_locked", false);
-        }
-        else { // lock this one
-            locked_state = d;
-            US_svg.selectAll(".US_symbol").classed("locked", function(dd) {
-                if (dd.properties.postal == d) return true;
-                return false;
-            }); // clear 
-            US_timelines_svg.selectAll(".line")
-                .classed("US_highlight_locked " + US_cur_case, false);
-            d3.select(this).classed("US_highlight_locked", true);
+    // function us_lines_click(d) { // d is NY, etc.
+    //     if (locked_state == d) { // unlock
+    //         locked_state = null;
+    //         US_svg.selectAll(".US_symbol").classed("locked", false); // clear 
+    //         d3.select(this).classed("US_highlight_locked", false);
+    //     }
+    //     else { // lock this one
+    //         locked_state = d;
+    //         US_svg.selectAll(".US_symbol").classed("locked", function(dd) {
+    //             if (dd.properties.postal == d) return true;
+    //             return false;
+    //         }); // clear 
+    //         US_timelines_svg.selectAll(".line")
+    //             .classed("US_highlight_locked " + US_cur_case, false);
+    //         d3.select(this).classed("US_highlight_locked", true);
 
-        }
+    //     }
 
-        var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-        if (locked_state)
-            update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-        else 
-            update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-    }
+    //     var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
+    //     var region = locked_state?locked_state:cur_US_region;
+    //     update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
+    // }
 
     US_timelines_lines.enter().append("path")
         .attr("class", "line US_line")
@@ -710,7 +722,7 @@ function us_ready() {
         //       else
         //           return "#cdcdcd";})
         .on("mouseover", us_lines_mouseover)
-        .on("click", us_lines_click)
+        .on("click", us_handle_click) // us_lines_click)
         .on("mouseout", function (d) {
             // US_timelines_svg.selectAll(".text-label").style("display", function(d) {
             //     if (US_names.includes(d.label))
@@ -755,21 +767,16 @@ function us_ready() {
     US_info_labels = []
     US_info_labels[0] = US_timelines_svg
         .append('text')
-        .attr("class", "hover-text")
-        .attr("style", "fill: #ababab")
+        .attr("class", "hover-text grey")
         .attr("x", 20)
         .attr("y", -5);
     US_info_labels[1] = US_timelines_svg
         .append('text')
-        .attr("class", "hover-text")
-        .attr("style", "font-size: 22px")
+        .attr("class", "hover-text red")
         .attr("x", 20)
         .attr("y", 20);
 
     var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
-    if (locked_state)
-        update_info_labels(US_info_labels, us_abbr_inv[locked_state], cur_date_US, ind, US_cur_case, US_all_cases[locked_state][US_cur_case][ind]);
-    else 
-        update_info_labels(US_info_labels, us_abbr_inv[cur_US_region], cur_date_US, ind, US_cur_case, US_all_cases[cur_US_region][US_cur_case][ind]);
-
+    var region = locked_state?locked_state:cur_US_region;
+    update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
 }

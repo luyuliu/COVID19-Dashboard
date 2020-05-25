@@ -80,8 +80,12 @@ function update_plot_title(the_id, heading1, heading2) {
 // }
 
 // update the labels on the plot 
-function update_info_labels(labs, place, datev, datei, casename, val) {
-    labs[0].text(`${case_date_format_MD(datev)}: ${place}`); //  - Day ${datei}
+function update_info_labels(labs, place, datev, datei, casename, val, locked=null) {
+    if (locked)
+        labs[0].attr("class", "hover-text highlight")
+    else 
+        labs[0].attr("class", "hover-text grey")
+    labs[0].text(`${case_date_format_MD(datev)}: ${place}`);
     labs[1].text(`${case_names[casename]}: ${d3.format(",")(val)}`).style("fill", function (e) {
         return circle_symbol_fills[casename];
     });

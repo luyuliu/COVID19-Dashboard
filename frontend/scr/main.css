@@ -186,22 +186,10 @@ html, body {
   stroke: #dadada;
 }
 
-.world_symbol.highlight {
+.world_symbol.highlight, .US_symbol.highlight, .state_symbol.highlight {
 	stroke-width: 3;
 	fill-opacity: 0.95;
 	stroke-opacity: 0.8;
-}
-    
-.US_symbol.highlight {
-    stroke-width: 3;
-    fill-opacity: 0.95;
-    stroke-opacity: 0.8;
-}
-
-.state_symbol.highlight {
-    stroke-width: 3;
-    fill-opacity: 0.95;
-    stroke-opacity: 0.8;
 }
 
 .world_symbol.locked, .US_symbol.locked, .state_symbol.locked {
@@ -226,9 +214,22 @@ html, body {
 }
 
 .hover-text  {
-	font: 18px Helvetica, sans-serif;
+  font: 22px Helvetica, sans-serif;
+}
+
+.hover-text.grey {
+	fill: #ababab;
+}
+
+.hover-text.highlight {
+  fill: white;
+}
+
+.hover-text.red  {
+	/* font: 18px Helvetica, sans-serif; */
 	fill: red;
 }
+
 
 .land {
 	stroke: #cacaca;
