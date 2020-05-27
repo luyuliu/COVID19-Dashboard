@@ -49,12 +49,12 @@ var state_projection_params = {
     "TN": { "name": "Tennessee", "angles": [86.7, -35.8, 0], "scale": 2800 },
     "TX": { "name": "Texas", "angles": [100, -31, 0], "scale": 1500 },
     "UT": { "name": "Utah", "angles": [112, -39.4, 0], "scale": 2600 },
+    "VA": { "name": "Virginia", "angles": [79.5, -37.5, 0], "scale": 3000 },
+    "VT": { "name": "Vermont", "angles": [72.7, -43.7, 0], "scale": 6000 },
     "WA": { "name": "Washington", "angles": [120.7, -47, 0], "scale": 2700 },
     "WI": { "name": "Wisconsin", "angles": [88.7, -43.7, 0], "scale": 4000 },
     "WV": { "name": "West Virginia", "angles": [80.5, -38, 0], "scale": 3500 },
-    "WY": { "name": "Wyoming", "angles": [107.3, -43, 0], "scale": 2600 },
-    "VA": { "name": "Virginia", "angles": [79.5, -37.5, 0], "scale": 3000 },
-    "VT": { "name": "Vermont", "angles": [72.7, -43.7, 0], "scale": 6000 }
+    "WY": { "name": "Wyoming", "angles": [107.3, -43, 0], "scale": 2600 }
 }
 
 // the_state is set in start.js
