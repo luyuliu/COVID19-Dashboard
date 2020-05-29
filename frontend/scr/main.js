@@ -14,8 +14,10 @@ var all_promises = [
 
     d3.json("data/state-counties/" + state_geojson_fname),
     d3.json("data/state-counties/" + state_centroids_fname),
-    d3.json("data/all-cases-data-processed-counties.json")
+    d3.json("data/all-cases-data-processed-counties.json"),
+    d3.csv("data/us-counties-attributes.csv")
 ];
+
 
 Promise.all(all_promises).then(all_ready);
 
@@ -53,4 +55,18 @@ function all_ready(all_data) {
 
     init_state(0);
     state_ready();
+
+    data_se_cases = convert_county_data(all_data[11], all_data[10]);
+    drawGraph(se_ind, case_ind, data_se_cases);
+    handle_par_data(data_se_cases)
+
+    // d3.csv("data/us-counties-attributes.csv").then(function(data_ind) { 
+    //     d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
+    //         data_se_cases = convert_county_data(data_ind, data_cases);
+    //         drawGraph(se_ind, case_ind, data_se_cases);
+    //         handle_par_data(data_se_cases)
+    //     });
+    // });
+    
+    
 }

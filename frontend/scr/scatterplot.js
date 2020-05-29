@@ -96,14 +96,15 @@ var se_ind = document.querySelector("#se_ind").value;
 var case_ind = document.querySelector("#case_ind").value;
 var data_se_cases;
 
-// load data
-d3.csv("data/us-counties-attributes.csv").then(function(data_ind) { 
-	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
-    	data_se_cases = convert_county_data(data_ind, data_cases);
-    	drawGraph(se_ind, case_ind, data_se_cases);
-        handle_par_data(data_se_cases)
-	});
-});
+// load data in main.js
+
+// d3.csv("data/us-counties-attributes.csv").then(function(data_ind) { 
+// 	d3.json("data/all-cases-data-processed-counties.json").then(function(data_cases) { 
+//     	data_se_cases = convert_county_data(data_ind, data_cases);
+//     	drawGraph(se_ind, case_ind, data_se_cases);
+//         handle_par_data(data_se_cases)
+// 	});
+// });
 
 
 function drawGraph(se_ind, case_ind, data) {		
