@@ -247,17 +247,19 @@ function highlightDots(state) {
 }
 
 
+// special_states = ["NY", "NJ", "MA", "PA"]
 function update_dots() {
 	sp_dots.each(function(d) {
 		this_dot = d3.select(this);
 		if (link_sp_dots && d.state == sp_curr_state) {
+		// if (special_states.includes(d.state)) {
 			this_dot.style("opacity", 0.9).style("fill", "#ff3a3a").attr("r", 2).raise(); 
 		}
 		else {
 			this_dot.style("opacity", 0.5).style("fill", "lightgrey").attr("r", 2);
 		}
-})
-
+	})
+	// update_plot_title("#scatter-plot-title", sp_title_str, special_states.join(" "));
 }
 
 function updateGraph() {

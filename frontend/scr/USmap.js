@@ -199,7 +199,9 @@ function us_ready() {
                     else
                         return "none";
                 });
-        
+
+                US_svg.selectAll(".US_symbol").classed("highlight", false); // clear first 
+
                 var ind = parseInt(US_toXScale.invert(cur_date_US)) + 1;
                 var region = locked_state?locked_state:cur_US_region;
                 update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_US, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
@@ -209,17 +211,17 @@ function us_ready() {
             })
             .on("click", us_handle_click)
             .on("mouseout", function (d, i) {
-            	US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
+            	// US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
                 d3.select(this).interrupt()
                     // .transition(10)
                     .style("fill", US_color_scheme(d["properties"][US_current_mapping_var]));
 
-                US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-                    if (US_names.includes(dd.label) || dd.label==locked_state)
-                        return "block";
-                    else
-                        return "none";
-                });
+                // US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+                //     if (US_names.includes(dd.label) || dd.label==locked_state)
+                //         return "block";
+                //     else
+                //         return "none";
+                // });
     
             });;
     }
@@ -361,14 +363,14 @@ function us_ready() {
         })
         .on("click", us_handle_click)
         .on("mouseout", function (d) {
-            US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
-            US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-                if (US_names.includes(dd.label) || dd.label==locked_state)
-                    return "block";
-                else
-                    return "none";
-            });
-            d3.select(this).classed("highlight", false);
+            // US_timelines_svg.selectAll(".line").classed("US_highlight " + US_cur_case, false);
+            // US_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+            //     if (US_names.includes(dd.label) || dd.label==locked_state)
+            //         return "block";
+            //     else
+            //         return "none";
+            // });
+            // d3.select(this).classed("highlight", false);
         });
 
     function us_handle_click(d) { // d is geojson obj

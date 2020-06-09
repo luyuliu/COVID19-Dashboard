@@ -322,7 +322,7 @@ function state_ready() {
             })
             .style("stroke", "#aaa")
             .style("stroke-width", 0.5)
-            .on("mouseover", function (d, i) {
+            .on("mouseover", function (d, i) { // choropleth
 	            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, function (dd, i) {
 	                if (dd == d.properties.GEOID) {
 	                    d3.select(this).raise();
@@ -342,23 +342,25 @@ function state_ready() {
                 d3.select(this)
                     // .transition(t)
                     .style("fill", "#efef65");
-            	
+                
+                state_svg.selectAll(".state_symbol").classed("highlight", false); // clear first 
+
 	            var ind = parseInt(state_toXScale.invert(cur_date_state)) + 1;
                 var region = locked_county?locked_county:cur_state_region;
                 update_info_labels(state_info_labels, fips_to_name[region], cur_date_state, ind, state_cur_case, state_all_cases[region][state_cur_case][ind], locked_county);    
             })
             .on("click", state_handle_click) 
             .on("mouseout", function (d, i) {
-	            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
-	            state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-	                if (state_names.includes(dd.label) || dd.label==locked_county)
-	                    return "block";
-	                else
-	                    return "none";
+	            // state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
+	            // state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+	            //     if (state_names.includes(dd.label) || dd.label==locked_county)
+	            //         return "block";
+	            //     else
+	            //         return "none";
 
-	            });
+	            // });
                 d3.select(this).interrupt()
-                    .transition(10)
+                    .transition(5)
                     .style("fill", state_color_scheme(d["properties"][state_current_mapping_var]));
             });;
     }
@@ -496,16 +498,16 @@ function state_ready() {
         })
         .on("click", state_handle_click)
         .on("mouseout", function (d) {
-            state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
-            state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
-                if (state_names.includes(dd.label) || dd.label==locked_county)
-                    return "block";
-                else
-                    return "none";
+            // state_timelines_svg.selectAll(".line").classed("state_highlight " + state_cur_case, false);
+            // state_timelines_svg.selectAll(".text-label").style("display", function (dd) {
+            //     if (state_names.includes(dd.label) || dd.label==locked_county)
+            //         return "block";
+            //     else
+            //         return "none";
 
-            });
-            if (d.properties.GEOID != locked_county)
-                d3.select(this).classed("highlight", false);
+            // });
+            // if (d.properties.GEOID != locked_county)
+            //     d3.select(this).classed("highlight", false);
         });
 
 
