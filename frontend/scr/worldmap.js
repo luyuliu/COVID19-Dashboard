@@ -709,7 +709,7 @@ function world_ready() { // TODO: LONG function!
                 update_info_labels(US_info_labels, us_abbr_inv[region], cur_date_world, ind, US_cur_case, US_all_cases[region][US_cur_case][ind], locked_state);
 
                 region = locked_county?locked_county:cur_state_region;
-                update_info_labels(state_info_labels, fips_to_name[region], cur_date_world, ind, region, state_all_cases[region][state_cur_case][ind], locked_county);
+                update_info_labels(state_info_labels, fips_to_name[region], cur_date_world, ind, state_cur_case, state_all_cases[region][state_cur_case][ind], locked_county);
 
                 update_title_info("#us-info",
                     cur_date_world,
